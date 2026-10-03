@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    android:background="@color/white"
+    tools:context=".Salary.HoursIncentiveActivity">
+
+    <!-- Improved Toolbar with centered title -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:id="@+id/BackBtn"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:gravity="center"
+                android:text="@string/back"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12ssp"
+                android:background="@drawable/rounded_back_btn" />
+
+
+            <TextView
+                android:id="@+id/monthYearBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_6sdp"
+                android:text="May 2024"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp" />
+
+            <TextView
+                android:id="@+id/NextBtn"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:gravity="center"
+                android:text="@string/next"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12ssp"
+                android:background="@drawable/rounded_back_btn"/>
+        </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Improved Card with better spacing and visual hierarchy -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="433dp"
+            android:background="@color/creamy_white"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Summary Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Hours"
+                        android:textColor="@color/Gray"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <TextView
+                        android:id="@+id/totalHours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="0 hrs"
+                        android:textColor="@color/Red"
+                        android:textSize="@dimen/_16ssp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Incentive Earned"
+                        android:textColor="@color/Gray"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <TextView
+                        android:id="@+id/hourincentive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="0"
+                        android:textColor="@color/Green"
+                        android:textSize="@dimen/_16ssp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/light_Gray" />
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:padding="@dimen/_6sdp"
+                android:text="@string/worikingHours"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold" />
+
+            <!-- Improved Incentive Chart -->
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Y-axis labels container -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingRight="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:text="Hours"
+                        android:textColor="@color/red_500"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="115dp"
+                        android:text="Incentive"
+                        android:textColor="@color/green_500"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Vertical divider -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="160dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@color/gray_300" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
+                    <!-- Main chart content -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Hours row -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingBottom="4dp">
+
+                            <!-- Hour markers with perfect spacing -->
+                            <TextView
+                                android:id="@+id/text_view_20"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:text="20"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_30"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="30"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_40"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="40"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <!-- Continue with consistent spacing -->
+                            <TextView
+                                android:id="@+id/text_view_50"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="50"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_60"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="60"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_70"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="70"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_80"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="80"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_90"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="90"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_100"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="100"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_110"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="110"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_120"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="120"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_view_125"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:text="125"
+                                android:textAlignment="center"
+                                android:textColor="@color/red_500"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <!-- Progress bar area -->
+                        <LinearLayout
+                            android:id="@+id/progress_container"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/_73sdp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:id="@+id/filled_view1"
+                                android:layout_width="@dimen/_4sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark1"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view2"
+                                android:layout_width="@dimen/_20sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark2"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view3"
+                                android:layout_width="@dimen/_21sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark3"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view4"
+                                android:layout_width="@dimen/_22sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark4"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view5"
+                                android:layout_width="@dimen/_21sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark5"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view6"
+                                android:layout_width="@dimen/_22sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark6"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view7"
+                                android:layout_width="@dimen/_22sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark7"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view8"
+                                android:layout_width="@dimen/_20sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark8"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view9"
+                                android:layout_width="@dimen/_20sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark9"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view10"
+                                android:layout_width="@dimen/_22sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark10"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view11"
+                                android:layout_width="@dimen/_22sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark11"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+
+                            <View
+                                android:id="@+id/filled_view12"
+                                android:layout_width="@dimen/_22sdp"
+                                android:layout_height="@dimen/_2sdp"
+                                android:layout_gravity="center" />
+
+                            <View
+                                android:id="@+id/tick_mark12"
+                                android:layout_width="@dimen/_25sdp"
+                                android:layout_height="@dimen/_22sdp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/slider_tick_mark" />
+                        </LinearLayout>
+
+                        <!-- Incentive values row -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="4dp">
+
+                            <!-- Incentive values perfectly aligned below hour markers -->
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:drawablePadding="2dp"
+                                android:text="₹ 380"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹ 1380"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹ 2500"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹ 4500"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹ 8750"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹12000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹15000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹18000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹20000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹22000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹25000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:drawablePadding="2dp"
+                                android:text="₹30000"
+                                android:textAlignment="center"
+                                android:textColor="@color/green_500"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+
+            <!-- Current progress indicator -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/light_Gray"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingLeft="@dimen/_8sdp"
+                android:paddingRight="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Progress"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11ssp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/current_hours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10hrs 15min"
+                        android:textColor="@color/Red"
+                        android:textSize="@dimen/_9ssp" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="16dp"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/Gray" />
+
+                    <TextView
+                        android:id="@+id/next_milestone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Next: 20 hrs"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_9ssp" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="16dp"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/Gray" />
+
+                    <TextView
+                        android:id="@+id/remaining_hours"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Remaining: 20hrs 55min"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_9ssp" />
+                </LinearLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="8dp"
+                    app:indicatorColor="@color/Green"
+                    app:trackColor="@color/light_Gray"
+                    app:trackCornerRadius="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

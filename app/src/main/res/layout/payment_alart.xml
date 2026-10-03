@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/dialog_background"
+    android:padding="20dp">
+
+    <!-- Commission Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Commission Due"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FF5722"
+        android:gravity="center"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Commission Description -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Great job completing your service! Please clear the commission to continue receiving new bookings."
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        android:paddingHorizontal="10dp"/>
+
+    <!-- Company Details -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#F5F5F5"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp">
+
+        <!-- Booking ID -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Booking ID:"
+                android:textSize="14sp"
+                android:textColor="#666"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/booking_id_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="#ORD123456"
+                android:gravity="start"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#2196F3"
+                android:paddingLeft="@dimen/_10ssp"
+                android:layout_marginBottom="12dp"/>
+        </LinearLayout>
+
+        <!-- Horizontal line after Booking ID -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="12dp"/>
+
+
+        <TextView
+            android:id="@+id/company_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="JIIFIT Commission"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#000"
+            android:layout_marginBottom="12dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Service Amount :"
+                android:textSize="14sp"
+                android:textColor="#666"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/service_amount_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="₹ 500.00"
+                android:gravity="end"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#FF5722"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jifiit Commission:"
+                android:textSize="14sp"
+                android:textColor="#666"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/commission_amount_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="₹ 500.00"
+                android:gravity="end"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#FF5722"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GST:"
+                android:textSize="14sp"
+                android:textColor="#666"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/gst_amount_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="₹ 500.00"
+                android:gravity="end"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#FF5722"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+
+        <!-- Horizontal line after GST -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#BDBDBD"
+            android:layout_marginBottom="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PAYABLE AMOUNT:"
+                android:textSize="14sp"
+                android:textColor="@color/red_600"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/total_amount_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="₹ 500.00"
+                android:gravity="end"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_600"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Payment Button -->
+    <Button
+        android:id="@+id/pay_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pay Now"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:textColor="#FFF"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:paddingVertical="12dp"/>
+</LinearLayout>

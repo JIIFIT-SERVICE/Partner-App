@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white"
+    tools:context=".Leave.CasualLeave">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/ShapGreen"
+            android:elevation="@dimen/_4sdp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:popupTheme="@style/ThemeOverlay.MyPopupTheme" />
+
+        <!-- Select Date -->
+        <TextView
+            android:id="@+id/tvSelectDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date &amp; times for Leave:"
+            android:textColor="@color/Gray"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textStyle="italic"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp" />
+
+        <!-- From Time -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewDates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="1dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/dateView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectDate" />
+
+        <TextView
+            android:id="@+id/dateView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewDates"
+            app:layout_constraintStart_toStartOf="parent"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvFromTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Leave From:"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/dateView"
+            app:layout_constraintStart_toStartOf="parent"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp" />
+
+        <Button
+            android:id="@+id/btnFromTime"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="wrap_content"
+            android:text="Select Time"
+            android:drawableBottom="@drawable/ccp_ic_arrow_drop_down"
+            android:drawableTint="@color/Gray"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/Blue"
+            app:layout_constraintTop_toBottomOf="@id/tvFromTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="16dp" />
+
+        <!-- To Time -->
+        <TextView
+            android:id="@+id/tvToTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Leave To:"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/btnFromTime"
+            app:layout_constraintStart_toStartOf="parent"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp" />
+
+        <Button
+            android:id="@+id/btnToTime"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="wrap_content"
+            android:text="Select Time"
+            android:backgroundTint="@color/white"
+            android:drawableBottom="@drawable/ccp_ic_arrow_drop_down"
+            android:drawableTint="@color/Gray"
+            android:textColor="@color/Blue"
+            app:layout_constraintTop_toBottomOf="@id/tvToTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:id="@+id/totalDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="23dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/btnSubmitLeave"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnToTime" />
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/btnSubmitLeave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Reason"
+            android:backgroundTint="@color/Blue"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/totalDuration"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="24dp" />
+        <Button
+            android:id="@+id/EmgCall"
+            android:layout_width="@dimen/_140sdp"
+            android:layout_height="wrap_content"
+            android:text="Emergency Support"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/Blue"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/btnSubmitLeave"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="16dp" />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/ShapGreen"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

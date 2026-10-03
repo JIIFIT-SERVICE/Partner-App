@@ -1,0 +1,169 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cart_category_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_4sdp"
+    android:layout_marginBottom="@dimen/_20sdp"
+    android:backgroundTint="@color/white"
+    app:cardCornerRadius="@dimen/_10sdp"
+    app:cardElevation="@dimen/_4sdp">
+
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="@dimen/_10sdp">
+
+<!-- Save Amount -->
+<TextView
+    android:id="@+id/save_amount"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/Green"
+    android:text="Save \u20B9159"
+    android:padding="@dimen/_4sdp"
+    android:textSize="@dimen/_8ssp"
+    android:textColor="@color/white"
+    android:paddingBottom="@dimen/_4sdp"
+    android:layout_marginBottom="@dimen/_4sdp"/>
+
+<!-- Get Details Section -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/get_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get Details"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/Blue"
+        android:gravity="right"
+        android:layout_gravity="right"
+        />
+
+
+
+</LinearLayout>
+
+<!-- Massage Image -->
+<ImageView
+    android:id="@+id/thumbnail"
+    android:layout_width="@dimen/_45sdp"
+    android:layout_height="@dimen/_45sdp"
+    android:layout_gravity="center"
+    android:scaleType="centerCrop"
+    android:layout_marginTop="@dimen/_10sdp"
+    /> <!-- Replace with your actual image -->
+
+<!-- Title -->
+<TextView
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_30sdp"
+    android:text="Relaxing Couples Massage Same Gender"
+    android:textSize="@dimen/_7ssp"
+    android:gravity="center"
+    android:padding="@dimen/_4sdp"
+    android:textColor="@android:color/black"
+    android:fontFamily="sans-serif-medium"
+    android:paddingTop="@dimen/_4sdp"
+    android:layout_marginTop="@dimen/_4sdp"/>
+
+<!-- Price and Time Section -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:paddingTop="@dimen/_10sdp">
+
+    <!-- Price -->
+    <LinearLayout
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/discountprice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\u20B91999"
+            android:textSize="@dimen/_10ssp"
+            android:textColor="@color/black" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_4sdp">
+            <TextView
+                android:id="@+id/originalprice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u20B91563"
+                android:textSize="@dimen/_8ssp"
+                android:textColor="@color/Red"
+                android:paddingStart="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:textStyle="italic" />
+            <!-- Apply strikethrough effect -->
+
+            <TextView
+                android:id="@+id/discounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:text="30% OFF"
+                android:textSize="@dimen/_8ssp"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Time -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/baseline_timer_24"
+            android:text="150"
+            android:textSize="@dimen/_10ssp"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minutes"
+            android:textSize="@dimen/_8ssp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+</LinearLayout>
+
+<!-- Add Button -->
+    <Button
+        android:id="@+id/add_service_button"
+        android:layout_width="@dimen/_60sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="ADD"
+        android:background="@drawable/button_border_blue"
+        android:textColor="@color/White"
+        android:layout_marginTop="@dimen/_8sdp" />
+
+</LinearLayout>
+    </androidx.cardview.widget.CardView>

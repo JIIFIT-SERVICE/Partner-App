@@ -1,0 +1,12 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base dot -->
+    <item android:drawable="@drawable/ic_dot" />
+
+    <!-- Lock icon at every 10th position -->
+    <item
+        android:drawable="@drawable/lock"
+        android:width="25dp"
+        android:height="25dp"
+        android:gravity="center_horizontal"
+        android:visible="false" />
+</layer-list>

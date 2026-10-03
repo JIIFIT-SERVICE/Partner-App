@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Duration and Price Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/time_filled_24"
+            android:drawableTint="@color/black"
+            android:drawablePadding="8dp" />
+
+        <!-- Add Service Button (initially visible) -->
+        <Button
+            android:id="@+id/add_service_button"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="wrap_content"
+            android:text="ADD"
+            android:layout_gravity="bottom"
+            android:background="@drawable/button_border_blue"
+            android:textColor="@color/White" />
+
+        <!-- Quantity Management Layout (initially gone) -->
+        <LinearLayout
+            android:id="@+id/quantity_management_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btn_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textSize="@dimen/_15sdp"
+                android:textStyle="bold"
+                android:background="@drawable/button_border_blue"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/txt_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="16sp"
+                android:padding="8dp"
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/btn_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:textSize="@dimen/_15sdp"
+                android:textStyle="bold"
+                android:background="@drawable/button_border_blue"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!-- Discounted Price Section -->
+    <TextView
+        android:id="@+id/discount_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <!-- Original Price and Discount Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/originalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="@color/Red"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/discounts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:textSize="10sp"
+            android:textColor="@color/Blue" />
+    </LinearLayout>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black"
+        android:layout_marginTop="8dp"
+        android:outlineSpotShadowColor="@color/Gray"
+        android:layout_marginBottom="8dp"/>
+</LinearLayout>

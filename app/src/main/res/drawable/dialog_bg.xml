@@ -1,0 +1,16 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="5dp" />
+
+    <!-- Gradient Background (angle must be a multiple of 45) -->
+    <gradient
+        android:angle="270"
+    android:startColor="@color/ShapGreen"
+    android:endColor="@color/white"
+    android:type="linear" />
+
+    <padding
+        android:top="10dp"
+        android:bottom="10dp"
+        android:left="10dp"
+        android:right="10dp" />
+</shape>

@@ -1,0 +1,134 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/add_coins"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_8sdp"
+    android:backgroundTint="@color/creamy_white"
+    app:cardCornerRadius="@dimen/_12sdp"
+    app:cardElevation="@dimen/_2sdp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Thumbnail Image -->
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/wallet"
+            android:contentDescription="@string/video_thumbnail"
+            android:background="@color/light_gray"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- Video Info Section -->
+        <LinearLayout
+            android:id="@+id/titelContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_4sdp">
+
+            <!-- Video Number -->
+            <TextView
+                android:id="@+id/Id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No.23:"
+                android:textSize="@dimen/_14ssp"
+                android:textColor="@color/primary_color"
+                android:textStyle="bold"
+                android:paddingEnd="@dimen/_4sdp" />
+
+            <!-- Video Title -->
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="How to apply body massage"
+                android:textSize="@dimen/_14ssp"
+                android:textColor="@android:color/black"
+                android:maxLines="2"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Metadata Section -->
+        <LinearLayout
+            android:id="@+id/viewsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp">
+
+            <!-- Views Count -->
+
+            <TextView
+                android:id="@+id/view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1.2M views"
+                android:textSize="@dimen/_12ssp"
+                android:textColor="@color/darker_gray"
+                android:paddingEnd="@dimen/_8sdp" />
+
+            <!-- Upload Date -->
+
+            <TextView
+                android:id="@+id/Date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 days ago"
+                android:textSize="@dimen/_12ssp"
+                android:textColor="@color/darker_gray"
+                android:paddingStart="@dimen/_4sdp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/like_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:orientation="horizontal"
+                android:gravity="start">
+
+                <ImageButton
+                    android:id="@+id/likeBtn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_like"
+                    android:contentDescription="@string/like"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"/>
+
+                <TextView
+                    android:id="@+id/likeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="1.5K"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="4dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <!-- Action Button -->
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

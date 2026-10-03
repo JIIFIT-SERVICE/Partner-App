@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/home_24"
+            android:title="@string/menu_home"
+            android:iconTint="@color/Gray"/>
+
+        <item
+            android:id="@+id/history"
+            android:icon="@drawable/history_24"
+            android:title="@string/history"
+            android:iconTint="@color/Gray"/>
+
+
+        <item
+            android:id="@+id/myQr"
+            android:icon="@drawable/qr_code_24"
+            android:title="@string/myQr"
+            android:iconTint="@color/Gray"/>
+
+
+        <item
+            android:id="@+id/TrainingHub"
+            android:icon="@drawable/training_24"
+            android:title="@string/menu_slideshow"
+            android:iconTint="@color/Gray"/>
+        <item
+            android:id="@+id/leaves"
+            android:icon="@drawable/leaves"
+            android:title="@string/Leaves"
+            android:iconTint="@color/Gray"/>
+<!--        <item-->
+<!--            android:id="@+id/nav_wallet"-->
+<!--            android:icon="@drawable/fine"-->
+<!--            android:title="@string/Fine"-->
+<!--            android:iconTint="@color/Gray"/>-->
+<!--        <item-->
+<!--            android:id="@+id/nav_Loans"-->
+<!--            android:icon="@drawable/clean_hands_24"-->
+<!--            android:title="@string/Loans"-->
+<!--            android:iconTint="@color/Gray"/>-->
+        <item
+            android:id="@+id/nav_salary"
+            android:icon="@drawable/rupee_24"
+            android:title="@string/salary"
+            android:iconTint="@color/Gray"/>
+
+        <item
+            android:id="@+id/nav_myperformance"
+            android:icon="@drawable/my_performance"
+            android:title="@string/MyPerformance"
+            android:iconTint="@color/Gray"/>
+    </group>
+
+    <item android:title="Comunicate">
+        <menu>
+            <item
+                android:id="@+id/nav_refer"
+                android:icon="@drawable/referal"
+                android:title="@string/Refer"
+                android:iconTint="@color/Gray"/>
+            <item
+                android:id="@+id/nav_shareGuest"
+                android:icon="@drawable/baseline_send_24"
+                android:title="@string/guest"
+                android:iconTint="@color/Gray"/>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/help"
+                android:title="@string/help"
+                android:iconTint="@color/Gray"/>
+            <item
+                android:id="@+id/nav_privacy"
+                android:icon="@drawable/privacy"
+                android:title="@string/Privacy"
+                android:iconTint="@color/Gray"/>
+            <item
+                android:id="@+id/nav_Terms"
+                android:icon="@drawable/terms"
+                android:title="@string/Terms"
+                android:iconTint="@color/Gray"/>
+            <item
+                android:id="@+id/logout"
+                android:icon="@drawable/logout_24"
+                android:title="@string/Logout"
+                android:iconTint="@color/Gray"/>
+        </menu>
+
+    </item>
+</menu>

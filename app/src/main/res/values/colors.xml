@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="ShapGreen">#538688</color>
+    <color name="DeepShapGreen">#1d4d4f</color>
+    <color name="BlueCharcoal">#212529</color>
+    <color name="Green">#32AC22</color>
+    <color name="DeepGreen">#136E09</color>
+    <color name="Red">#C10101</color>
+    <color name="Pink">#C1016B</color>
+    <color name="Yellow">#FFEB0E</color>
+    <color name="Blue">#0000FF</color>
+    <color name="Electric_Blue">#2196F3</color>
+    <color name="Button_Blue">#FF1A56DB</color>
+    <color name="Text_Blue">#1976D2</color>
+    <color name="BackgroundBlue">#E3F0FF</color>
+    <color name="Sky">#6F8BAE</color>
+    <color name="Gray">#808080</color>
+    <color name="light_gray">#D3D3D3</color>
+    <color name="light_Gray">#2D808080</color>
+    <color name="Nav_header">#AA3E9C</color>
+    <color name="btn_color">#D99ECE</color>
+    <color name="active_dot_color">#FF000000</color> <!-- Change this color as needed -->
+    <color name="inactive_dot_color">#CCCCCC</color> <!-- Change this color as needed -->
+    <color name="transparent">#00FFFFFF</color>
+    <color name="orange">#FF3D00</color>
+    <color name="acua">#00FFF7</color>
+
+
+<!--        <color name="Blue">#0000FF</color>-->
+        <color name="White">#FFFFFF</color>
+        <color name="ButtonDefaultBackground">#0000FF</color>
+        <color name="ButtonDefaultText">#fff</color>
+    <color name="headerBackgroundColor">#FFBB86FC</color> <!-- Purple -->
+    <color name="headerTextColor">#FFFFFF</color>         <!-- White -->
+    <color name="rowColor1">#FFF2F2F2</color>             <!-- Light gray -->
+    <color name="rowColor2">#FFFFFFFF</color>             <!-- White -->
+    <color name="rowTextColor">#FF000000</color>          <!-- Black -->
+
+
+    <color name="progress_track">#E0E0E0</color> <!-- Light gray track -->
+    <color name="progress_fill">#4CAF50</color>  <!-- Green fill color -->
+    <color name="lock_overlay">#80000000</color>
+    <!-- More transparent dark overlay (30% opacity) -->
+    <color name="lock_overlay_light">#4D000000</color>
+
+    <!-- Semi-transparent white overlay -->
+    <color name="lock_overlay_white">#80FFFFFF</color>
+
+    <!-- Colored overlay (e.g., blue with 50% opacity) -->
+    <color name="lock_overlay_blue">#800000FF</color>
+
+    <color name="bronze">#CD7F32</color>  <!-- Bronze color -->
+    <color name="silver">#C0C0C0</color>  <!-- Silver color -->
+    <color name="gold">#FFD700</color>     <!-- Gold color -->
+    <color name="platinum">#E5E4E2</color> <!-- Platinum color -->
+
+
+    <color name="background">#1A237E</color>
+    <color name="card_background">#303F9F</color>
+    <color name="accent">#FF5722</color>
+    <color name="highlight_red">#FFCDD2</color>
+
+
+
+
+
+    <!-- AgriChain Colors -->
+    <color name="primary_green">#4CAF50</color>
+    <color name="dark_green">#388E3C</color>
+    <color name="light_green">#A5D6A7</color>
+    <color name="secondary_brown">#795548</color>
+    <color name="cold_blue">#2196F3</color>
+    <color name="frozen_blue">#0D47A1</color>
+    <color name="ambient_yellow">#FFC107</color>
+
+    <color name="light_ash">#B2BEB5</color>
+    <color name="medium_ash">#A9A9A9</color>
+    <color name="dark_ash">#3C3939</color>
+    <color name="teal_700">#00796B</color>
+    <color name="row_even">#FAFAFA</color>
+    <color name="row_odd">#EEEEEE</color>
+    <color name="gray_dark">#616161</color>
+    <color name="creamy_white">#FFF8F0</color>
+    <color name="deep_creamy_white">#FFE0C0</color>
+
+    <color name="green_success">#4CAF50</color>
+    <color name="text_secondary">#757575</color>
+    <!-- colors.xml -->
+    <color name="blue_action">#2196F3</color>
+    <color name="light_blue_ripple">#402196F3</color>
+    <color name="divider_color">#E0E0E0</color>
+
+    <color name="primary_color">#4285F4</color>
+    <color name="darker_gray">#757575</color>
+    <color name="primaryColor">#4285F4</color>
+    <color name="secondaryTextColor">#757575</color>
+    <color name="cardBackground">#FAFAFA</color>
+    <color name="screen">#FDF8FF</color>
+    <color name="ShapGreenLight">#E8F5E9</color>
+
+
+
+    <color name="red_500">#F44336</color>
+    <color name="red_600">#E53935</color>
+
+    <color name="green_500">#4CAF50</color>
+    <color name="green_600">#43A047</color>
+
+    <!-- Grayscale -->
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>  <!-- Divider color -->
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+
+    <color name="orange_dark">#F57C00</color>
+
+    <color name="error_color">#F44336</color>
+    <color name="gray">#757575</color>
+    <color name="gray_light">#BDBDBD</color>
+
+    <color name="lightGreen">#90EE90</color>
+    <color name="lightGray">#F5F5F5</color>
+    <color name="commission_green">#2E7D32</color>
+    <color name="commission_accent">#1976D2</color>
+
+
+    <color name="selection_overlay">#00000000</color>
+    <color name="selection_selected">#4CAF50</color>  <!-- Green with some transparency -->
+    <color name="selection_unselected">#00000000</color>  <!-- Transparent -->
+    <color name="selection_disabled">#33FF0000</color>  <!-- Red with transparency -->
+    <color name="disabled_overlay">#33000000</color>  <!-- Dark overlay for disabled -->
+
+
+    <color name="joiner_background">#FAF7F2</color>
+
+    <color name="card_background_color">#FFFEFC</color>
+    <color name="card_stroke">#E3E8EF</color>
+    <color name="card_divider">#EAEEF4</color>
+
+    <!-- ==================== TEXT ==================== -->
+    <color name="joiner_title">#0F1B2D</color>
+    <color name="joiner_text_dark">#0F1B2D</color>
+    <color name="joiner_text_secondary">#5A6472</color>
+
+    <!-- ==================== BRAND BLUE ==================== -->
+    <color name="joiner_green">#1E5FA8</color>           <!-- আগের গ্রীনের জায়গায় ব্র্যান্ড ব্লু -->
+    <color name="joiner_expert_border">#7BA7D9</color>    <!-- সফট ব্লু বর্ডার -->
+
+    <!-- ==================== BENEFIT ==================== -->
+    <color name="joiner_divider">#D5DCE6</color>
+
+    <!-- ==================== ICON BACKGROUNDS ==================== -->
+    <color name="icon_mint">#DCEBFA</color>               <!-- আগের মিন্ট গ্রীনের জায়গায় লাইট ব্লু -->
+    <color name="icon_cream">#F2F5FA</color>              <!-- আগের ক্রিমের জায়গায় অফ-হোয়াইট ব্লু -->
+    <color name="expert_icon_green">#0B3D73</color>       <!-- ডার্ক নেভি ব্লু -->
+
+    <!-- ==================== BADGES ==================== -->
+    <color name="badge_green">#B8D9F5</color>             <!-- সফট ব্লু ব্যাজ -->
+    <color name="badge_gray">#E6EBF2</color>              <!-- নিউট্রাল ব্লু-গ্রে -->
+    <color name="badge_popular">#FFE0A0</color>           <!-- Most Popular ব্যাজ অপরিবর্তিত (গোল্ডেন) -->
+
+    <!-- ==================== CLOSE BUTTON ==================== -->
+    <color name="close_background">#6B7280</color>
+
+    <!-- ==================== CHIP ==================== -->
+    <color name="chip_background">#EEF3F9</color>
+
+
+    <color name="faq_bg">#F4F7FB</color> <!-- Off-white blue background -->
+    <color name="faq_card_bg">#FFFFFF</color> <!-- White cards (unchanged) -->
+    <color name="faq_text_primary">#0D1B2A</color> <!-- Dark navy text -->
+    <color name="faq_text_secondary">#5A6B7B</color> <!-- Grey-blue text -->
+    <color name="faq_divider">#D6E0EB</color> <!-- Light blue divider lines -->
+    <color name="green_light">#E3F2FD</color> <!-- Light blue for WhatsApp button -->
+    <color name="green_dark">#1565C0</color> <!-- Dark blue for headers/icons -->
+    <color name="grey_button">#ECEFF1</color> <!-- Light blue-grey for Call button -->
+
+
+    <color name="teal_primary">#0F4C4C</color>
+    <color name="teal_dark">#083838</color>
+    <color name="teal_light">#E0F2F1</color>
+    <color name="bg_grey">#F5F7F9</color>
+    <color name="text_dark">#1E1E1E</color>
+    <color name="text_grey">#757575</color>
+    <color name="status_green">#4CAF50</color>
+    <color name="status_orange">#FFB74D</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+</resources>

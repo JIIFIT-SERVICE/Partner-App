@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "291207934707",
+    "project_id": "jiifittherapistapp",
+    "storage_bucket": "jiifittherapistapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291207934707:android:8afdc1bd6b342b6047fd86",
+        "android_client_info": {
+          "package_name": "com.company.jifiit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzUzo1oJe16YpwfZSRpOOvf9YYRIoqiTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

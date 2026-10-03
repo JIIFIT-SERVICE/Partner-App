@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+
+    <!-- Slide in from the right, fast -->
+    <translate
+        android:fromXDelta="100%"
+        android:toXDelta="0%"
+        android:duration="2000"
+    android:fillAfter="true"
+    android:startOffset="0" />
+
+    <!-- Pause for 4-5 seconds -->
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="1.0"
+        android:duration="4000"
+    android:startOffset="2000"
+    android:fillAfter="true" />
+
+    <!-- Slide out to the right -->
+<!--    <translate-->
+<!--        android:fromXDelta="0%"-->
+<!--        android:toXDelta="100%"-->
+<!--        android:duration="2000"-->
+<!--    android:startOffset="4700"-->
+<!--    android:fillAfter="true"-->
+<!--    android:repeatCount="infinite"-->
+<!--    android:repeatMode="restart" />-->
+</set>

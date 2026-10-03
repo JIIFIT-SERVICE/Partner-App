@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA"
+    android:padding="20dp">
+
+    <!-- Success Icon Container -->
+    <LinearLayout
+        android:id="@+id/successIconContainer"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/circle_background_green"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- Success Checkmark Icon -->
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_check_circle"
+            app:tint="@android:color/white" />
+
+    </LinearLayout>
+
+    <!-- Success Message -->
+    <TextView
+        android:id="@+id/tvSuccessTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/successIconContainer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Payment Successful!"
+        android:textColor="#2E7D32"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Order ID -->
+    <TextView
+        android:id="@+id/tvOrderId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvSuccessTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Order ID: ORDER123456"
+        android:textColor="#555555"
+        android:textSize="16sp" />
+
+    <!-- Amount -->
+    <TextView
+        android:id="@+id/tvAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvOrderId"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:text="Amount: ₹100.00"
+        android:textColor="#555555"
+        android:textSize="16sp" />
+
+    <!-- Success Message Details -->
+    <TextView
+        android:id="@+id/tvSuccessMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvAmount"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Your payment has been processed successfully. Thank you for your purchase!"
+        android:textColor="#666666"
+        android:textSize="14sp" />
+
+    <!-- Redirecting Message -->
+    <TextView
+        android:id="@+id/tvRedirectMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:layout_alignParentBottom="true"
+        android:text="Redirecting to home in 3 seconds..."
+        android:textColor="#888888"
+        android:textSize="12sp" />
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="200dp"
+        android:layout_height="4dp"
+        android:layout_above="@id/tvRedirectMessage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:progress="100"
+        android:progressTint="#4CAF50" />
+
+</RelativeLayout>

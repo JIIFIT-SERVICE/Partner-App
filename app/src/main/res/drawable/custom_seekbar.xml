@@ -1,0 +1,31 @@
+<!-- res/drawable/custom_seekbar.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background of the SeekBar -->
+    <item>
+        <shape>
+            <corners android:radius="8dp"/>
+            <solid android:color="#D3D3D3"/>
+        </shape>
+    </item>
+
+    <!-- Progress of the SeekBar -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="8dp"/>
+                <solid android:color="#3F51B5"/>
+            </shape>
+        </clip>
+    </item>
+
+    <!-- Secondary progress of the SeekBar (if needed) -->
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape>
+                <corners android:radius="8dp"/>
+                <solid android:color="#B3E5FC"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>

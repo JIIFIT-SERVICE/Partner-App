@@ -1,0 +1,87 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="video_height">200dp</dimen>
+    <dimen name="_1sdp">1dp</dimen>
+    <dimen name="_2sdp">2dp</dimen>
+    <dimen name="_5sdp">5dp</dimen>
+    <dimen name="_10sdp">10dp</dimen>
+    <dimen name="_15sdp">15dp</dimen>
+    <dimen name="_20sdp">20dp</dimen>
+    <dimen name="_25sdp">25dp</dimen>
+    <dimen name="_30sdp">30dp</dimen>
+    <dimen name="_40sdp">40dp</dimen>
+    <dimen name="_42sdp">42dp</dimen>
+
+
+    <!-- Screen -->
+    <dimen name="joiner_screen_horizontal">18dp</dimen>
+    <dimen name="joiner_screen_top">2dp</dimen>
+    <dimen name="joiner_screen_bottom">24dp</dimen>
+
+    <!-- Header -->
+    <dimen name="joiner_title_size">28sp</dimen>
+    <dimen name="joiner_subtitle_size">14sp</dimen>
+    <dimen name="joiner_subtitle_margin_top">8dp</dimen>
+
+    <!-- Benefits -->
+    <dimen name="benefits_height">42dp</dimen>
+    <dimen name="benefits_margin_top">20dp</dimen>
+    <dimen name="benefits_horizontal_padding">8dp</dimen>
+    <dimen name="benefit_icon_size">18dp</dimen>
+    <dimen name="benefit_text_size">12sp</dimen>
+
+    <!-- Cards -->
+    <dimen name="card_first_margin_top">12dp</dimen>
+    <dimen name="card_spacing">8dp</dimen>
+    <dimen name="cardCcorner_radius">19dp</dimen>
+    <dimen name="card_padding">12dp</dimen>
+
+    <dimen name="category_icon_container">50dp</dimen>
+    <dimen name="category_icon_size">27dp</dimen>
+    <dimen name="category_text_margin">12dp</dimen>
+
+    <dimen name="card_title_size">18sp</dimen>
+    <dimen name="card_category_size">11sp</dimen>
+    <dimen name="expert_category_size">11sp</dimen>
+
+    <dimen name="card_description_margin">9dp</dimen>
+    <dimen name="card_description_size">14sp</dimen>
+    <dimen name="card_divider_margin">10dp</dimen>
+    <dimen name="card_bottom_margin">9dp</dimen>
+
+    <!-- Badges -->
+    <dimen name="badge_text_size">8sp</dimen>
+    <dimen name="popular_badge_text_size">10sp</dimen>
+
+    <!-- Chips -->
+    <dimen name="chip_text_size">11sp</dimen>
+
+    <!-- Actions -->
+    <dimen name="action_text_size">14sp</dimen>
+
+    <!-- Close -->
+    <dimen name="close_button_size">60dp</dimen>
+    <dimen name="close_button_margin_top">12dp</dimen>
+    <dimen name="close_button_margin_end">14dp</dimen>
+
+
+    <!-- Text sizes -->
+    <dimen name="text_large">40sp</dimen>
+    <dimen name="text_medium_large">30sp</dimen>
+    <dimen name="text_medium">18sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+
+    <!-- Spacings -->
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+
+    <!-- Card attributes -->
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+</resources>

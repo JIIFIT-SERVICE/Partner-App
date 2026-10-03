@@ -1,0 +1,165 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    android:backgroundTint="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:background="@color/creamy_white">
+
+        <!-- Top Row: Booking ID and Status -->
+        <LinearLayout
+            android:id="@+id/topRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/CusId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Booking #1000"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/bookingStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Completed"
+                android:textSize="@dimen/_9ssp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_status_completed"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:textStyle="bold"
+                android:textAllCaps="true"/>
+        </LinearLayout>
+
+        <!-- Customer Info Row -->
+        <LinearLayout
+            android:id="@+id/customerRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/topRow">
+
+            <ImageView
+                android:id="@+id/accountIcon"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/account_box_24"
+                app:tint="@color/ShapGreen"/>
+
+            <TextView
+                android:id="@+id/CusName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Debasish Mandal"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Service Info Row -->
+        <LinearLayout
+            android:id="@+id/serviceRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/customerRow">
+
+            <TextView
+                android:id="@+id/MassageName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Full Body Massage"
+                android:textSize="@dimen/_10ssp"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/timeDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/timer_24"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/ShapGreen"
+                android:text="120 min"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp"/>
+        </LinearLayout>
+
+        <!-- Address Row -->
+        <TextView
+            android:id="@+id/CusAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_10ssp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:text="123 Main Street, Apartment 4B, New York, NY 10001"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/location_on_24"
+            android:drawableTint="@color/Red"
+            app:layout_constraintTop_toBottomOf="@id/serviceRow"/>
+
+        <!-- Bottom Row: Time and Button -->
+        <LinearLayout
+            android:id="@+id/bottomRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/CusAddress">
+
+            <TextView
+                android:id="@+id/BookingTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/time_filled_24"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/ShapGreen"
+                android:text="10:30 AM"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewMoreButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View More"
+                android:textSize="@dimen/_10ssp"
+                android:textColor="@color/ShapGreen"
+                app:strokeColor="@color/ShapGreen"
+                app:strokeWidth="1dp"
+                app:cornerRadius="12dp"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

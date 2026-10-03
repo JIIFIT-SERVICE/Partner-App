@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- For SMS Permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" /> <!-- Only needed for Android 10 and below -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" /> <!-- <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> -->
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries> <!-- <queries> -->
+    <!-- <package android:name="com.phonepe.app" /> -->
+    <!-- <intent> -->
+    <!-- <action android:name="android.intent.action.VIEW" /> -->
+    <!-- <data android:scheme="upi" /> -->
+    <!-- </intent> -->
+    <!-- </queries> -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <data android:scheme="upi" />
+        </intent>
+
+        <package android:name="com.phonepe.app" />
+        <package android:name="com.phonepe.app.preprod" />
+        <package android:name="com.google.android.apps.nbu.paisa.user" />
+        <package android:name="net.one97.paytm" />
+        <package android:name="in.org.npci.upiapp" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.phonepe.android.sdk" />
+    </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" /> <!-- Required for FCM -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- <uses-permission -->
+    <!-- android:name="android.permission.QUERY_ALL_PACKAGES" -->
+    <!-- tools:ignore="QueryAllPackagesPermission" /> -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Jifiit"
+        android:usesCleartextTraffic="true"
+        tools:ignore="ForegroundServicePermission"
+        tools:targetApi="31">
+        <activity
+            android:name=".Hotel.Expert_activity"
+            android:exported="false" />
+        <activity
+            android:name=".Hotel.Slot_activity"
+            android:exported="false"
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.Preference_Bed"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.Room_Info"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.ServiceDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.YourCartActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.HotelSelectServices"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar" />
+        <activity
+            android:name=".Hotel.AddBookingActivity"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Theme.Jifiit.Fullscreen" />
+        <activity
+            android:name=".Hotel.HotelMainActivity"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar" />
+        <activity
+            android:name=".AccountSelectionActivity"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Theme.Jifiit.Fullscreen" />
+        <activity
+            android:name=".Hotel.HotelRegistraion"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Jifiit.Fullscreen" />
+        <activity
+            android:name=".JoinerTypes"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Theme.Jifiit.Fullscreen" />
+        <activity
+            android:name=".SplashActivityNew"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Theme.Jifiit.Fullscreen" />
+        <activity
+            android:name=".ViewMoreMenu.CompletePaymenteActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Commission.Payment_Request_Status"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".PaymentDialogActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomWidthDialog" />
+        <activity
+            android:name=".PaymentSuccessActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".PhotoUpload"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Commission.CommissionChart"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Commission.CommissionActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".MyQr.My_Qr"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.CompletedActivity2"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.QrWebViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Salary.RatingIncentiveActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".Salary.UpgradeIncentiveActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".Salary.HoursIncentiveActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".Salary.NewSalaryActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".Wallet.WalletRequestActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".historypages.MonthlyUpgradeActivity"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/AppTheme.PopMe" />
+        <activity
+            android:name=".Leave.IllnessActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Leave.CasualLeave"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Leave.YearlyLeave"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.AddToCartActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.BookUpgradeActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.CompletedActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.UpgradeActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.ViewTableAcitivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopMe" />
+        <activity
+            android:name=".MassageWorkingActivity"
+            android:exported="false"
+            android:label=""
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".CodeActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopMe" />
+        <activity
+            android:name=".ViewMoreActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".notification.NotificationsActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".TrainingHub.VideoPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".MyPerformance.MyPerformanceActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.FareActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopMe" />
+        <activity
+            android:name=".ViewMoreMenu.HelpsActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ViewMoreMenu.ExchangeActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ViewMoreMenu.AddServiceActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".ViewMoreMenu.RescheduleActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Referral.Terms"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Leave.LeaveHistory"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Salary.SalaryActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Wallet.WalletAcitivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".Referral.TermsAndConditions"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Referral.PrivacyAndPolicy"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Referral.HelpActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Referral.ReferGuestActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Referral.ReferralFriendActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Leave.LeaveActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.Jifiit" />
+        <activity
+            android:name=".TrainingHub.TrainingHubActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".Verification.UnverifiedActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".historypages.BookingHistory"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EditPage"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label=" "
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Jifiit.NoActionBar" />
+        <activity
+            android:name=".OTPActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Activity.Theme.Jifiit" />
+        <activity
+            android:name=".PhoneNumberActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Register"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Jifiit"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.phonepe.android.sdk.isUAT"
+            android:value="false" />
+        <meta-data
+            android:name="com.phonepe.android.sdk.isSimulator"
+            android:value="false" /> <!-- The value will be the MID -->
+        <meta-data
+            android:name="com.phonepe.android.sdk.MerchantId"
+            android:value="JIIFITONLINE" />
+        <meta-data
+            android:name="com.phonepe.android.sdk.AppId"
+            android:value="" />
+
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".NotificationSoundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <receiver
+            android:name=".notification.NotificationActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="OK_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="jifiit_channel" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

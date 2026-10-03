@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ViewMoreMenu.CompletedActivity">
+
+  <!-- Compact Toolbar -->
+  <com.google.android.material.appbar.MaterialToolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:background="@color/ShapGreen"
+      android:elevation="4dp"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:titleTextColor="@color/white"
+      app:title="Payment" />
+
+  <!-- Main content - No ScrollView -->
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:orientation="vertical"
+      android:padding="12dp"
+      app:layout_constraintTop_toBottomOf="@id/toolbar"
+      app:layout_constraintBottom_toTopOf="@id/footer">
+
+    <!-- Completed State (Compact) -->
+    <LinearLayout
+        android:id="@+id/completedLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:background="?attr/selectableItemBackground"
+        android:visibility="gone"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp">
+
+      <!-- Success Icon -->
+      <ImageView
+          android:id="@+id/paymentCompleteIcon"
+          android:layout_width="80dp"
+          android:layout_height="80dp"
+          android:src="@drawable/ic_check_circle"
+          app:tint="@color/green_success"
+          android:contentDescription="@string/payment_success"/>
+
+      <!-- Success Message -->
+      <TextView
+          android:id="@+id/paymentCompletedText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:text="@string/payment_completed"
+          android:textColor="@color/green_success"
+          android:textSize="20sp"
+          android:textStyle="bold"/>
+
+      <!-- Thank You Message -->
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="@string/thank_you_message"
+          android:textColor="@color/text_secondary"
+          android:textSize="16sp"/>
+
+      <!-- Action Buttons -->
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="54dp"
+          android:orientation="horizontal"
+          android:gravity="center"
+          android:paddingHorizontal="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/feedBackLink"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/blue_action"
+            app:cornerRadius="8dp"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:text="@string/feedback"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/invoiceLink"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/blue_action"
+            app:cornerRadius="8dp"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:text="@string/invoice"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"/>
+      </LinearLayout>
+    </LinearLayout>
+
+    <!-- Payment In Progress State (Compact) -->
+    <LinearLayout
+        android:id="@+id/paymentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+      <!-- Compact Amount Display -->
+      <TextView
+          android:id="@+id/AmountTxt"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="12dp"
+          android:gravity="center"
+          android:text="₹"
+          android:layout_marginTop="@dimen/_10ssp"
+          android:textColor="@color/black"
+          android:textSize="18sp" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Payment Method:"
+          android:textColor="@color/Gray"
+          android:textSize="14sp"
+          android:layout_marginTop="@dimen/_10ssp"
+          android:layout_marginBottom="8dp"/>
+
+      <!-- Compact Payment Options -->
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:weightSum="2"
+          android:layout_marginTop="@dimen/_10ssp"
+          android:layout_marginBottom="12dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cashCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="8dp"
+            app:strokeColor="@color/light_gray"
+            app:strokeWidth="1dp">
+
+          <LinearLayout
+              android:id="@+id/cash_layout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:background="@color/creamy_white"
+              android:orientation="vertical"
+              android:padding="12dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/rupee"
+                app:tint="@color/ShapGreen"/>
+
+            <TextView
+                android:id="@+id/cashcollect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Cash"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+          </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/qrCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="@color/creamy_white"
+            app:strokeColor="@color/light_gray"
+            app:strokeWidth="1dp">
+
+          <LinearLayout
+              android:id="@+id/qr_layout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:background="@color/creamy_white"
+              android:orientation="vertical"
+              android:padding="12dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_qr_code"
+                app:tint="@color/ShapGreen"/>
+
+            <TextView
+                android:id="@+id/qr_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="QR Code"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+          </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+      </LinearLayout>
+
+      <!-- Compact QR Section -->
+      <com.google.android.material.card.MaterialCardView
+          android:id="@+id/qrCardContainer"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginHorizontal="16dp"
+          android:visibility="gone"
+          app:cardCornerRadius="16dp"
+          app:cardElevation="4dp"
+          app:strokeColor="@color/light_gray"
+          app:strokeWidth="1dp"
+          app:cardBackgroundColor="@color/creamy_white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center">
+
+          <!-- Customer/Sender Info -->
+          <TextView
+              android:id="@+id/senderName"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Scan to pay, Customer Name"
+              android:textColor="@color/black"
+              android:textSize="16sp"
+              android:textStyle="bold"/>
+
+          <!-- Order Info -->
+          <TextView
+              android:id="@+id/paymentInProgressText"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:text="Order ID: 123456"
+              android:textColor="@color/Gray"
+              android:textSize="14sp"/>
+
+          <!-- QR Code Image -->
+          <ImageView
+              android:id="@+id/qrCodeImageView"
+              android:layout_width="250dp"
+              android:layout_height="200dp"
+              android:layout_marginTop="10dp"
+              android:layout_marginBottom="8dp"
+              android:contentDescription="QR Code"
+              android:scaleType="fitCenter"/>
+
+          <!-- Timer with colored text -->
+          <TextView
+              android:id="@+id/timerText"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="8dp"
+              android:textSize="14sp"
+              android:visibility="visible"/>
+
+          <!-- Instruction Text -->
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="8dp"
+              android:text="Scan QR code to make payment"
+              android:textColor="@color/Gray"
+              android:textSize="14sp"/>
+        </LinearLayout>
+      </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+  </LinearLayout>
+
+  <!-- Compact Footer -->
+  <LinearLayout
+      android:id="@+id/footer"
+      android:layout_width="match_parent"
+      android:layout_height="56dp"
+      android:layout_margin="8dp"
+      android:visibility="visible"
+      android:elevation="4dp"
+      android:outlineProvider="background"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+      <com.google.android.material.button.MaterialButton
+          android:id="@+id/refreshBtn"
+          style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+          android:layout_width="wrap_content"
+          android:layout_height="36dp"
+          android:text="Submit"
+          android:visibility="gone"
+          android:textColor="@color/orange"
+          app:cornerRadius="18dp"
+          android:gravity="center"
+          app:strokeColor="@color/orange"
+          app:strokeWidth="1dp" />
+
+      <com.google.android.material.button.MaterialButton
+          android:id="@+id/backbtn"
+          style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+          android:layout_width="wrap_content"
+          android:layout_height="46dp"
+          android:layout_marginStart="8dp"
+          android:minWidth="120dp"
+          android:text="Go To Dashboard"
+          android:textAllCaps="false"
+          android:textColor="@color/white"
+          android:textSize="14sp"
+          android:gravity="center"
+          android:paddingStart="16dp"
+          android:visibility="gone"
+          android:paddingEnd="16dp"
+          app:cornerRadius="0dp"
+          android:backgroundTint="@color/blue_action"
+          app:strokeWidth="1dp"
+          app:rippleColor="@color/Blue"/>
+    </LinearLayout>
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

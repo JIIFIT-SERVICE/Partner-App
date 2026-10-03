@@ -1,0 +1,1014 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/joiner_background"
+    tools:context=".JoinerTypes">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- SINGLE DIRECT CHILD START -->
+        <LinearLayout
+            android:id="@+id/contentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/joiner_screen_horizontal"
+            android:paddingEnd="@dimen/joiner_screen_horizontal"
+            android:paddingTop="@dimen/joiner_screen_top"
+            android:paddingBottom="@dimen/joiner_screen_bottom">
+
+            <!-- ================================================= -->
+            <!-- HEADER -->
+            <!-- ================================================= -->
+
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/joiner_title"
+                android:textColor="@color/joiner_title"
+                android:textSize="@dimen/joiner_title_size"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/joiner_subtitle_margin_top"
+                android:gravity="center"
+                android:lineSpacingExtra="1dp"
+                android:text="@string/joiner_subtitle"
+                android:textColor="@color/joiner_text_secondary"
+                android:textSize="@dimen/joiner_subtitle_size" />
+
+            <!-- ================================================= -->
+            <!-- BENEFITS STRIP -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_benefits"
+                android:paddingStart="@dimen/benefits_horizontal_padding"
+                android:paddingEnd="@dimen/benefits_horizontal_padding"
+                android:paddingTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="3 SIMPLE STEPS TO JOIN"
+                    android:textColor="@color/joiner_green"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <LinearLayout
+                    android:id="@+id/benefitsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_step_box"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:gravity="center"
+                            android:text="1"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:text="Submit profile &amp; track details"
+                            android:textColor="#333333"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_step_box"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:gravity="center"
+                            android:text="2"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:text="Verified by Jiifit Support Team"
+                            android:textColor="#333333"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:background="@drawable/bg_step_box"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="@drawable/bg_circle_green"
+                            android:gravity="center"
+                            android:text="3"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:text="Fulfill orders &amp; earn"
+                            android:textColor="#333333"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ================================================= -->
+            <!-- EXPERT CARD -->
+            <!-- ================================================= -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_spacing"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardExpert"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/card_spacing"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardBackgroundColor="@color/card_background_color"
+                    app:cardCornerRadius="@dimen/cardCcorner_radius"
+                    app:cardElevation="1dp"
+                    app:strokeColor="@color/joiner_expert_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/card_padding">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="@dimen/_10sdp">
+
+                            <FrameLayout
+                                android:layout_width="@dimen/category_icon_container"
+                                android:layout_height="@dimen/category_icon_container"
+                                android:background="@drawable/bg_expert_icon">
+
+                                <ImageView
+                                    android:layout_width="@dimen/category_icon_size"
+                                    android:layout_height="@dimen/category_icon_size"
+                                    android:layout_gravity="center"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_lotus"
+                                    app:tint="@color/joiner_green" />
+
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/category_text_margin"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/join_as_expert"
+                                    android:textColor="@color/joiner_title"
+                                    android:textSize="@dimen/card_title_size"
+                                    android:textStyle="normal" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="1dp"
+                                    android:letterSpacing="0.02"
+                                    android:text="@string/expert_categories"
+                                    android:textColor="@color/joiner_green"
+                                    android:textSize="@dimen/expert_category_size"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_green_badge"
+                                android:gravity="center"
+                                android:paddingStart="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="6dp"
+                                android:text="@string/spas_clinics"
+                                android:textColor="@color/joiner_green"
+                                android:textSize="@dimen/badge_text_size"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/card_description_margin"
+                            android:lineSpacingExtra="2dp"
+                            android:text="@string/expert_description"
+                            android:textColor="@color/joiner_text_secondary"
+                            android:textSize="@dimen/card_description_size" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/card_divider_margin"
+                            android:background="@color/card_divider" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/card_bottom_margin"
+                            android:gravity="center_vertical">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnExpertApply"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/joiner_green"
+                                android:text="Join as Certified Expert"
+                                android:textColor="@android:color/white"
+                                android:textSize="@dimen/action_text_size"
+                                android:textStyle="bold"
+                                android:textAllCaps="false"
+                                app:cornerRadius="8dp"
+                                app:icon="@drawable/ic_arrow_forward"
+                                app:iconTint="@android:color/white"
+                                app:iconGravity="textEnd"
+                                app:iconPadding="8dp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/tvMostPopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/bg_most_popular"
+                    android:drawableStart="@drawable/ic_fire"
+                    android:elevation="4dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="6dp"
+                    android:text="@string/most_popular"
+                    android:textColor="@color/joiner_text_dark"
+                    android:textSize="@dimen/popular_badge_text_size"
+                    android:textStyle="bold" />
+
+            </FrameLayout>
+
+            <!-- ================================================= -->
+            <!-- HOTEL CARD -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHotel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_first_margin_top"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/card_background_color"
+                app:cardCornerRadius="@dimen/cardCcorner_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/joiner_expert_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="@dimen/category_icon_container"
+                            android:layout_height="@dimen/category_icon_container"
+                            android:background="@drawable/bg_icon_mint">
+
+                            <ImageView
+                                android:layout_width="@dimen/category_icon_size"
+                                android:layout_height="@dimen/category_icon_size"
+                                android:layout_gravity="center"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_hotel"
+                                app:tint="@color/joiner_green" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/category_text_margin"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hotels_resorts"
+                                android:textColor="@color/joiner_title"
+                                android:textSize="@dimen/card_title_size"
+                                android:textStyle="normal" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:letterSpacing="0.02"
+                                android:text="@string/luxury_stays_resorts"
+                                android:textColor="@color/joiner_green"
+                                android:textSize="@dimen/expert_category_size"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_green_badge"
+                            android:gravity="center"
+                            android:paddingStart="12dp"
+                            android:paddingTop="6dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="6dp"
+                            android:text="@string/rupee_500_booking"
+                            android:textColor="@color/joiner_green"
+                            android:textSize="@dimen/badge_text_size"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_description_margin"
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/hotel_description"
+                        android:textColor="@color/joiner_text_secondary"
+                        android:textSize="@dimen/card_description_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/card_divider_margin"
+                        android:background="@color/card_divider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_bottom_margin"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/tvHotelSelect"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/joiner_green"
+                            android:text="Register Hotel Property"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/action_text_size"
+                            android:textStyle="bold"
+                            android:textAllCaps="false"
+                            app:cornerRadius="8dp"
+                            app:icon="@drawable/ic_arrow_forward"
+                            app:iconTint="@android:color/white"
+                            app:iconGravity="textEnd"
+                            app:iconPadding="8dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ================================================= -->
+            <!-- WELLNESS BRAND CARD -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardWellnessBrand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_spacing"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/card_background_color"
+                app:cardCornerRadius="@dimen/cardCcorner_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/joiner_expert_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="@dimen/category_icon_container"
+                            android:layout_height="@dimen/category_icon_container"
+                            android:background="@drawable/bg_icon_cream">
+
+                            <ImageView
+                                android:layout_width="@dimen/category_icon_size"
+                                android:layout_height="@dimen/category_icon_size"
+                                android:layout_gravity="center"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_health"
+                                app:tint="@color/joiner_green" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/category_text_margin"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/wellness_brand"
+                                android:textColor="@color/joiner_title"
+                                android:textSize="@dimen/card_title_size" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:letterSpacing="0.03"
+                                android:text="@string/ayurveda_health_products"
+                                android:textColor="@color/joiner_green"
+                                android:textSize="@dimen/card_category_size"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_green_badge"
+                            android:gravity="center"
+                            android:paddingStart="12dp"
+                            android:paddingTop="6dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="6dp"
+                            android:text="@string/marketplace"
+                            android:textColor="@color/joiner_green"
+                            android:textSize="@dimen/badge_text_size"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_description_margin"
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/wellness_description"
+                        android:textColor="@color/joiner_text_secondary"
+                        android:textSize="@dimen/card_description_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/card_divider_margin"
+                        android:background="@color/card_divider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_bottom_margin"
+                        android:gravity="center_vertical">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/tvWellnessSelect"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/joiner_green"
+                            android:text="List Your Centre"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/action_text_size"
+                            android:textStyle="bold"
+                            android:textAllCaps="false"
+                            app:cornerRadius="8dp"
+                            app:icon="@drawable/ic_arrow_forward"
+                            app:iconTint="@android:color/white"
+                            app:iconGravity="textEnd"
+                            app:iconPadding="8dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ================================================= -->
+            <!-- LIST YOUR CENTRE CARD -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCentre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_spacing"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/card_background_color"
+                app:cardCornerRadius="@dimen/cardCcorner_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/joiner_expert_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <FrameLayout
+                            android:layout_width="@dimen/category_icon_container"
+                            android:layout_height="@dimen/category_icon_container"
+                            android:background="@drawable/bg_icon_cream">
+
+                            <ImageView
+                                android:layout_width="@dimen/category_icon_size"
+                                android:layout_height="@dimen/category_icon_size"
+                                android:layout_gravity="center"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_store"
+                                app:tint="@color/joiner_green" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/category_text_margin"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/list_your_centre"
+                                android:textColor="@color/joiner_title"
+                                android:textSize="@dimen/card_title_size" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.03"
+                                android:text="@string/clinics_studios_spas"
+                                android:textColor="@color/joiner_green"
+                                android:textSize="@dimen/card_category_size"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_green_badge"
+                            android:gravity="center"
+                            android:paddingStart="12dp"
+                            android:paddingTop="6dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="6dp"
+                            android:text="@string/spas_clinics"
+                            android:textColor="@color/joiner_green"
+                            android:textSize="@dimen/badge_text_size"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_description_margin"
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/centre_description"
+                        android:textColor="@color/joiner_text_secondary"
+                        android:textSize="@dimen/card_description_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/card_divider_margin"
+                        android:background="@color/card_divider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_bottom_margin"
+                        android:gravity="center_vertical">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/tvCentreSelect"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/joiner_green"
+                            android:text="Open Merchant Account"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/action_text_size"
+                            android:textStyle="bold"
+                            android:textAllCaps="false"
+                            app:cornerRadius="8dp"
+                            app:icon="@drawable/ic_arrow_forward"
+                            app:iconTint="@android:color/white"
+                            app:iconGravity="textEnd"
+                            app:iconPadding="8dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GOT QUESTIONS?"
+                    android:textColor="@color/green_dark"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Frequently Asked Questions"
+                    android:textColor="@color/faq_text_primary"
+                    android:textSize="20sp"
+                    android:fontFamily="serif"
+                    android:textStyle="bold" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/faqSection"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="32dp"
+
+                android:orientation="vertical">
+
+
+
+                <!-- ============================================= -->
+                <!-- CATEGORY FILTER -->
+                <!-- ============================================= -->
+
+                <HorizontalScrollView
+                    android:id="@+id/categoryScroll"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:clipToPadding="false"
+
+                    android:overScrollMode="never"
+
+                    android:scrollbars="none">
+
+
+                    <LinearLayout
+                        android:id="@+id/categoryContainer"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center_vertical"
+
+                        android:orientation="horizontal"
+
+                        android:paddingEnd="8dp" />
+
+                </HorizontalScrollView>
+
+
+                <!-- ============================================= -->
+                <!-- FAQ HEADER -->
+                <!-- ============================================= -->
+
+                <LinearLayout
+                    android:id="@+id/faqHeaderSection"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="24dp"
+
+                    android:gravity="center_vertical"
+
+                    android:orientation="horizontal">
+
+
+                    <!-- Green Dot -->
+
+                    <View
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+
+                        android:background="@drawable/bg_faq_green_dot" />
+
+
+                    <!-- Category Title -->
+
+                    <TextView
+                        android:id="@+id/tvFaqTitle"
+
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:layout_weight="1"
+
+                        android:layout_marginStart="12dp"
+
+                        android:text="ALL QUESTIONS"
+
+                        android:textColor="@color/green_dark"
+
+                        android:textSize="13sp"
+
+                        android:textStyle="bold"
+
+                        android:letterSpacing="0.04" />
+
+
+                    <!-- Article Count -->
+
+                    <TextView
+                        android:id="@+id/tvFaqCount"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:text="0 Articles"
+
+                        android:textColor="@color/faq_text_secondary"
+
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+
+                <!-- ============================================= -->
+                <!-- DYNAMIC FAQ CONTAINER -->
+                <!-- ============================================= -->
+
+                <LinearLayout
+                    android:id="@+id/faqContainer"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="16dp"
+
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/calculateUsers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="15,000+ Verified Partners across 40+ Indian Cities"
+                android:textColor="@color/faq_text_secondary"
+                android:textSize="11sp" />
+
+            <!-- 4. Bottom Support Card -->
+            <!-- ================================================= -->
+            <!-- BOTTOM SUPPORT CARD (Redesigned) -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_concierge_card"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Top Row: Status Badge + Instant Reply -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- Green Dot + "24/7 DEDICATED CONCIERGE" -->
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_green_dot" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:letterSpacing="0.05"
+                        android:text="24/7 DEDICATED CONCIERGE"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <!-- "Instant Reply ~5 min" Badge -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_instant_reply_badge"
+                        android:paddingStart="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="4dp"
+                        android:text="Instant Reply ~5 min"
+                        android:textColor="@color/white"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <!-- Main Heading -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="serif"
+                    android:text="Still have questions?"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <!-- Subtitle Description -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:lineSpacingExtra="4dp"
+                    android:text="Get assistance with onboarding, bookings, earnings, wallet, payouts and other JIIFIT expart app -related queries."
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <!-- WhatsApp Button (Primary, Light Green) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWhatsApp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="@color/icon_mint"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="Chat on WhatsApp"
+                    android:textColor="@color/Text_Blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"
+                    app:cornerRadius="10dp"
+                    app:icon="@drawable/ic_whatsapp"
+                    app:iconTint="@color/Text_Blue"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp" />
+
+                <!-- Call Support Button (Secondary, Dark) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/icon_mint"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="Call Support Concierge"
+                    android:textColor="@color/Text_Blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="false"
+                    app:cornerRadius="10dp"
+                    app:icon="@drawable/ic_phone"
+                    app:iconTint="@color/Text_Blue"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/res"
+        android:icon="@drawable/three_dot_black"
+        app:showAsAction="ifRoom"
+        android:title="TODO">
+        <menu>
+            <item
+                android:id="@+id/hours"
+                android:title="Hours Incentive"
+                android:icon="@drawable/add_service_24"
+                android:iconTint="@color/black"/>
+            <item
+                android:id="@+id/review"
+                android:title="Review Incentive"
+                android:icon="@drawable/help"
+                android:iconTint="@color/black"/>
+            <item
+                android:id="@+id/upgrade"
+                android:title="Upgrade Incentive"
+                android:icon="@drawable/help"
+                android:iconTint="@color/black"/>
+        </menu>
+
+    </item>
+</menu>
