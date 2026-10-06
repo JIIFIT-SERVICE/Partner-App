@@ -6,12 +6,12 @@
         <item
             android:id="@+id/nav_overview"
             android:icon="@drawable/ic_hotel"
-            android:title="My Hotel Overview"
+            android:title="My Hotel"
             android:iconTint="@color/Gray" />
         <item
             android:id="@+id/nav_rooms"
             android:icon="@drawable/ic_bed"
-            android:title="Manage Rooms (140 keys)"
+            android:title="Manage Rooms"
             android:iconTint="@color/Gray"/>
         <item
             android:id="@+id/nav_history"
@@ -27,7 +27,7 @@
         <item
             android:id="@+id/nav_reports"
             android:icon="@drawable/ic_chart"
-            android:title="Reports &amp; Standee Scans"
+            android:title="Reports"
             android:iconTint="@color/Gray"/>
     </group>
     <item android:title="Comunicate">
@@ -35,12 +35,12 @@
             <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/help"
-                android:title="Help &amp; Concierge Support"
+                android:title="Help &amp; Support"
                 android:iconTint="@color/Gray"/>
             <item
                 android:id="@+id/nav_terms"
                 android:icon="@drawable/ic_shield"
-                android:title="Partner Terms &amp; SLA"
+                android:title="Terms &amp; Condition"
                 android:iconTint="@color/Gray"/>
 
          </menu>

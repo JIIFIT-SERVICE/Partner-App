@@ -7,34 +7,41 @@
     android:padding="24dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <TextView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/bg_circle_grey"
-        android:backgroundTint="@color/white"
-        android:text="GOH"
-        android:gravity="center"
-        android:textColor="@color/Text_Blue"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Grand Orchid Hotel"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        android:textStyle="bold"/>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <TextView
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_circle_grey"
+            android:backgroundTint="@color/white"
+            android:gravity="center"
+            android:text="GOH"
+            android:textColor="@color/Text_Blue"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Grand Orchid Hotel"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Partner Concierge Desk"
         android:textColor="#B2DFDB"
-        android:textSize="14sp"/>
+        android:textSize="14sp"/> -->
 
-    <TextView
+    <!-- <TextView -->
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -44,7 +51,7 @@
         android:textStyle="bold"/>
 
     <!-- Property Selector -->
-    <LinearLayout
+    <!-- <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -69,6 +76,6 @@
             android:padding="8dp"
             android:text="XYZ Hotel"
             android:textColor="#B2DFDB"/>
-    </LinearLayout>
+    </LinearLayout> -->
 
 </LinearLayout>
