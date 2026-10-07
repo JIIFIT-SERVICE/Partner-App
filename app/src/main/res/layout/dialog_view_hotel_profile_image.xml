@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_rounded"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Dialog Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="Profile picture"
+            android:textColor="#1F2937"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnCloseFullImage"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:src="@drawable/ic_close"
+            app:tint="#6B7280" />
+    </RelativeLayout>
+
+    <!-- Image Display Area -->
+    <FrameLayout
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="12dp">
+
+        <!-- Default Initials Avatar -->
+        <TextView
+            android:id="@+id/tvFullProfileInitials"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_circle_grey"
+            android:backgroundTint="@color/Text_Blue"
+            android:gravity="center"
+            android:text="GOH"
+            android:textColor="@color/white"
+            android:textSize="64sp"
+            android:textStyle="bold" />
+
+        <!-- Image when custom photo exists -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivFullProfileImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:civ_border_color="@color/Text_Blue"
+            app:civ_border_width="3dp" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="Grand Orchid Hotel"
+        android:textColor="#1F2937"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

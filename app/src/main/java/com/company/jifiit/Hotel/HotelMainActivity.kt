@@ -57,9 +57,22 @@ import java.util.Locale
 import androidx.core.view.WindowInsetsControllerCompat
 import java.util.TimeZone
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowCompat
+import android.app.Dialog
+import android.net.Uri
+import android.view.ViewGroup
+import android.view.Window
+import android.widget.FrameLayout
+import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import de.hdodenhof.circleimageview.CircleImageView
+import java.io.File
+import java.io.FileOutputStream
 
 class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -118,6 +131,27 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var sp: SharedPreferences
     private var currentSelectedButton: String = "today"
     private var selectedCalendarDate: String = ""
+
+    // ✅ Profile image picker & launchers
+    private var cameraImageUri: Uri? = null
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { saveAndApplyProfileImage(it) }
+    }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success) {
+            cameraImageUri?.let { saveAndApplyProfileImage(it) }
+        }
+    }
+
+    private val requestCameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            takePhotoWithCamera()
+        } else {
+            Toast.makeText(this, "Camera permission is required to take a photo", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     // ============================================================
     // ✅ onCreate
@@ -253,6 +287,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
         navView.setNavigationItemSelectedListener(this)
+
+        // Setup profile image click & initial load in nav header
+        setupNavHeaderProfile()
     }
 
     // ============================================================
@@ -807,5 +844,171 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 tvToday.performClick()
             }
         }
+    }
+
+    // ============================================================
+    // ✅ Hotel Profile Image (Facebook & Instagram style)
+    // ============================================================
+    private fun setupNavHeaderProfile() {
+        val headerView = navView.getHeaderView(0) ?: return
+        val layoutProfile = headerView.findViewById<FrameLayout>(R.id.layoutHotelProfileImage)
+        val tvInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials)
+
+        layoutProfile?.setOnClickListener {
+            showProfileImageBottomSheet()
+        }
+        tvInitials?.setOnClickListener {
+            showProfileImageBottomSheet()
+        }
+
+        loadHotelProfileImage()
+    }
+
+    private fun loadHotelProfileImage() {
+        val headerView = navView.getHeaderView(0) ?: return
+        val tvProfileInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials) ?: return
+        val ivProfileImage = headerView.findViewById<CircleImageView>(R.id.ivHotelProfileImage) ?: return
+
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        if (!savedPath.isNullOrEmpty() && File(savedPath).exists()) {
+            Glide.with(this)
+                .load(File(savedPath))
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(ivProfileImage)
+            ivProfileImage.visibility = View.VISIBLE
+            tvProfileInitials.visibility = View.GONE
+        } else {
+            ivProfileImage.visibility = View.GONE
+            tvProfileInitials.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showProfileImageBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme)
+        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_hotel_profile_picker, null)
+        bottomSheetDialog.setContentView(sheetView)
+
+        val optCamera = sheetView.findViewById<View>(R.id.layout_option_camera)
+        val optGallery = sheetView.findViewById<View>(R.id.layout_option_gallery)
+        val optView = sheetView.findViewById<View>(R.id.layout_option_view)
+        val optRemove = sheetView.findViewById<View>(R.id.layout_option_remove)
+        val btnClose = sheetView.findViewById<ImageView>(R.id.btn_close_sheet)
+
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        val hasCustomImage = !savedPath.isNullOrEmpty() && File(savedPath).exists()
+
+        optRemove?.visibility = if (hasCustomImage) View.VISIBLE else View.GONE
+
+        optCamera?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            checkCameraPermissionAndLaunch()
+        }
+
+        optGallery?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            galleryLauncher.launch("image/*")
+        }
+
+        optView?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            showFullProfileImageDialog()
+        }
+
+        optRemove?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            removeHotelProfileImage()
+        }
+
+        btnClose?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun checkCameraPermissionAndLaunch() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        } else {
+            takePhotoWithCamera()
+        }
+    }
+
+    private fun takePhotoWithCamera() {
+        try {
+            val photoFile = File(cacheDir, "hotel_cam_${System.currentTimeMillis()}.jpg")
+            val photoUri = FileProvider.getUriForFile(this, "${packageName}.provider", photoFile)
+            cameraImageUri = photoUri
+            cameraLauncher.launch(photoUri)
+        } catch (e: Exception) {
+            Log.e("HotelProfile", "Failed to start camera", e)
+            Toast.makeText(this, "Could not open camera: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveAndApplyProfileImage(sourceUri: Uri) {
+        try {
+            val destFile = File(filesDir, "hotel_profile_photo.jpg")
+            contentResolver.openInputStream(sourceUri)?.use { input ->
+                FileOutputStream(destFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            sp.edit().putString("hotel_profile_image_path", destFile.absolutePath).apply()
+            loadHotelProfileImage()
+            Toast.makeText(this, "Profile picture updated", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("HotelProfile", "Error saving profile image", e)
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun removeHotelProfileImage() {
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        if (!savedPath.isNullOrEmpty()) {
+            val file = File(savedPath)
+            if (file.exists()) {
+                file.delete()
+            }
+        }
+        sp.edit().remove("hotel_profile_image_path").apply()
+        loadHotelProfileImage()
+        Toast.makeText(this, "Profile picture removed", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showFullProfileImageDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_view_hotel_profile_image)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.88).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val ivFull = dialog.findViewById<CircleImageView>(R.id.ivFullProfileImage)
+        val tvInitials = dialog.findViewById<TextView>(R.id.tvFullProfileInitials)
+        val btnClose = dialog.findViewById<ImageView>(R.id.btnCloseFullImage)
+
+        btnClose?.setOnClickListener { dialog.dismiss() }
+
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        if (!savedPath.isNullOrEmpty() && File(savedPath).exists()) {
+            ivFull?.visibility = View.VISIBLE
+            tvInitials?.visibility = View.GONE
+            Glide.with(this)
+                .load(File(savedPath))
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(ivFull)
+        } else {
+            ivFull?.visibility = View.GONE
+            tvInitials?.visibility = View.VISIBLE
+        }
+
+        dialog.show()
     }
 }
