@@ -42,24 +42,41 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- 2. Hotel Name -->
-                <TextView
-                    android:id="@+id/hotelName"
+                <!-- 2. Hotel Name & Subtitle -->
+                <LinearLayout
+                    android:id="@+id/layoutHotelTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_marginEnd="8dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="Grand Orchid Hotel"
-                    android:textColor="#1E1E1E"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btnNotification"
                     app:layout_constraintStart_toEndOf="@id/btnMenu"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintHorizontal_bias="0" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/hotelName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Grand Orchid Hotel"
+                        android:textColor="#1E1E1E"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/hotelSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Official Partner JIIFIT LLP"
+                        android:textColor="#757575"
+                        android:textSize="11sp" />
+                </LinearLayout>
 
                 <!-- 5. Notification Bell with Red Dot -->
                 <FrameLayout

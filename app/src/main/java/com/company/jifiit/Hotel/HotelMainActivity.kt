@@ -39,6 +39,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.company.jifiit.Constant
+import com.company.jifiit.EditPage
 import com.company.jifiit.LoginActivity
 import com.company.jifiit.R
 import com.google.android.material.navigation.NavigationView
@@ -190,7 +191,13 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         // ---- Retrieve Shared Preferences (credentials) ----
         val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
-        name = spCred.getString("Name", "Default Name") ?: "Default Name"
+        val loadedName = spCred.getString("Name", "Grand Orchid Hotel") ?: "Grand Orchid Hotel"
+        name = if (loadedName == "Jzkxmx" || loadedName == "Default Name" || loadedName.isBlank()) {
+            "Grand Orchid Hotel"
+        } else {
+            loadedName
+        }
+        spCred.edit().putString("Name", name).apply()
         age  = spCred.getString("Age", "Hii") ?: "Hii"
 
         val idString = spCred.getString("Id", "0") ?: "0"
@@ -235,6 +242,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         recyclerView     = findViewById(R.id.todolist)
         progressBar      = findViewById(R.id.progressBar)
         btnAddBooking    = findViewById(R.id.btnAddBooking)
+
+        val tvToolbarHotelName = findViewById<TextView>(R.id.hotelName)
+        tvToolbarHotelName?.text = name
 
 
         // Empty state (included layout)
@@ -808,6 +818,7 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         super.onResume()
         checkForUpdate()
         checkRequiredPermissions()
+        loadHotelProfileImage()
 
 
         currentSelectedButton = sp.getString("selected_button", "today") ?: "today"
@@ -847,12 +858,23 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     // ============================================================
-    // ✅ Hotel Profile Image (Facebook & Instagram style)
+    // ✅ Hotel Profile Header & Image (Facebook & Instagram style)
     // ============================================================
     private fun setupNavHeaderProfile() {
         val headerView = navView.getHeaderView(0) ?: return
         val layoutProfile = headerView.findViewById<FrameLayout>(R.id.layoutHotelProfileImage)
         val tvInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials)
+        val tvHotelName = headerView.findViewById<TextView>(R.id.tvHotelName)
+        val tvPartnerId = headerView.findViewById<TextView>(R.id.tvHotelPartnerId)
+        val btnEdit = headerView.findViewById<ImageView>(R.id.btnEditHotelProfile)
+
+        tvHotelName?.text = name
+        tvInitials?.text = "GOH"
+        tvPartnerId?.text = "Official Partner JIIFIT LLP"
+
+        btnEdit?.setOnClickListener {
+            startActivity(Intent(this, EditPage::class.java))
+        }
 
         layoutProfile?.setOnClickListener {
             showProfileImageBottomSheet()
@@ -991,7 +1013,11 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         val ivFull = dialog.findViewById<CircleImageView>(R.id.ivFullProfileImage)
         val tvInitials = dialog.findViewById<TextView>(R.id.tvFullProfileInitials)
+        val tvFullHotelName = dialog.findViewById<TextView>(R.id.tvFullHotelName)
         val btnClose = dialog.findViewById<ImageView>(R.id.btnCloseFullImage)
+
+        tvFullHotelName?.text = name
+        tvInitials?.text = "GOH"
 
         btnClose?.setOnClickListener { dialog.dismiss() }
 
