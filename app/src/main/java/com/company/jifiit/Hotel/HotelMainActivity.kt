@@ -298,6 +298,17 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         navView.setNavigationItemSelectedListener(this)
 
+        // Setup click on My Hotel edit icon actionView
+        val overviewItem = navView.menu.findItem(R.id.nav_overview)
+        overviewItem?.actionView?.setOnClickListener {
+            drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, EditHotelDetailsActivity::class.java))
+        }
+        overviewItem?.actionView?.findViewById<View>(R.id.btnEditHotelNav)?.setOnClickListener {
+            drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, EditHotelDetailsActivity::class.java))
+        }
+
         // Setup profile image click & initial load in nav header
         setupNavHeaderProfile()
     }
@@ -711,7 +722,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     // ============================================================
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_overview -> Toast.makeText(this, "Hotel Overview Clicked", Toast.LENGTH_SHORT).show()
+            R.id.nav_overview -> {
+                startActivity(Intent(this, EditHotelDetailsActivity::class.java))
+            }
             R.id.nav_rooms    -> Toast.makeText(this, "Manage Rooms Clicked", Toast.LENGTH_SHORT).show()
             R.id.nav_history  -> { /* Navigate to history */ }
             R.id.nav_earnings -> { /* Navigate to earnings */ }
@@ -820,6 +833,16 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         checkRequiredPermissions()
         loadHotelProfileImage()
 
+        // ✅ Refresh hotel name if updated from Edit Hotel Details
+        val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
+        val updatedName = spCred.getString("Name", name) ?: name
+        if (updatedName.isNotBlank() && updatedName != "Jzkxmx" && updatedName != "Default Name") {
+            name = updatedName
+            findViewById<TextView>(R.id.hotelName)?.text = name
+            val headerView = navView.getHeaderView(0)
+            headerView?.findViewById<TextView>(R.id.tvHotelName)?.text = name
+        }
+
 
         currentSelectedButton = sp.getString("selected_button", "today") ?: "today"
         selectedCalendarDate  = sp.getString("selected_calendar_date", "") ?: ""
@@ -866,15 +889,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val tvInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials)
         val tvHotelName = headerView.findViewById<TextView>(R.id.tvHotelName)
         val tvPartnerId = headerView.findViewById<TextView>(R.id.tvHotelPartnerId)
-        val btnEdit = headerView.findViewById<ImageView>(R.id.btnEditHotelProfile)
-
         tvHotelName?.text = name
         tvInitials?.text = "GOH"
         tvPartnerId?.text = "Official Partner JIIFIT LLP"
-
-        btnEdit?.setOnClickListener {
-            startActivity(Intent(this, EditPage::class.java))
-        }
 
         layoutProfile?.setOnClickListener {
             showProfileImageBottomSheet()
