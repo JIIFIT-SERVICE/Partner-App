@@ -502,6 +502,9 @@ class EditHotelDetailsActivity : AppCompatActivity() {
             apply()
         }
 
+        // Sync with currently selected hotel branch
+        HotelBranchManager.getInstance(this).syncHotelDetailsToSelectedBranch()
+
         Toast.makeText(this, "Hotel details updated successfully", Toast.LENGTH_SHORT).show()
         setResult(RESULT_OK)
         finish()

@@ -4,19 +4,19 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|end"
-    android:paddingEnd="12dp">
+    android:paddingEnd="10dp">
 
     <ImageView
         android:id="@+id/btnEditHotelNav"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_gravity="center_vertical|end"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:contentDescription="Edit Hotel"
         android:focusable="true"
-        android:padding="2dp"
+        android:padding="6dp"
         android:src="@drawable/ic_edit_outline"
-        app:tint="@color/Gray" />
+        app:tint="#64748B" />
 
 </FrameLayout>

@@ -4,46 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="#FFFFFF">
+    android:layout_marginHorizontal="14dp"
+    android:layout_marginVertical="7dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp">
 
+    <!-- Outer card container with clean rounded stroke -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_booking_card"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- ============ HEADER ROW ============ -->
+        <!-- ============ 1. HEADER ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- Booking ID -->
+            <!-- Booking ID (#834) -->
             <TextView
                 android:id="@+id/tvBookingId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="#834"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#1A1A1A" />
+                android:textColor="#0F172A"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            <!-- In-Room Tag -->
+            <!-- Service Tag Pill (In-Room Massage) -->
             <TextView
                 android:id="@+id/tvInRoomTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="In-Room Massage"
-                android:textColor="#1A56DB"
-                android:background="@drawable/bg_tag_blue"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_service_tag_pill"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="3dp"
-                android:textSize="10sp"
+                android:paddingVertical="4dp"
+                android:text="In-Room Massage"
+                android:textColor="#334155"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <!-- Status Badge (PENDING / COMPLETED) -->
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_status_pending_pill"
+                android:drawableStart="@drawable/ic_pending"
+                android:drawablePadding="5dp"
+                android:drawableTint="#B45309"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="PENDING"
+                android:textColor="#B45309"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <!-- Spacer -->
@@ -52,183 +73,147 @@
                 android:layout_height="1dp"
                 android:layout_weight="1" />
 
-            <!-- Pending Tag -->
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PENDING"
-                android:drawableTint="#FF9800"
-                android:drawablePadding="4dp"
-                android:textColor="#FF9800"
-                android:background="@drawable/bg_tag_pending"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="3dp"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-
-            <!-- Overflow Menu (3 dots) -->
+            <!-- 3 Dots Overflow Menu -->
             <ImageView
                 android:id="@+id/ivOverflow"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="8dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="More options"
+                android:padding="4dp"
                 android:src="@drawable/three_dot_black"
-                app:tint="#757575"
-                android:contentDescription="More options" />
+                app:tint="#94A3B8" />
         </LinearLayout>
 
-        <!-- ============ CUSTOMER INFO ROW ============ -->
+        <!-- ============ 2. CUSTOMER & ROOM ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center_vertical">
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- Avatar Circle -->
+            <!-- Rounded Circle Avatar with Person Outline -->
             <FrameLayout
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_circle_light_gray">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_gravity="center"
-                    android:src="@android:drawable/ic_menu_my_calendar"
-                    app:tint="#546E7A" />
+                    android:src="@drawable/ic_person"
+                    app:tint="#64748B" />
             </FrameLayout>
 
-            <!-- Name and Room -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- Customer Name -->
+            <TextView
+                android:id="@+id/tvCustomerName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="12dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginStart="10dp"
+                android:text="Megha Sharma"
+                android:textColor="#0F172A"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tvCustomerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Megha Sharma"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="#1A1A1A" />
-
-                <TextView
-                    android:id="@+id/tvRoomInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Room 112"
-                    android:textSize="13sp"
-                    android:textColor="#757575" />
-            </LinearLayout>
+            <!-- Room Info (Room 112) -->
+            <TextView
+                android:id="@+id/tvRoomInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Room 112"
+                android:textColor="#64748B"
+                android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- ============ DATE + TIME TAG ============ -->
+        <!-- ============ 3. TIME ROW ============ -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_rounded_light_gray"
+            android:background="@drawable/bg_booking_time_pill"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="10dp"
-            android:paddingVertical="6dp">
+            android:paddingVertical="5dp">
 
-            <!-- Calendar Icon -->
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:src="@android:drawable/ic_menu_my_calendar"
-                app:tint="#546E7A" />
+                android:src="@drawable/baseline_schedule_24"
+                app:tint="#64748B" />
 
-            <!-- Date -->
-            <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Tue, 26 Aug"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#1A1A1A" />
-
-            <!-- Divider Dot -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="6dp"
-                android:text="•"
-                android:textSize="13sp"
-                android:textColor="#B0BEC5" />
-
-            <!-- Clock Icon -->
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:src="@android:drawable/ic_lock_idle_alarm"
-                app:tint="#546E7A" />
-
-            <!-- Time -->
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="07:00 PM"
-                android:textSize="13sp"
-                android:textColor="#1A1A1A" />
+                android:textColor="#1E293B"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- Kept for compatibility -->
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
         </LinearLayout>
 
-        <!-- ============ ACTION BUTTONS ============ -->
+        <!-- ============ 4. ACTION BUTTONS ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Call Client Button (Outline Style) -->
+            <!-- Call Client Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCall"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
                 android:layout_weight="1"
                 android:text="Call Client"
-                android:textSize="13sp"
                 android:textAllCaps="false"
-                android:textColor="#1A56DB"
+                android:textColor="#0B4F4F"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:backgroundTint="#F1F5F9"
+                app:cornerRadius="22dp"
+                app:elevation="0dp"
                 app:icon="@drawable/baseline_call_24"
-                app:iconTint="#1A56DB"
                 app:iconGravity="textStart"
-                app:iconPadding="6dp"
-                app:backgroundTint="#FFFFFF"
-                app:strokeColor="#1A56DB"
-                app:strokeWidth="1dp"
-                app:cornerRadius="10dp"
-                app:elevation="0dp" />
+                app:iconPadding="8dp"
+                app:iconSize="16dp"
+                app:iconTint="#0B4F4F"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp" />
 
-            <!-- View Details Button (Solid Blue) -->
+            <!-- View Details Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewDetails"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:layout_marginStart="10dp"
                 android:text="View Details"
-                android:textSize="13sp"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-                app:icon="@android:drawable/ic_menu_view"
-                app:iconTint="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:backgroundTint="#0B4F4F"
+                app:cornerRadius="22dp"
+                app:elevation="0dp"
+                app:icon="@drawable/ic_eye"
                 app:iconGravity="textStart"
-                app:iconPadding="6dp"
-                app:backgroundTint="#1A56DB"
-                app:cornerRadius="10dp"
-                app:elevation="0dp" />
+                app:iconPadding="8dp"
+                app:iconSize="16dp"
+                app:iconTint="#FFFFFF" />
         </LinearLayout>
 
     </LinearLayout>

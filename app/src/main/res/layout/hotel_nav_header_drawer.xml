@@ -57,7 +57,7 @@
                 app:tint="@color/Text_Blue" />
         </FrameLayout>
 
-        <!-- Hotel Name and Partner ID -->
+        <!-- Hotel Name and Partner ID with Dropdown -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -65,16 +65,38 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvHotelName"
+            <!-- Hotel Name and Drop Down Button Container -->
+            <LinearLayout
+                android:id="@+id/layoutHotelBranchDropdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Grand Orchid Hotel"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvHotelName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Grand Orchid Hotel"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <!-- Drop Down Button -->
+                <ImageView
+                    android:id="@+id/btnDropdownBranch"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="2dp"
+                    android:contentDescription="Select Branch"
+                    android:src="@drawable/ic_arrow_drop_down"
+                    app:tint="@color/white" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvHotelPartnerId"
@@ -85,52 +107,172 @@
                 android:maxLines="1"
                 android:text="Official Partner JIIFIT LLP"
                 android:textColor="#E0E0E0"
-                android:textSize="13sp" />
+                android:textSize="12sp" />
+
+            <!-- Branch Selector Pill / Drop Down Button -->
+            <LinearLayout
+                android:id="@+id/btnBranchSelectorPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_branch_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_hotel_building"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvSelectedBranchBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Sector 14 (Main Branch)"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_arrow_drop_down"
+                    app:tint="@color/white" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Partner Concierge Desk"
-        android:textColor="#B2DFDB"
-        android:textSize="14sp"/> -->
-
-    <!-- <TextView -->
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="ACTIVE PROPERTY"
-        android:textColor="#80CBC4"
-        android:textSize="10sp"
-        android:textStyle="bold"/>
-
-    <!-- Property Selector -->
-    <!-- <LinearLayout
+    <!-- Active Selected Branch Information Card -->
+    <LinearLayout
+        android:id="@+id/layoutBranchInfoCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_branch_info_container"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="12dp">
 
-        <TextView
-            android:layout_width="0dp"
+        <!-- Top Header: Title and Branch ID -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bg_rounded_white"
-            android:padding="8dp"
-            android:text="Grand Orchid ..."
-            android:textColor="@color/text_dark"
-            android:textStyle="bold"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="0dp"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:letterSpacing="0.06"
+                android:text="BRANCH DETAILS"
+                android:textColor="#B3E5FC"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBranchCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BRANCH ID #101"
+                android:textColor="#E1F5FE"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Location row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:background="#1AFFFFFF"
-            android:padding="8dp"
-            android:text="XYZ Hotel"
-            android:textColor="#B2DFDB"/>
-    </LinearLayout> -->
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/location_on_24"
+                app:tint="#81D4FA" />
+
+            <TextView
+                android:id="@+id/tvBranchLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="DLF Phase 2, Sector 14, Gurgaon"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Badges row: Rooms, Rating, Property Type -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvBranchRooms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_branch_pill"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="50 Rooms"
+                android:textColor="@color/white"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvBranchCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_branch_pill"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="4-Star Luxury"
+                android:textColor="@color/white"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvBranchPropertyType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_branch_pill"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="Hotel"
+                android:textColor="@color/white"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvBranchViewMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View Info ›"
+                android:textColor="#E1F5FE"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
