@@ -800,7 +800,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 bookingsNotFound.visibility = View.GONE
                 recyclerView.smoothScrollToPosition(0)
             }
-            R.id.nav_rooms    -> Toast.makeText(this, "Manage Rooms Clicked", Toast.LENGTH_SHORT).show()
+            R.id.nav_rooms -> {
+                startActivity(Intent(this, ManageRoomsActivity::class.java))
+            }
             R.id.nav_history  -> { /* Navigate to history */ }
             R.id.nav_earnings -> { /* Navigate to earnings */ }
             R.id.nav_help     -> { /* Navigate to help */ }
