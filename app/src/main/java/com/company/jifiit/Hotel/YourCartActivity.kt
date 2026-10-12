@@ -2,7 +2,9 @@ package com.company.jifiit.Hotel
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -19,6 +21,14 @@ import com.company.jifiit.LocalStorage.HotelDatabaseHelper
 import com.company.jifiit.R
 import com.google.android.material.button.MaterialButton
 import java.util.Locale
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.company.jifiit.Constant
+import com.company.jifiit.Hotel.HelperFunctions.HotelCommissionHelper
+import org.json.JSONObject
+import java.math.BigInteger
+
 
 class YourCartActivity : AppCompatActivity() {
 
@@ -59,9 +69,11 @@ class YourCartActivity : AppCompatActivity() {
     // =========================
 
     private val GST_PERCENT = 5.0
-    private val HOTEL_CHARGE = 500.0
+    private var HOTEL_CHARGE = 0.0
+    private lateinit var Id: BigInteger
 
     private lateinit var service: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -203,6 +215,16 @@ class YourCartActivity : AppCompatActivity() {
         // =========================
 
         loadCart()
+        val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
+
+        val idString = spCred.getString("Id", "0") ?: "0"
+        Id = try {
+            BigInteger(idString)
+        } catch (e: NumberFormatException) {
+            BigInteger.ZERO
+        }
+
+//        fetchCommissionCharge(Id)
     }
 
     // =========================================================
@@ -300,6 +322,16 @@ class YourCartActivity : AppCompatActivity() {
 
         serviceTotalOriginal.text =
             "₹${formatPrice(originalTotal)}"
+
+        serviceTotalOriginal.paintFlags =
+            serviceTotalOriginal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        serviceTotalOriginal.setTextColor(
+            ContextCompat.getColor(
+                this,
+                android.R.color.holo_red_dark
+            )
+        )
 
         serviceTotalDiscounted.text =
             "₹${formatPrice(discountedTotal)}"
@@ -413,7 +445,93 @@ class YourCartActivity : AppCompatActivity() {
 
             loadCart()
         }
+
+        HotelCommissionHelper.fetchCommissionCharge(
+            context = this,
+            hotelRegistrationId = Id,
+
+            onSuccess = { charge ->
+                HOTEL_CHARGE = charge
+                updateCartSummary()
+            },
+
+            onError = { message ->
+                Log.e("YourCartActivity", message)
+            }
+        )
     }
+
+//    private fun fetchCommissionCharge(hotelRegistrationId: BigInteger) {
+//
+//        if (hotelRegistrationId <= BigInteger.ZERO) {
+//            android.util.Log.e(
+//                "CommissionAPI",
+//                "Invalid hotel_registration_id: $hotelRegistrationId"
+//            )
+//            return
+//        }
+//
+//        val url = Constant.GET_COMMISSION_CHARGE + hotelRegistrationId
+//
+//        val request = JsonObjectRequest(
+//            Request.Method.GET,
+//            url,
+//            null,
+//            { response: JSONObject ->
+//
+//                try {
+//                    val status = response.optBoolean("status", false)
+//
+//                    if (status) {
+//                        val data = response.optJSONArray("data")
+//
+//                        if (data != null && data.length() > 0) {
+//                            val item = data.getJSONObject(0)
+//
+//                            HOTEL_CHARGE =
+//                                item.optDouble("commission_charge", 0.0)
+//
+//                            android.util.Log.d(
+//                                "CommissionAPI",
+//                                "Commission charge: $HOTEL_CHARGE"
+//                            )
+//
+//                            // Refresh cart summary using the API value
+//                            updateCartSummary()
+//
+//                        } else {
+//                            android.util.Log.e(
+//                                "CommissionAPI",
+//                                "No hotel commission data found"
+//                            )
+//                        }
+//                    } else {
+//                        android.util.Log.e(
+//                            "CommissionAPI",
+//                            response.optString("message", "API returned false status")
+//                        )
+//                    }
+//
+//                } catch (e: Exception) {
+//                    android.util.Log.e(
+//                        "CommissionAPI",
+//                        "JSON parsing error: ${e.message}",
+//                        e
+//                    )
+//                }
+//            },
+//            { error ->
+//
+//                android.util.Log.e(
+//                    "CommissionAPI",
+//                    "API request failed: ${error.message}",
+//                    error
+//                )
+//            }
+//        )
+//
+//        Volley.newRequestQueue(this).add(request)
+//    }
 
     // =========================================================
     // BACK PRESS
@@ -429,4 +547,6 @@ class YourCartActivity : AppCompatActivity() {
             R.anim.slide_out_right
         )
     }
+
+
 }

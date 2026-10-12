@@ -1,10 +1,12 @@
 package com.company.jifiit.Hotel.Adapter
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.company.jifiit.LocalStorage.HotelDatabaseHelper
 import com.company.jifiit.R
@@ -76,6 +78,16 @@ class CartItemAdapter(
 
         holder.tvOriginalPrice.text =
             "₹${formatPrice(item.originalPrice)}"
+
+        holder.tvOriginalPrice.paintFlags =
+            holder.tvOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        holder.tvOriginalPrice.setTextColor(
+            ContextCompat.getColor(
+                holder.itemView.context,
+                android.R.color.holo_red_dark
+            )
+        )
 
         holder.tvDuration.text = "${item.duration} Minutes"
 

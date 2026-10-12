@@ -42,6 +42,7 @@ import com.company.jifiit.Constant
 import com.company.jifiit.EditPage
 import com.company.jifiit.LoginActivity
 import com.company.jifiit.R
+import com.google.android.material.chip.Chip
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -55,7 +56,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import androidx.core.view.WindowInsetsControllerCompat
 import java.util.TimeZone
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -83,18 +83,13 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     // ============================================================
     // ✅ GLOBAL VIEW VARIABLES
     // ============================================================
-
-    // Layout
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
-    // Toolbar / Header
     private lateinit var btnMenu: ImageView
     private lateinit var ivCalendar: ImageView
 
-    // Footer
     private lateinit var btnSignOut: TextView
-    // RecyclerView & empty state
     private lateinit var recyclerView: RecyclerView
     private lateinit var bookingsNotFound: View
     private lateinit var btnAddDeskBooking: com.google.android.material.button.MaterialButton
@@ -102,13 +97,18 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var tvEmptySubtitle: TextView
     private lateinit var progressBar: ProgressBar
 
-    // Date pills
     private lateinit var tvYesterday: TextView
     private lateinit var tvToday: TextView
     private lateinit var tvTomorrow: TextView
     private lateinit var btnAddBooking: LinearLayout
 
-    // Adapter
+    // ✅ Filter chips (service-type)
+    private lateinit var chipAll: Chip
+    private lateinit var chipYoga: Chip
+    private lateinit var chipInRoom: Chip
+    private lateinit var chipAyurveda: Chip
+    private lateinit var chipPersonal: Chip
+
     private lateinit var bookingAdapter: BookingAdapter
 
     // ============================================================
@@ -120,18 +120,20 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private var appUpdateManager: AppUpdateManager? = null
 
-    // "yesterday" | "today" | "tomorrow" | "custom"
     private var selectedDate: String = "today"
     private var customSelectedDate: Date? = null
 
+    // Full list from API + filtered list shown to adapter
+    private val allBookings = mutableListOf<BookingModel>()
     private val bookingList = mutableListOf<BookingModel>()
+
+    private var activeFilter: ServiceFilter = ServiceFilter.All
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 101
         private const val UPDATE_REQUEST_CODE = 100
     }
 
-    // ✅ State restore related
     private lateinit var sp: SharedPreferences
     private var currentSelectedButton: String = "today"
     private var selectedCalendarDate: String = ""
@@ -156,6 +158,8 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             Toast.makeText(this, "Camera permission is required to take a photo", Toast.LENGTH_SHORT).show()
         }
     }
+    /** Filter by service type (massage_types) */
+    enum class ServiceFilter { All, Yoga, InRoom, Ayurveda, Personal }
 
     // ============================================================
     // ✅ onCreate
@@ -164,19 +168,16 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // ✅ Force dark icons on status bar (since background will be white)
         WindowCompat.getInsetsController(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true   // black/dark icons on status bar
-            isAppearanceLightNavigationBars = true // black/dark icons on nav bar
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
         }
 
         setContentView(R.layout.activity_hotel_main)
 
-        // ✅ Draw white background behind the status bar
         window.statusBarColor = Color.WHITE
         window.navigationBarColor = Color.WHITE
 
-        // ✅ Apply insets: top inset goes to AppBarLayout, sides+bottom to root
         val root = findViewById<DrawerLayout>(R.id.drawer_layout)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -191,8 +192,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             insets
         }
 
-
-        // ---- Retrieve Shared Preferences (credentials) ----
         val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
         val loadedName = spCred.getString("Name", "Grand Orchid Hotel") ?: "Grand Orchid Hotel"
         name = if (loadedName == "Jzkxmx" || loadedName == "Default Name" || loadedName.isBlank()) {
@@ -210,32 +209,19 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             BigInteger.ZERO
         }
 
-        // ✅ Initialize class-level `sp` for app state
         sp = getSharedPreferences("app_state", MODE_PRIVATE)
-        // ---- Bind views ----
+
         bindViews()
-
-        // ---- Setup Drawer / Menu ----
         setupDrawer()
-
-        // ---- Setup RecyclerView ----
         setupRecyclerView()
-
-        // ---- Setup Date Pills ----
         setupDatePills()
-
-        // ---- Setup Calendar Icon ----
         setupCalendarIcon()
-
-        // ---- Load initial bookings from API ----
-//        fetchBookings(Id, "today")
-
-        // ---- Style bottom menu items (gray) ----
+        setupFilterChips()
         styleBottomMenuItems()
     }
 
     // ============================================================
-    // ✅ Bind all views to their global variables
+    // ✅ Bind all views
     // ============================================================
     private fun bindViews() {
         drawerLayout     = findViewById(R.id.drawer_layout)
@@ -246,41 +232,33 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         progressBar      = findViewById(R.id.progressBar)
         btnAddBooking    = findViewById(R.id.btnAddBooking)
 
-        val tvToolbarHotelName = findViewById<TextView>(R.id.hotelName)
-        tvToolbarHotelName?.text = name
-
-
-        // Empty state (included layout)
         bookingsNotFound  = findViewById(R.id.Bookings_notFound)
         btnAddDeskBooking = bookingsNotFound.findViewById(R.id.btnAddDeskBooking)
         tvEmptyTitle      = bookingsNotFound.findViewById(R.id.tvEmptyTitle)
         tvEmptySubtitle   = bookingsNotFound.findViewById(R.id.tvEmptySubtitle)
 
-        // Date pills
         tvYesterday = findViewById(R.id.tvYesterday)
         tvToday     = findViewById(R.id.tvToday)
         tvTomorrow  = findViewById(R.id.tvTomorrow)
 
-        // Calendar icon
         ivCalendar  = findViewById(R.id.ivCalendar)
 
-        // Empty state button click
-        btnAddBooking.setOnClickListener{
+        // ✅ Filter chips
+        chipAll       = findViewById(R.id.chip_all)
+        chipYoga      = findViewById(R.id.chip_yoga)
+        chipInRoom    = findViewById(R.id.chip_inroom)
+        chipAyurveda  = findViewById(R.id.chip_ayurveda)
+        chipPersonal  = findViewById(R.id.chip_personal)
+
+        btnAddBooking.setOnClickListener {
             val intent = Intent(this, AddBookingActivity::class.java)
             startActivity(intent)
-            // Swipe animation: current screen moves left, new screen comes from right
-            overridePendingTransition(
-                R.anim.slide_in_right,
-                R.anim.slide_out_left
-            )
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
         btnAddDeskBooking.setOnClickListener {
             val intent = Intent(this, AddBookingActivity::class.java)
             startActivity(intent)
-            overridePendingTransition(
-                R.anim.slide_in_right,
-                R.anim.slide_out_left
-            )
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 
@@ -291,14 +269,12 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         btnMenu.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
-
         btnSignOut.setOnClickListener {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START)
             }
             showLogoutDialog()
         }
-
         navView.setNavigationItemSelectedListener(this)
 
         // Setup click on My Hotel edit pencil icon actionView -> opens EditHotelDetailsActivity
@@ -373,54 +349,134 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     // ============================================================
-    // ✅ Setup date pills with real dates + click actions
+    // ✅ Setup filter chips (single-select, checkable)
+    // ============================================================
+    private fun setupFilterChips() {
+        chipAll.setOnClickListener       { onChipClicked(ServiceFilter.All) }
+        chipYoga.setOnClickListener      { onChipClicked(ServiceFilter.Yoga) }
+        chipInRoom.setOnClickListener    { onChipClicked(ServiceFilter.InRoom) }
+        chipAyurveda.setOnClickListener  { onChipClicked(ServiceFilter.Ayurveda) }
+        chipPersonal.setOnClickListener  { onChipClicked(ServiceFilter.Personal) }
+
+        // Start with "All" selected
+        chipAll.isChecked = true
+    }
+
+    /** Called when any chip is tapped. Only one chip stays checked. */
+    private fun onChipClicked(filter: ServiceFilter) {
+        Log.d("ChipClick", "Chip clicked: $filter")
+
+        // Uncheck all
+        chipAll.isChecked       = false
+        chipYoga.isChecked      = false
+        chipInRoom.isChecked    = false
+        chipAyurveda.isChecked  = false
+        chipPersonal.isChecked  = false
+
+        // Check the tapped one
+        when (filter) {
+            ServiceFilter.All      -> chipAll.isChecked      = true
+            ServiceFilter.Yoga     -> chipYoga.isChecked     = true
+            ServiceFilter.InRoom   -> chipInRoom.isChecked   = true
+            ServiceFilter.Ayurveda -> chipAyurveda.isChecked = true
+            ServiceFilter.Personal -> chipPersonal.isChecked = true
+        }
+
+        applyFilter(filter)
+    }
+
+    // ============================================================
+    // ✅ Apply filter and refresh adapter
+    // ============================================================
+    private fun applyFilter(filter: ServiceFilter) {
+        activeFilter = filter
+        bookingList.clear()
+
+        when (filter) {
+            ServiceFilter.All -> bookingList.addAll(allBookings)
+
+            ServiceFilter.Yoga -> bookingList.addAll(allBookings.filter {
+                it.massage_types.trim().equals("Yoga at Hotel", ignoreCase = true)
+            })
+
+            ServiceFilter.InRoom -> bookingList.addAll(allBookings.filter {
+                it.massage_types.trim().equals("Massage at Hotel", ignoreCase = true)
+            })
+
+            ServiceFilter.Ayurveda -> bookingList.addAll(allBookings.filter {
+                it.massage_types.trim().equals("Ayurveda at Hotel", ignoreCase = true)
+            })
+
+            ServiceFilter.Personal -> bookingList.addAll(allBookings.filter {
+                it.massage_types.trim().equals("Personal Trainer at Hotel", ignoreCase = true)
+            })
+        }
+
+        bookingAdapter.notifyDataSetChanged()
+        updateChipCounts()
+
+        if (bookingList.isEmpty()) {
+            showEmptyState()
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            bookingsNotFound.visibility = View.GONE
+        }
+    }
+
+    // ============================================================
+    // ✅ Update chip labels with real counts
+    // ============================================================
+    private fun updateChipCounts() {
+        val all       = allBookings.size
+        val yoga      = allBookings.count { it.massage_types.trim().equals("Yoga at Hotel", true) }
+        val inRoom    = allBookings.count { it.massage_types.trim().equals("Massage at Hotel", true) }
+        val ayurveda  = allBookings.count { it.massage_types.trim().equals("Ayurveda at Hotel", true) }
+        val personal  = allBookings.count { it.massage_types.trim().equals("Personal Trainer at Hotel", true) }
+
+        chipAll.text       = "All $all"
+        chipYoga.text      = "Yoga $yoga"
+        chipInRoom.text    = "In-Room Massage $inRoom"
+        chipAyurveda.text  = "Ayurveda $ayurveda"
+        chipPersonal.text  = "Personal Trainer $personal"
+    }
+
+    // ============================================================
+    // ✅ Setup date pills
     // ============================================================
     private fun setupDatePills() {
         val dateFormat = SimpleDateFormat("EEE • dd MMM", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
-        // ---- YESTERDAY ----
         calendar.add(Calendar.DAY_OF_YEAR, -1)
         tvYesterday.text = "YESTERDAY\n${dateFormat.format(calendar.time)}"
 
-        // ---- TODAY ----
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         tvToday.text = "TODAY\n${dateFormat.format(calendar.time)}"
 
-        // ---- TOMORROW ----
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         tvTomorrow.text = "TOMORROW\n${dateFormat.format(calendar.time)}"
 
-        // ---- Click listeners ----
         tvYesterday.setOnClickListener {
             selectDatePill("yesterday")
             fetchBookings(Id, "yesterday")
         }
-
         tvToday.setOnClickListener {
             selectDatePill("today")
             fetchBookings(Id, "today")
         }
-
         tvTomorrow.setOnClickListener {
             selectDatePill("tomorrow")
             fetchBookings(Id, "tomorrow")
         }
 
-        // Apply initial state (Today active by default)
         selectDatePill("today")
     }
 
-    // ============================================================
-    // ✅ Update visual state of date pills
-    // ============================================================
     private fun selectDatePill(which: String) {
         selectedDate = which
 
-        // ✅ Save state for next resume
         sp.edit().putString("selected_button", which).apply()
         if (which != "custom") {
-            // pills select হলে calendar date clear করে দিচ্ছি
             sp.edit().putString("selected_calendar_date", "").apply()
             selectedCalendarDate = ""
         }
@@ -444,12 +500,11 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         resetCalendarIcon()
     }
 
-    /** Resets the calendar icon to its default (inactive) appearance. */
     private fun resetCalendarIcon() {
         ivCalendar.setBackgroundResource(0)
-        ivCalendar.setColorFilter(Color.parseColor("#0B4F4F")) // teal tint
+        ivCalendar.setColorFilter(Color.parseColor("#0B4F4F"))
     }
-    /** Applies the "active" blue pill style to the calendar icon. */
+
     private fun activateCalendarIcon() {
         ivCalendar.setBackgroundResource(R.drawable.bg_active_calendar_icon)
         ivCalendar.setColorFilter(Color.WHITE)
@@ -463,23 +518,14 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
-    // ============================================================
-    // ✅ Calendar icon click → DatePickerDialog (last 30 days → today)
-    // ============================================================
     private fun setupCalendarIcon() {
-        ivCalendar.setOnClickListener {
-            showDateRangePicker()
-        }
+        ivCalendar.setOnClickListener { showDateRangePicker() }
     }
 
     private fun showDateRangePicker() {
         val calendar = Calendar.getInstance()
-
-        // Min date = today - 30 days
         calendar.add(Calendar.DAY_OF_YEAR, -30)
         val minDate = calendar.timeInMillis
-
-        // Restore calendar to today for initial selection
         calendar.add(Calendar.DAY_OF_YEAR, 30)
 
         val datePickerDialog = DatePickerDialog(
@@ -494,7 +540,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             calendar.get(Calendar.DAY_OF_MONTH)
         )
         datePickerDialog.datePicker.minDate = minDate
-
         datePickerDialog.show()
     }
 
@@ -502,34 +547,21 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val today = Calendar.getInstance()
 
         val pickedMidnight = (picked.clone() as Calendar).apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0);      set(Calendar.MILLISECOND, 0)
         }
         val todayMidnight = (today.clone() as Calendar).apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0);      set(Calendar.MILLISECOND, 0)
         }
 
         val diffDays = ((pickedMidnight.timeInMillis - todayMidnight.timeInMillis) /
                 (1000L * 60 * 60 * 24)).toInt()
 
         when (diffDays) {
-            -1 -> {
-                selectDatePill("yesterday")
-                fetchBookings(Id, "yesterday")
-            }
-            0 -> {
-                selectDatePill("today")
-                fetchBookings(Id, "today")
-            }
-            1 -> {
-                selectDatePill("tomorrow")
-                fetchBookings(Id, "tomorrow")
-            }
+            -1 -> { selectDatePill("yesterday"); fetchBookings(Id, "yesterday") }
+            0  -> { selectDatePill("today");     fetchBookings(Id, "today") }
+            1  -> { selectDatePill("tomorrow");  fetchBookings(Id, "tomorrow") }
             else -> {
                 selectedDate = "custom"
                 customSelectedDate = pickedMidnight.time
@@ -540,7 +572,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 val apiFmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val selectedDateStr = apiFmt.format(pickedMidnight.time)
 
-                // ✅ Save custom state
                 selectedCalendarDate = selectedDateStr
                 sp.edit().putString("selected_button", "calender").apply()
                 sp.edit().putString("selected_calendar_date", selectedDateStr).apply()
@@ -553,30 +584,21 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
-    // ============================================================
-    // ✅ Make bottom two menu items gray (Help / Terms)
-    // ============================================================
     private fun styleBottomMenuItems() {
         val grayColor = ContextCompat.getColor(this, R.color.Gray)
 
-        val helpItem  = navView.menu.findItem(R.id.nav_help)
-        val termsItem = navView.menu.findItem(R.id.nav_terms)
-
-        helpItem?.let {
+        navView.menu.findItem(R.id.nav_help)?.let {
             val title = SpannableString(it.title)
             title.setSpan(ForegroundColorSpan(grayColor), 0, title.length, 0)
             it.title = title
         }
-        termsItem?.let {
+        navView.menu.findItem(R.id.nav_terms)?.let {
             val title = SpannableString(it.title)
             title.setSpan(ForegroundColorSpan(grayColor), 0, title.length, 0)
             it.title = title
         }
     }
 
-    // ============================================================
-    // ✅ Logout confirmation dialog
-    // ============================================================
     private fun showLogoutDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("Are you sure you want to log out?")
@@ -584,20 +606,15 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
 
         val dialog = builder.create()
-
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE)
             dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.BLACK)
         }
-
         dialog.show()
     }
 
-    // ============================================================
-    // ✅ Network availability check
-    // ============================================================
     private fun isNetworkAvailable(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = cm.activeNetwork ?: return false
@@ -606,10 +623,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     // ============================================================
-    // ✅ Fetch bookings from API (converted from Java)
+    // ✅ Fetch bookings
     // ============================================================
     private fun fetchBookings(id: BigInteger, listType: String, date: String? = null) {
-        // ---- Network check ----
         if (!isNetworkAvailable()) {
             progressBar.visibility = View.GONE
             recyclerView.visibility = View.GONE
@@ -619,7 +635,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             return
         }
 
-        // ---- Build URL ----
         val timeZone = TimeZone.getDefault().id
         val url: String = when (listType) {
             "today"         -> "${Constant.fetchHotelBookings}$id&selectdate=today&timezone=$timeZone"
@@ -633,7 +648,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         Log.d("FetchBookings", "URL: $url")
 
-        // ---- Show progress (keep existing bookings visible if already loaded) ----
         progressBar.visibility = View.VISIBLE
         if (bookingList.isEmpty()) {
             recyclerView.visibility = View.GONE
@@ -642,7 +656,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         bookingsNotFound.visibility = View.GONE
 
-        // ---- Volley request ----
         val requestQueue = Volley.newRequestQueue(this)
 
         val jsonObjectRequest = JsonObjectRequest(
@@ -654,8 +667,8 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     if (status.equals("success", ignoreCase = true)) {
                         val dataArray: JSONArray? = response.optJSONArray("booking")
 
+                        allBookings.clear()
                         if (dataArray != null && dataArray.length() > 0) {
-                            bookingList.clear()
                             for (i in 0 until dataArray.length()) {
                                 val bookingObject = dataArray.getJSONObject(i)
 
@@ -666,8 +679,12 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                                 val bookingId     = bookingObject.optString("id", "N/A")
                                 val bookingDate   = bookingObject.optString("booking_date", "")
                                 val inRoom        = bookingObject.optBoolean("in_room", false)
+                                val room_num      = bookingObject.optString("room_number", "")
+                                val massage_types = bookingObject.optString("massage_types", "")
 
-                                bookingList.add(
+                                Log.d("FetchBookings", "massage_types='$massage_types'")
+
+                                allBookings.add(
                                     BookingModel(
                                         bookingId    = bookingId,
                                         isInRoom     = inRoom,
@@ -675,29 +692,29 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                                         customerName = customerName,
                                         roomInfo     = address,
                                         date         = bookingDate,
-                                        time         = startTime
+                                        time         = startTime,
+                                        room_number  = room_num,
+                                        massage_types = massage_types
                                     )
                                 )
                             }
-                            bookingsNotFound.visibility = View.GONE
-                            recyclerView.visibility = View.VISIBLE
-                            bookingAdapter.notifyDataSetChanged()
-                        } else {
-                            // If backend has no live bookings for this date yet, keep demo bookings so cards stay visible
-                            if (bookingList.isEmpty()) {
-                                bookingList.addAll(getDefaultDemoBookings())
-                            }
-                            bookingsNotFound.visibility = View.GONE
-                            recyclerView.visibility = View.VISIBLE
-                            bookingAdapter.notifyDataSetChanged()
                         }
+
+                        // Reset chip selection to "All" on every new fetch
+                        chipAll.isChecked       = true
+                        chipYoga.isChecked      = false
+                        chipInRoom.isChecked    = false
+                        chipAyurveda.isChecked  = false
+                        chipPersonal.isChecked  = false
+
+                        activeFilter = ServiceFilter.All
+                        applyFilter(ServiceFilter.All)
+
                     } else {
-                        if (bookingList.isEmpty()) {
-                            bookingList.addAll(getDefaultDemoBookings())
-                        }
-                        bookingsNotFound.visibility = View.GONE
-                        recyclerView.visibility = View.VISIBLE
-                        bookingAdapter.notifyDataSetChanged()
+                        allBookings.clear()
+                        chipAll.isChecked = true
+                        activeFilter = ServiceFilter.All
+                        applyFilter(ServiceFilter.All)
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -724,15 +741,13 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         requestQueue.add(jsonObjectRequest)
     }
 
-
     private fun showEmptyState() {
         recyclerView.visibility = View.GONE
         bookingsNotFound.visibility = View.VISIBLE
-
-        // Default messages — change these to customize per case
         tvEmptyTitle.text = "No appointments for this selection"
         tvEmptySubtitle.text = "Switch date tab or create a new desk booking using the button below."
     }
+
     // ============================================================
     // ✅ Logout
     // ============================================================
@@ -760,17 +775,13 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     val status = jsonObject.getString("status")
                     if (status == "success") {
                         // Success
-                    } else {
-                        // Failure
                     }
                 } catch (e: JSONException) {
                     Log.e("JSONError", "Error parsing response", e)
-                    Toast.makeText(this@HotelMainActivity, "Error parsing response", Toast.LENGTH_SHORT).show()
                 }
             },
             Response.ErrorListener { error: VolleyError ->
                 Log.e("VolleyError", "Error logging out", error)
-                Toast.makeText(this@HotelMainActivity, "Error logging out: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         ) {
             override fun getParams(): MutableMap<String, String> {
@@ -780,13 +791,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             }
         }
 
-        val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(stringRequest)
+        Volley.newRequestQueue(this).add(stringRequest)
     }
 
-    // ============================================================
-    // ✅ Navigation item clicks
-    // ============================================================
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_overview -> {
@@ -808,38 +815,28 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_help     -> { /* Navigate to help */ }
             R.id.nav_terms    -> { /* Navigate to terms */ }
         }
-
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    // ============================================================
-    // ✅ Permissions
-    // ============================================================
     private fun checkRequiredPermissions() {
         val permissions = ArrayList<String>()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             permissions.add(Manifest.permission.CAMERA)
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
                 permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
             permissions.add(Manifest.permission.READ_PHONE_STATE)
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             permissions.add(Manifest.permission.RECORD_AUDIO)
 
         if (permissions.isNotEmpty()) {
             ActivityCompat.requestPermissions(this, permissions.toTypedArray(), PERMISSION_REQUEST_CODE)
-        } else {
-            Log.d("PERMISSION", "All permissions granted")
         }
     }
 
@@ -849,16 +846,12 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         if (requestCode == PERMISSION_REQUEST_CODE) {
             val allGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
             Log.d("PERMISSION", if (allGranted) "All permissions granted" else "Some permissions denied")
         }
     }
 
-    // ============================================================
-    // ✅ App update
-    // ============================================================
     private fun checkForUpdate() {
         val updateManager = AppUpdateManagerFactory.create(this)
         appUpdateManager = updateManager
@@ -889,9 +882,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
-    // ============================================================
-    // ✅ Back press
-    // ============================================================
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -901,9 +891,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
-    // ============================================================
-    // ✅ onResume
-    // ============================================================
     override fun onResume() {
         super.onResume()
         checkForUpdate()
@@ -918,40 +905,23 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         updateNavHeaderBranchInfo()
 
-
         currentSelectedButton = sp.getString("selected_button", "today") ?: "today"
         selectedCalendarDate  = sp.getString("selected_calendar_date", "") ?: ""
 
         when (currentSelectedButton) {
-            "today" -> {
-                tvToday.performClick()
-            }
-
-            "tomorrow" -> {
-                tvTomorrow.performClick()
-            }
-
-            "yesterday" -> {
-                tvYesterday.performClick()
-            }
-
-            "calender" -> {
+            "today"     -> tvToday.performClick()
+            "tomorrow"  -> tvTomorrow.performClick()
+            "yesterday" -> tvYesterday.performClick()
+            "calender"  -> {
                 if (selectedCalendarDate.isNotEmpty()) {
-                    // ✅ Directly fetch bookings for the saved date without showing calendar
                     fetchBookings(Id, "specific_date", selectedCalendarDate)
-
-                    // ✅ Update UI to show calendar is selected
                     deselectAllPills()
                     activateCalendarIcon()
                 } else {
-                    // Fallback to today if no date was saved
                     tvToday.performClick()
                 }
             }
-
-            else -> {
-                tvToday.performClick()
-            }
+            else -> tvToday.performClick()
         }
     }
 
