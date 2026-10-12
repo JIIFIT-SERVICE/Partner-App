@@ -180,7 +180,9 @@ public class Constant {
     public static String SERVICE_DETAILS_API = "https://jiifit.com/Jifiit/Hotel/get_service_details.php";
     public static String ADD_ON_API = "https://jiifit.com/Jifiit/Hotel/add-on-service.php";
     public static String GET_HOTEL_ROOMS_API  = "https://jiifit.com/Jifiit/Hotel/get_hotel_rooms.php?hotel_registration_id=";
+    public static String GET_COMMISSION_CHARGE  = "https://jiifit.com/Jifiit/Hotel/fetch_commission.php?hotel_registration_id=";
     public static String EXPERT_API  = "https://jiifit.com/Jifiit/Hotel/fetch_experts.php";
+    public static String HOTEL_BOOKING_API  = "https://jiifit.com/Jifiit/Hotel/submit_hotel_order.php";
 }
 
 

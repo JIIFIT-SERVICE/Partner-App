@@ -9,7 +9,7 @@
     android:fitsSystemWindows="false"
     tools:context=".Hotel.HotelMainActivity">
 
-    <!-- MAIN CONTENT (Image 1) -->
+    <!-- MAIN CONTENT -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,7 +31,6 @@
                 android:background="@drawable/bg_appbar_rounded"
                 android:paddingHorizontal="12dp">
 
-                <!-- 1. Menu Button -->
                 <ImageView
                     android:id="@+id/btnMenu"
                     android:layout_width="28dp"
@@ -42,7 +41,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- 2. Small Hotel Logo (Circle) -->
                 <ImageView
                     android:id="@+id/ivHotelLogo"
                     android:layout_width="32dp"
@@ -56,7 +54,6 @@
                     app:layout_constraintStart_toEndOf="@id/btnMenu"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- 3. Hotel Name -->
                 <TextView
                     android:id="@+id/hotelName"
                     android:layout_width="0dp"
@@ -75,7 +72,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintHorizontal_bias="0" />
 
-                <!-- 4. Profile Icon -->
                 <ImageView
                     android:id="@+id/ivProfile"
                     android:layout_width="36dp"
@@ -87,7 +83,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- 5. Notification Bell with Red Dot -->
                 <FrameLayout
                     android:id="@+id/btnNotification"
                     android:layout_width="wrap_content"
@@ -112,7 +107,6 @@
                         android:background="@drawable/bg_notification_dot" />
                 </FrameLayout>
 
-                <!-- ⭐ 6. Straight Divider Line at Bottom ⭐ -->
                 <View
                     android:id="@+id/bottomDivider"
                     android:layout_width="0dp"
@@ -138,7 +132,6 @@
                 android:padding="10dp">
 
                 <!-- Date Selector -->
-                <!-- Date Selector -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -147,7 +140,6 @@
                     android:orientation="horizontal"
                     android:padding="6dp">
 
-                    <!-- YESTERDAY -->
                     <TextView
                         android:id="@+id/tvYesterday"
                         android:layout_width="0dp"
@@ -162,7 +154,6 @@
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground" />
 
-                    <!-- TODAY (Active) -->
                     <TextView
                         android:id="@+id/tvToday"
                         android:layout_width="0dp"
@@ -177,7 +168,6 @@
                         android:clickable="true"
                         android:focusable="true" />
 
-                    <!-- TOMORROW -->
                     <TextView
                         android:id="@+id/tvTomorrow"
                         android:layout_width="0dp"
@@ -192,7 +182,6 @@
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground" />
 
-                    <!-- Calendar Icon -->
                     <ImageView
                         android:id="@+id/ivCalendar"
                         android:layout_width="40dp"
@@ -203,8 +192,9 @@
 
                 </LinearLayout>
 
-                <!-- Filter Chips -->
-                <!-- Filter Chips Container -->
+                <!-- ============================================= -->
+                <!-- Filter Chips (checkable, single-select)       -->
+                <!-- ============================================= -->
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -221,74 +211,99 @@
 
                         <!-- Chip 1: All -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_all"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="All 2"
-                            android:textColor="@color/white"
-                            app:chipBackgroundColor="@color/blue_action"
+                            android:text="All"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
                         <!-- Chip 2: Yoga -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_yoga"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Yoga"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_meditation"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
-                        <!-- Chip 3: In Room Massage -->
+                        <!-- Chip 3: In-Room Massage -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_inroom"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="In-Room Massage"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_room"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
-                        <!-- Chip 4: Ayurveda (Modified) -->
+                        <!-- Chip 4: Ayurveda -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_ayurveda"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Ayurveda"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_ayurveda"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
+                        <!-- Chip 5: Personal Trainer -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_personal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Personal Trainer"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_gym"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <!-- Booking Card 1 -->
                 <!-- RecyclerView for Bookings -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/todolist"
@@ -301,10 +316,6 @@
                     android:visibility="gone"
                     tools:listitem="@layout/hote_item_booking_card" />
 
-                <!-- Progress Bar -->
-
-
-                <!-- Empty State -->
                 <!-- Empty State -->
                 <include
                     android:id="@+id/Bookings_notFound"
@@ -314,10 +325,9 @@
                     android:layout_marginTop="16dp"
                     android:visibility="gone" />
 
-                <!-- Add second card similarly here -->
-
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="48dp"
@@ -325,7 +335,7 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:visibility="gone" />
-        <!-- Floating Bottom Bar -->
+
         <!-- Floating Bottom Bar -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -339,7 +349,6 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="6dp">
 
-            <!-- QR Section -->
             <LinearLayout
                 android:id="@+id/btnQr"
                 android:layout_width="0dp"
@@ -366,13 +375,11 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Divider Line -->
             <View
                 android:layout_width="1dp"
                 android:layout_height="24dp"
                 android:background="#E0E0E0" />
 
-            <!-- Share Section -->
             <LinearLayout
                 android:id="@+id/btnShare"
                 android:layout_width="0dp"
@@ -399,7 +406,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Add Booking Button -->
             <LinearLayout
                 android:id="@+id/btnAddBooking"
                 android:layout_width="0dp"
@@ -432,7 +438,7 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- NAVIGATION DRAWER CONTAINER -->
+    <!-- NAVIGATION DRAWER -->
     <LinearLayout
         android:layout_width="320dp"
         android:layout_height="match_parent"
@@ -441,7 +447,6 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
-        <!-- NAVIGATION DRAWER (Takes all remaining space above the footer) -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
@@ -454,7 +459,7 @@
             app:itemHorizontalPadding="16dp"
             app:itemVerticalPadding="4dp"
             android:background="@color/white"/>
-        <!-- FOOTER (Fixed at the bottom) -->
+
         <include layout="@layout/nav_footer_drawer" />
 
     </LinearLayout>

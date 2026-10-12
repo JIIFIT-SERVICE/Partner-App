@@ -33,20 +33,21 @@
                 android:textColor="#1A1A1A" />
 
             <!-- In-Room Tag -->
+
+            <!-- Spacer -->
             <TextView
                 android:id="@+id/tvInRoomTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="In-Room Massage"
-                android:textColor="#1A56DB"
                 android:background="@drawable/bg_tag_blue"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="3dp"
+                android:text="In-Room Massage"
+                android:textColor="#1A56DB"
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
-            <!-- Spacer -->
             <View
                 android:layout_width="0dp"
                 android:layout_height="1dp"
@@ -75,6 +76,7 @@
                 android:layout_marginStart="8dp"
                 android:src="@drawable/three_dot_black"
                 app:tint="#757575"
+                android:visibility="gone"
                 android:contentDescription="More options" />
         </LinearLayout>
 
@@ -143,7 +145,7 @@
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:src="@android:drawable/ic_menu_my_calendar"
+                android:src="@drawable/calendar_month_24"
                 app:tint="#546E7A" />
 
             <!-- Date -->
@@ -191,43 +193,45 @@
             android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
-            <!-- Call Client Button (Outline Style) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCall"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
+                android:layout_height="46dp"
                 android:layout_weight="1"
                 android:text="Call Client"
                 android:textSize="13sp"
                 android:textAllCaps="false"
                 android:textColor="#1A56DB"
+                android:letterSpacing="0.02"
                 app:icon="@drawable/baseline_call_24"
                 app:iconTint="#1A56DB"
                 app:iconGravity="textStart"
                 app:iconPadding="6dp"
-                app:backgroundTint="#FFFFFF"
+                app:iconSize="18dp"
                 app:strokeColor="#1A56DB"
-                app:strokeWidth="1dp"
-                app:cornerRadius="10dp"
+                app:strokeWidth="1.2dp"
+                app:cornerRadius="12dp"
                 app:elevation="0dp" />
 
-            <!-- View Details Button (Solid Blue) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewDetails"
                 android:layout_width="0dp"
-                android:layout_height="44dp"
+                android:layout_height="46dp"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
                 android:text="View Details"
                 android:textSize="13sp"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
+                android:letterSpacing="0.02"
                 app:icon="@android:drawable/ic_menu_view"
                 app:iconTint="#FFFFFF"
                 app:iconGravity="textStart"
                 app:iconPadding="6dp"
+                app:iconSize="18dp"
                 app:backgroundTint="#1A56DB"
-                app:cornerRadius="10dp"
+                app:cornerRadius="12dp"
                 app:elevation="0dp" />
         </LinearLayout>
 

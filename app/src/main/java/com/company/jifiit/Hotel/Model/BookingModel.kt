@@ -7,5 +7,7 @@ data class BookingModel(
     val customerName: String,
     val roomInfo: String,
     val date: String,
-    val time: String
+    val time: String,
+    val room_number: String,
+    val massage_types: String
 )

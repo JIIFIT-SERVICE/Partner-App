@@ -219,11 +219,6 @@ class Room_Info : AppCompatActivity() {
                     false
                 )
 
-                // Automatically fill floor / wing
-                etFloorWing.setText(
-                    selectedRoom?.floorWing ?: ""
-                )
-
                 // Dropdown closed
                 etRoomNumber.setCompoundDrawablesWithIntrinsicBounds(
                     0,
@@ -351,10 +346,7 @@ class Room_Info : AppCompatActivity() {
                                 id = item.optString("id"),
 
                                 roomNumber =
-                                item.optString("room_number"),
-
-                                floorWing =
-                                item.optString("floor_wing")
+                                item.optString("room_number")
                             )
 
                             roomList.add(room)
@@ -523,10 +515,7 @@ class Room_Info : AppCompatActivity() {
             selectedRoomData.roomNumber
         )
 
-        intent.putExtra(
-            "floor_wing",
-            selectedRoomData.floorWing
-        )
+        intent.putExtra("floor_wing", floorWing)
         intent.putExtra("SELECTED_SERVICE", service)
         startActivity(intent)
 
