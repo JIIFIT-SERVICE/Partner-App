@@ -39,6 +39,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.company.jifiit.Constant
+import com.company.jifiit.EditPage
 import com.company.jifiit.LoginActivity
 import com.company.jifiit.R
 import com.google.android.material.chip.Chip
@@ -57,9 +58,25 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowCompat
+import android.app.Dialog
+import android.net.Uri
+import android.view.ViewGroup
+import android.view.Window
+import android.widget.FrameLayout
+import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import de.hdodenhof.circleimageview.CircleImageView
+import java.io.File
+import java.io.FileOutputStream
+import com.company.jifiit.Hotel.Model.HotelBranch
+import com.company.jifiit.Hotel.Adapter.HotelBranchAdapter
+import com.company.jifiit.Hotel.HotelBranchManager
 
 class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -121,6 +138,26 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private var currentSelectedButton: String = "today"
     private var selectedCalendarDate: String = ""
 
+    // ✅ Profile image picker & launchers
+    private var cameraImageUri: Uri? = null
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { saveAndApplyProfileImage(it) }
+    }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success) {
+            cameraImageUri?.let { saveAndApplyProfileImage(it) }
+        }
+    }
+
+    private val requestCameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            takePhotoWithCamera()
+        } else {
+            Toast.makeText(this, "Camera permission is required to take a photo", Toast.LENGTH_SHORT).show()
+        }
+    }
     /** Filter by service type (massage_types) */
     enum class ServiceFilter { All, Yoga, InRoom, Ayurveda, Personal }
 
@@ -156,7 +193,13 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
         val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
-        name = spCred.getString("Name", "Default Name") ?: "Default Name"
+        val loadedName = spCred.getString("Name", "Grand Orchid Hotel") ?: "Grand Orchid Hotel"
+        name = if (loadedName == "Jzkxmx" || loadedName == "Default Name" || loadedName.isBlank()) {
+            "Grand Orchid Hotel"
+        } else {
+            loadedName
+        }
+        spCred.edit().putString("Name", name).apply()
         age  = spCred.getString("Age", "Hii") ?: "Hii"
 
         val idString = spCred.getString("Id", "0") ?: "0"
@@ -233,6 +276,16 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             showLogoutDialog()
         }
         navView.setNavigationItemSelectedListener(this)
+
+        // Setup click on My Hotel edit pencil icon actionView -> opens EditHotelDetailsActivity
+        val overviewItem = navView.menu.findItem(R.id.nav_overview)
+        overviewItem?.actionView?.findViewById<View>(R.id.btnEditHotelNav)?.setOnClickListener {
+            drawerLayout.closeDrawer(GravityCompat.START)
+            startActivity(Intent(this, EditHotelDetailsActivity::class.java))
+        }
+
+        // Setup profile image click & initial load in nav header
+        setupNavHeaderProfile()
     }
 
     // ============================================================
@@ -240,11 +293,59 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     // ============================================================
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
+        if (bookingList.isEmpty()) {
+            bookingList.addAll(getDefaultDemoBookings())
+        }
         bookingAdapter = BookingAdapter(bookingList) { booking ->
-            Toast.makeText(this, "Clicked Booking: ${booking.bookingId}", Toast.LENGTH_SHORT).show()
+            showBookingDetailsDialog(booking)
         }
         recyclerView.adapter = bookingAdapter
         recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun getDefaultDemoBookings(): List<BookingModel> {
+        return listOf(
+            BookingModel(
+                bookingId = "834",
+                isInRoom = true,
+                status = "PENDING",
+                customerName = "Megha Sharma",
+                roomInfo = "112",
+                date = "Tue, 26 Aug",
+                time = "07:00 PM",
+                serviceName = "In-Room Massage",
+                phone = "+91 98765 43210"
+            ),
+            BookingModel(
+                bookingId = "823",
+                isInRoom = true,
+                status = "COMPLETED",
+                customerName = "Charu Khanna",
+                roomInfo = "304",
+                date = "Tue, 26 Aug",
+                time = "01:00 PM",
+                serviceName = "In-Room Massage",
+                phone = "+91 98765 43211"
+            )
+        )
+    }
+
+    private fun showBookingDetailsDialog(booking: BookingModel) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Booking #${booking.bookingId}")
+            .setMessage("Customer: ${booking.customerName}\nRoom: ${booking.roomInfo}\nService: ${booking.serviceName}\nStatus: ${booking.status}\nTime: ${booking.time}")
+            .setPositiveButton("Call Client") { _, _ ->
+                if (booking.phone.isNotBlank()) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${booking.phone}")))
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Calling ${booking.customerName}...", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton("Close", null)
+            .create()
+        dialog.show()
     }
 
     // ============================================================
@@ -548,7 +649,11 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         Log.d("FetchBookings", "URL: $url")
 
         progressBar.visibility = View.VISIBLE
-        recyclerView.visibility = View.GONE
+        if (bookingList.isEmpty()) {
+            recyclerView.visibility = View.GONE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+        }
         bookingsNotFound.visibility = View.GONE
 
         val requestQueue = Volley.newRequestQueue(this)
@@ -557,11 +662,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             Request.Method.GET, url, null,
             { response ->
                 progressBar.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
                 try {
                     val status = response.getString("Status")
                     if (status.equals("success", ignoreCase = true)) {
-                        bookingsNotFound.visibility = View.GONE
                         val dataArray: JSONArray? = response.optJSONArray("booking")
 
                         allBookings.clear()
@@ -615,13 +718,23 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
+                    if (bookingList.isEmpty()) {
+                        bookingList.addAll(getDefaultDemoBookings())
+                    }
+                    bookingsNotFound.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                    bookingAdapter.notifyDataSetChanged()
                 }
             },
             { error ->
                 progressBar.visibility = View.GONE
-                bookingsNotFound.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
                 Log.e("VolleyError", "Error: ${error.message}")
+                if (bookingList.isEmpty()) {
+                    bookingList.addAll(getDefaultDemoBookings())
+                }
+                bookingsNotFound.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+                bookingAdapter.notifyDataSetChanged()
             }
         )
 
@@ -683,8 +796,20 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_overview -> Toast.makeText(this, "Hotel Overview Clicked", Toast.LENGTH_SHORT).show()
-            R.id.nav_rooms    -> Toast.makeText(this, "Manage Rooms Clicked", Toast.LENGTH_SHORT).show()
+            R.id.nav_overview -> {
+                // Clicking "My Hotel" opens Current Bookings on the main page
+                selectDatePill("today")
+                if (bookingList.isEmpty()) {
+                    bookingList.addAll(getDefaultDemoBookings())
+                }
+                bookingAdapter.notifyDataSetChanged()
+                recyclerView.visibility = View.VISIBLE
+                bookingsNotFound.visibility = View.GONE
+                recyclerView.smoothScrollToPosition(0)
+            }
+            R.id.nav_rooms -> {
+                startActivity(Intent(this, ManageRoomsActivity::class.java))
+            }
             R.id.nav_history  -> { /* Navigate to history */ }
             R.id.nav_earnings -> { /* Navigate to earnings */ }
             R.id.nav_help     -> { /* Navigate to help */ }
@@ -770,6 +895,15 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         super.onResume()
         checkForUpdate()
         checkRequiredPermissions()
+        loadHotelProfileImage()
+
+        // ✅ Refresh branch details & hotel name if updated from Edit Hotel Details
+        val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
+        val updatedName = spCred.getString("Name", name) ?: name
+        if (updatedName.isNotBlank() && updatedName != "Jzkxmx" && updatedName != "Default Name") {
+            name = updatedName
+        }
+        updateNavHeaderBranchInfo()
 
         currentSelectedButton = sp.getString("selected_button", "today") ?: "today"
         selectedCalendarDate  = sp.getString("selected_calendar_date", "") ?: ""
@@ -789,5 +923,398 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             }
             else -> tvToday.performClick()
         }
+    }
+
+    // ============================================================
+    // ✅ Hotel Profile Header & Image (Facebook & Instagram style)
+    // ============================================================
+    private fun setupNavHeaderProfile() {
+        val headerView = navView.getHeaderView(0) ?: return
+        val layoutProfile = headerView.findViewById<FrameLayout>(R.id.layoutHotelProfileImage)
+        val tvInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials)
+
+        layoutProfile?.setOnClickListener {
+            showProfileImageBottomSheet()
+        }
+        tvInitials?.setOnClickListener {
+            showProfileImageBottomSheet()
+        }
+
+        loadHotelProfileImage()
+        setupNavHeaderBranches(headerView)
+    }
+
+    // ============================================================
+    // ✅ Hotel Branches Setup & Dropdown
+    // ============================================================
+    private fun setupNavHeaderBranches(headerView: View) {
+        val layoutDropdown = headerView.findViewById<View>(R.id.layoutHotelBranchDropdown)
+        val btnDropdown = headerView.findViewById<View>(R.id.btnDropdownBranch)
+        val btnPill = headerView.findViewById<View>(R.id.btnBranchSelectorPill)
+        val layoutBranchInfoCard = headerView.findViewById<View>(R.id.layoutBranchInfoCard)
+        val tvBranchViewMore = headerView.findViewById<View>(R.id.tvBranchViewMore)
+
+        val openPickerListener = View.OnClickListener {
+            showHotelBranchPickerBottomSheet()
+        }
+
+        layoutDropdown?.setOnClickListener(openPickerListener)
+        btnDropdown?.setOnClickListener(openPickerListener)
+        btnPill?.setOnClickListener(openPickerListener)
+
+        val openDetailsListener = View.OnClickListener {
+            showBranchDetailsBottomSheet()
+        }
+        layoutBranchInfoCard?.setOnClickListener(openDetailsListener)
+        tvBranchViewMore?.setOnClickListener(openDetailsListener)
+
+        updateNavHeaderBranchInfo()
+    }
+
+    /**
+     * Updates Drawer Header and Main Toolbar with the current selected branch information.
+     */
+    private fun updateNavHeaderBranchInfo() {
+        val headerView = navView.getHeaderView(0) ?: return
+        val branchManager = HotelBranchManager.getInstance(this)
+        val currentBranch = branchManager.getSelectedBranch()
+
+        val tvHotelName = headerView.findViewById<TextView>(R.id.tvHotelName)
+        val tvPartnerId = headerView.findViewById<TextView>(R.id.tvHotelPartnerId)
+        val tvBadge = headerView.findViewById<TextView>(R.id.tvSelectedBranchBadge)
+        val tvInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials)
+        val tvBranchCode = headerView.findViewById<TextView>(R.id.tvBranchCode)
+        val tvBranchLocation = headerView.findViewById<TextView>(R.id.tvBranchLocation)
+        val tvBranchRooms = headerView.findViewById<TextView>(R.id.tvBranchRooms)
+        val tvBranchCategory = headerView.findViewById<TextView>(R.id.tvBranchCategory)
+        val tvBranchPropertyType = headerView.findViewById<TextView>(R.id.tvBranchPropertyType)
+
+        name = currentBranch.name
+        tvHotelName?.text = currentBranch.name
+        tvPartnerId?.text = currentBranch.partnerId
+        tvBadge?.text = "${currentBranch.locality} (${currentBranch.branchTag})"
+        tvInitials?.text = currentBranch.initials
+        tvBranchCode?.text = "BRANCH ID #${currentBranch.id}"
+        tvBranchLocation?.text = currentBranch.address
+        tvBranchRooms?.text = "${currentBranch.totalRooms} Rooms"
+        tvBranchCategory?.text = "${currentBranch.categoryStars}-Star Luxury"
+        tvBranchPropertyType?.text = currentBranch.propertyType
+
+        // Update main screen toolbar
+        findViewById<TextView>(R.id.hotelName)?.text = currentBranch.name
+        findViewById<TextView>(R.id.hotelSubtitle)?.text = "${currentBranch.locality} • ${currentBranch.branchTag}"
+    }
+
+    /**
+     * Shows the BottomSheet with list of branches when clicking the dropdown button.
+     */
+    private fun showHotelBranchPickerBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme)
+        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_hotel_branch_picker, null)
+        bottomSheetDialog.setContentView(sheetView)
+
+        val rvBranches = sheetView.findViewById<RecyclerView>(R.id.rvBranchesList)
+        val btnClose = sheetView.findViewById<View>(R.id.btnCloseBranchSheet)
+        val btnAdd = sheetView.findViewById<View>(R.id.btnAddNewBranch)
+
+        val branchManager = HotelBranchManager.getInstance(this)
+        val branches = branchManager.getAllBranches()
+        val currentSelectedId = branchManager.getSelectedBranchId()
+
+        rvBranches?.layoutManager = LinearLayoutManager(this)
+        val adapter = HotelBranchAdapter(branches, currentSelectedId) { selectedBranch ->
+            branchManager.setSelectedBranchId(selectedBranch.id)
+            updateNavHeaderBranchInfo()
+            Toast.makeText(this, "Selected: ${selectedBranch.name}", Toast.LENGTH_SHORT).show()
+            bottomSheetDialog.dismiss()
+
+            // Update Id if applicable and refresh bookings
+            try {
+                Id = BigInteger(selectedBranch.id)
+            } catch (e: Exception) {
+                // Keep Id
+            }
+            fetchBookings(Id, selectedDate)
+        }
+        rvBranches?.adapter = adapter
+
+        btnClose?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        btnAdd?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            showAddBranchDialog()
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    /**
+     * Shows all detailed information of the current selected branch.
+     */
+    private fun showBranchDetailsBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme)
+        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_branch_details, null)
+        bottomSheetDialog.setContentView(sheetView)
+
+        val branch = HotelBranchManager.getInstance(this).getSelectedBranch()
+
+        sheetView.findViewById<TextView>(R.id.tvSheetBranchTitle)?.text = branch.name
+        sheetView.findViewById<TextView>(R.id.tvSheetBranchSubtitle)?.text = "${branch.branchTag} • Partner ID #${branch.id}"
+        sheetView.findViewById<TextView>(R.id.tvDetailLegalName)?.text = branch.legalBusinessName
+        sheetView.findViewById<TextView>(R.id.tvDetailCategory)?.text = "${branch.categoryStars}-Star Luxury"
+        sheetView.findViewById<TextView>(R.id.tvDetailPropertyType)?.text = branch.propertyType
+        sheetView.findViewById<TextView>(R.id.tvDetailEstYear)?.text = branch.establishmentYear
+        sheetView.findViewById<TextView>(R.id.tvDetailRooms)?.text = "${branch.totalRooms} Rooms (${branch.roomTypes})"
+        sheetView.findViewById<TextView>(R.id.tvDetailAddress)?.text = branch.address
+        sheetView.findViewById<TextView>(R.id.tvDetailCity)?.text = "City: ${branch.city}"
+        sheetView.findViewById<TextView>(R.id.tvDetailLocality)?.text = "Locality: ${branch.locality}"
+        sheetView.findViewById<TextView>(R.id.tvDetailPhone)?.text = branch.phone
+        sheetView.findViewById<TextView>(R.id.tvDetailGst)?.text = branch.gstPan
+
+        sheetView.findViewById<View>(R.id.btnCloseDetailSheet)?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        sheetView.findViewById<View>(R.id.btnSheetSwitchBranch)?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            showHotelBranchPickerBottomSheet()
+        }
+
+        sheetView.findViewById<View>(R.id.btnSheetEditBranch)?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            startActivity(Intent(this, EditHotelDetailsActivity::class.java))
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    /**
+     * Dialog to add a new hotel branch location.
+     */
+    private fun showAddBranchDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_hotel_branch, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val etName = dialogView.findViewById<android.widget.EditText>(R.id.etNewBranchName)
+        val etTag = dialogView.findViewById<android.widget.EditText>(R.id.etNewBranchTag)
+        val etLocality = dialogView.findViewById<android.widget.EditText>(R.id.etNewBranchLocality)
+        val etCity = dialogView.findViewById<android.widget.EditText>(R.id.etNewBranchCity)
+        val etAddress = dialogView.findViewById<android.widget.EditText>(R.id.etNewBranchAddress)
+        val etRooms = dialogView.findViewById<android.widget.EditText>(R.id.etNewBranchRooms)
+        val btnCancel = dialogView.findViewById<View>(R.id.btnCancelNewBranch)
+        val btnSave = dialogView.findViewById<View>(R.id.btnSaveNewBranch)
+
+        btnCancel?.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnSave?.setOnClickListener {
+            val nameText = etName.text.toString().trim()
+            val tagText = etTag.text.toString().trim().ifEmpty { "Branch" }
+            val localityText = etLocality.text.toString().trim().ifEmpty { "Main Road" }
+            val cityText = etCity.text.toString().trim().ifEmpty { "Gurgaon" }
+            val addressText = etAddress.text.toString().trim()
+            val roomsText = etRooms.text.toString().trim().ifEmpty { "30" }
+
+            if (nameText.isEmpty()) {
+                etName.error = "Branch name is required"
+                return@setOnClickListener
+            }
+            if (addressText.isEmpty()) {
+                etAddress.error = "Address is required"
+                return@setOnClickListener
+            }
+
+            val branchManager = HotelBranchManager.getInstance(this)
+            val newId = (100 + branchManager.getAllBranches().size + 1).toString()
+            val initials = nameText.split(" ")
+                .mapNotNull { it.firstOrNull()?.toString() }
+                .take(3)
+                .joinToString("")
+                .uppercase()
+                .ifEmpty { "GOH" }
+
+            val newBranch = HotelBranch(
+                id = newId,
+                name = nameText,
+                branchTag = tagText,
+                locality = localityText,
+                city = cityText,
+                address = addressText,
+                totalRooms = roomsText,
+                initials = initials,
+                partnerId = "Official Partner JIIFIT LLP • ID #$newId"
+            )
+
+            branchManager.addBranch(newBranch)
+            branchManager.setSelectedBranchId(newId)
+            updateNavHeaderBranchInfo()
+            Toast.makeText(this, "Branch \"$nameText\" added successfully", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+
+    private fun loadHotelProfileImage() {
+        val headerView = navView.getHeaderView(0) ?: return
+        val tvProfileInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials) ?: return
+        val ivProfileImage = headerView.findViewById<CircleImageView>(R.id.ivHotelProfileImage) ?: return
+
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        if (!savedPath.isNullOrEmpty() && File(savedPath).exists()) {
+            Glide.with(this)
+                .load(File(savedPath))
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(ivProfileImage)
+            ivProfileImage.visibility = View.VISIBLE
+            tvProfileInitials.visibility = View.GONE
+        } else {
+            ivProfileImage.visibility = View.GONE
+            tvProfileInitials.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showProfileImageBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialogTheme)
+        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_hotel_profile_picker, null)
+        bottomSheetDialog.setContentView(sheetView)
+
+        val optCamera = sheetView.findViewById<View>(R.id.layout_option_camera)
+        val optGallery = sheetView.findViewById<View>(R.id.layout_option_gallery)
+        val optView = sheetView.findViewById<View>(R.id.layout_option_view)
+        val optRemove = sheetView.findViewById<View>(R.id.layout_option_remove)
+        val btnClose = sheetView.findViewById<ImageView>(R.id.btn_close_sheet)
+
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        val hasCustomImage = !savedPath.isNullOrEmpty() && File(savedPath).exists()
+
+        optRemove?.visibility = if (hasCustomImage) View.VISIBLE else View.GONE
+
+        optCamera?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            checkCameraPermissionAndLaunch()
+        }
+
+        optGallery?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            galleryLauncher.launch("image/*")
+        }
+
+        optView?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            showFullProfileImageDialog()
+        }
+
+        optRemove?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            removeHotelProfileImage()
+        }
+
+        btnClose?.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun checkCameraPermissionAndLaunch() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        } else {
+            takePhotoWithCamera()
+        }
+    }
+
+    private fun takePhotoWithCamera() {
+        try {
+            val photoFile = File(cacheDir, "hotel_cam_${System.currentTimeMillis()}.jpg")
+            val photoUri = FileProvider.getUriForFile(this, "${packageName}.provider", photoFile)
+            cameraImageUri = photoUri
+            cameraLauncher.launch(photoUri)
+        } catch (e: Exception) {
+            Log.e("HotelProfile", "Failed to start camera", e)
+            Toast.makeText(this, "Could not open camera: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveAndApplyProfileImage(sourceUri: Uri) {
+        try {
+            val destFile = File(filesDir, "hotel_profile_photo.jpg")
+            contentResolver.openInputStream(sourceUri)?.use { input ->
+                FileOutputStream(destFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            sp.edit().putString("hotel_profile_image_path", destFile.absolutePath).apply()
+            loadHotelProfileImage()
+            Toast.makeText(this, "Profile picture updated", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("HotelProfile", "Error saving profile image", e)
+            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun removeHotelProfileImage() {
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        if (!savedPath.isNullOrEmpty()) {
+            val file = File(savedPath)
+            if (file.exists()) {
+                file.delete()
+            }
+        }
+        sp.edit().remove("hotel_profile_image_path").apply()
+        loadHotelProfileImage()
+        Toast.makeText(this, "Profile picture removed", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showFullProfileImageDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_view_hotel_profile_image)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.88).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val ivFull = dialog.findViewById<CircleImageView>(R.id.ivFullProfileImage)
+        val tvInitials = dialog.findViewById<TextView>(R.id.tvFullProfileInitials)
+        val tvFullHotelName = dialog.findViewById<TextView>(R.id.tvFullHotelName)
+        val btnClose = dialog.findViewById<ImageView>(R.id.btnCloseFullImage)
+
+        tvFullHotelName?.text = name
+        tvInitials?.text = "GOH"
+
+        btnClose?.setOnClickListener { dialog.dismiss() }
+
+        val savedPath = sp.getString("hotel_profile_image_path", null)
+        if (!savedPath.isNullOrEmpty() && File(savedPath).exists()) {
+            ivFull?.visibility = View.VISIBLE
+            tvInitials?.visibility = View.GONE
+            Glide.with(this)
+                .load(File(savedPath))
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(ivFull)
+        } else {
+            ivFull?.visibility = View.GONE
+            tvInitials?.visibility = View.VISIBLE
+        }
+
+        dialog.show()
     }
 }

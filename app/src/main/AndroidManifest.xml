@@ -85,6 +85,14 @@
             android:name=".Hotel.PaymentActivity"
             android:exported="false" />
         <activity
+            android:name=".Hotel.ManageRoomsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.EditHotelDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".Hotel.Expert_activity"
             android:exported="false" />
         <activity

@@ -1,11 +1,21 @@
 package com.company.jifiit.Hotel
 
+import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
+import android.net.Uri
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.company.jifiit.R
 import com.google.android.material.button.MaterialButton
@@ -39,9 +49,10 @@ class BookingAdapter(
 
     override fun onBindViewHolder(holder: BookingViewHolder, position: Int) {
         val booking = bookingList[position]
+        val context = holder.itemView.context
 
-        // 1. Header
-        holder.tvBookingId.text = "#${booking.bookingId}"
+        // 1. Header: Booking ID
+        holder.tvBookingId.text = if (booking.bookingId.startsWith("#")) booking.bookingId else "#${booking.bookingId}"
 
         // ✅ Service tag based on massage_types
         val tagLabel = getServiceTagLabel(booking.massage_types)
@@ -52,34 +63,89 @@ class BookingAdapter(
             holder.tvInRoomTag.text = tagLabel
         }
 
-        // Status color + background
-        holder.tvStatus.text = booking.status
-        when (booking.status.uppercase()) {
+        // Status Badge styling
+        val statusUpper = booking.status.trim().uppercase()
+        holder.tvStatus.text = statusUpper
+
+        when (statusUpper) {
             "PENDING" -> {
-                holder.tvStatus.setTextColor(Color.parseColor("#FF9800"))
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_tag_pending)
+                val colorPending = Color.parseColor("#B45309")
+                holder.tvStatus.setTextColor(colorPending)
+                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_pending_pill)
+                val icon = ContextCompat.getDrawable(context, R.drawable.ic_pending)
+                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
+                icon?.setTint(colorPending)
+                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
             }
             "COMPLETED" -> {
-                holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"))
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_tag_pending)
+                val colorCompleted = Color.parseColor("#15803D")
+                holder.tvStatus.setTextColor(colorCompleted)
+                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_completed_pill)
+                val icon = ContextCompat.getDrawable(context, R.drawable.baseline_check_circle_outline_24)
+                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
+                icon?.setTint(colorCompleted)
+                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
             }
             "CONFIRMED" -> {
-                holder.tvStatus.setTextColor(Color.parseColor("#1A56DB"))
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_tag_blue)
+                val colorConfirmed = Color.parseColor("#1D4ED8")
+                holder.tvStatus.setTextColor(colorConfirmed)
+                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_confirmed_pill)
+                val icon = ContextCompat.getDrawable(context, R.drawable.baseline_check_circle_outline_24)
+                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
+                icon?.setTint(colorConfirmed)
+                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
             }
             else -> {
-                holder.tvStatus.setTextColor(Color.parseColor("#757575"))
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_tag_pending)
+                val colorDefault = Color.parseColor("#64748B")
+                holder.tvStatus.setTextColor(colorDefault)
+                holder.tvStatus.setBackgroundResource(R.drawable.bg_service_tag_pill)
+                holder.tvStatus.setCompoundDrawables(null, null, null, null)
             }
         }
 
-        // 2. Customer info
+        // 2. Customer Name & Room Info
         holder.tvCustomerName.text = booking.customerName
         holder.tvRoomInfo.text = booking.room_number
 
-        // 3. Date + Time
+        // Room formatting: "Room 112" with "Room " in grey and number in bold
+        val rawRoom = booking.roomInfo.trim()
+        val roomNumber = if (rawRoom.startsWith("Room", ignoreCase = true)) {
+            rawRoom.replace(Regex("(?i)^Room\\s*"), "")
+        } else {
+            rawRoom
+        }
+        val roomText = if (roomNumber.isNotEmpty()) "Room $roomNumber" else "Room 101"
+
+        val spannableRoom = SpannableStringBuilder()
+        val prefix = "Room "
+        spannableRoom.append(prefix)
+        spannableRoom.setSpan(
+            ForegroundColorSpan(Color.parseColor("#64748B")),
+            0,
+            prefix.length,
+            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        val numberStart = prefix.length
+        val numPart = if (roomNumber.isNotEmpty()) roomNumber else "101"
+        spannableRoom.append(numPart)
+        spannableRoom.setSpan(
+            ForegroundColorSpan(Color.parseColor("#0F172A")),
+            numberStart,
+            numberStart + numPart.length,
+            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannableRoom.setSpan(
+            StyleSpan(Typeface.BOLD),
+            numberStart,
+            numberStart + numPart.length,
+            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        holder.tvRoomInfo.text = spannableRoom
+
+        // 3. Time
+        holder.tvTime.text = if (booking.time.isNotBlank()) booking.time else "07:00 PM"
         holder.tvDate.text = booking.date
-        holder.tvTime.text = booking.time
 
         // 4. Clicks
         holder.itemView.setOnClickListener { onItemClick(booking) }
