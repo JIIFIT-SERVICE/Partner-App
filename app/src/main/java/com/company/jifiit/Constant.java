@@ -183,6 +183,7 @@ public class Constant {
     public static String GET_COMMISSION_CHARGE  = "https://jiifit.com/Jifiit/Hotel/fetch_commission.php?hotel_registration_id=";
     public static String EXPERT_API  = "https://jiifit.com/Jifiit/Hotel/fetch_experts.php";
     public static String HOTEL_BOOKING_API  = "https://jiifit.com/Jifiit/Hotel/submit_hotel_order.php";
+    public static String HOTEL_BOOKING_Details = "https://jiifit.com/Jifiit/Hotel/hotel_order_details.php?id=";
 }
 
 

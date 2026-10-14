@@ -305,47 +305,26 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun getDefaultDemoBookings(): List<BookingModel> {
         return listOf(
-            BookingModel(
-                bookingId = "834",
-                isInRoom = true,
-                status = "PENDING",
-                customerName = "Megha Sharma",
-                roomInfo = "112",
-                date = "Tue, 26 Aug",
-                time = "07:00 PM",
-                serviceName = "In-Room Massage",
-                phone = "+91 98765 43210"
-            ),
-            BookingModel(
-                bookingId = "823",
-                isInRoom = true,
-                status = "COMPLETED",
-                customerName = "Charu Khanna",
-                roomInfo = "304",
-                date = "Tue, 26 Aug",
-                time = "01:00 PM",
-                serviceName = "In-Room Massage",
-                phone = "+91 98765 43211"
-            )
+
         )
     }
 
     private fun showBookingDetailsDialog(booking: BookingModel) {
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("Booking #${booking.bookingId}")
-            .setMessage("Customer: ${booking.customerName}\nRoom: ${booking.roomInfo}\nService: ${booking.serviceName}\nStatus: ${booking.status}\nTime: ${booking.time}")
-            .setPositiveButton("Call Client") { _, _ ->
-                if (booking.phone.isNotBlank()) {
-                    try {
-                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${booking.phone}")))
-                    } catch (e: Exception) {
-                        Toast.makeText(this, "Calling ${booking.customerName}...", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .setNegativeButton("Close", null)
-            .create()
-        dialog.show()
+//        val dialog = AlertDialog.Builder(this)
+//            .setTitle("Booking #${booking.bookingId}")
+//            .setMessage("Customer: ${booking.customerName}\nRoom: ${booking.roomInfo}\nService: ${booking.serviceName}\nStatus: ${booking.status}\nTime: ${booking.time}")
+//            .setPositiveButton("Call Client") { _, _ ->
+//                if (booking.phone.isNotBlank()) {
+//                    try {
+//                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${booking.phone}")))
+//                    } catch (e: Exception) {
+//                        Toast.makeText(this, "Calling ${booking.customerName}...", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//            }
+//            .setNegativeButton("Close", null)
+//            .create()
+//        dialog.show()
     }
 
     // ============================================================
@@ -674,6 +653,7 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
                                 val customerName  = bookingObject.optString("customer_name", "N/A")
                                 val startTime     = bookingObject.optString("start_time", "N/A")
+                                val endTime     = bookingObject.optString("end_time", "N/A")
                                 val address       = bookingObject.optString("landmark", "N/A")
                                 val paymentStatus = bookingObject.optString("payment_status", "N/A")
                                 val bookingId     = bookingObject.optString("id", "N/A")
@@ -681,6 +661,10 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                                 val inRoom        = bookingObject.optBoolean("in_room", false)
                                 val room_num      = bookingObject.optString("room_number", "")
                                 val massage_types = bookingObject.optString("massage_types", "")
+                                val clientNumber = bookingObject.optString("expert_number", "")
+                                val expertName = bookingObject.optString("expert_name", "")
+                                val totalDuration = bookingObject.optString("duration", "")
+                                val image      = bookingObject.optString("exper_photo", "")
 
                                 Log.d("FetchBookings", "massage_types='$massage_types'")
 
@@ -694,7 +678,12 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                                         date         = bookingDate,
                                         time         = startTime,
                                         room_number  = room_num,
-                                        massage_types = massage_types
+                                        massage_types = massage_types,
+                                        client_number = clientNumber,
+                                        expertName = expertName,
+                                        duration = totalDuration,
+                                        image = image,
+                                        EndTime = endTime
                                     )
                                 )
                             }

@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId = "com.company.jifiit"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
-        versionCode = 61
-        versionName = "3.32"
+        versionCode = 62
+        versionName = "3.33"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

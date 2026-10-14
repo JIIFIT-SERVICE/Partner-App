@@ -69,6 +69,10 @@ class HotelPayment : AppCompatActivity() {
     // ----- Guest / Room / Flags -----
     private var guestName: String = ""
     private var guestMobile: String = ""
+    private var country_Code: String = ""
+    private var Mobile: String = ""
+
+
     private var roomId: String = ""
     private var roomNumber: String = ""
     private var floorWing: String = ""
@@ -200,7 +204,11 @@ class HotelPayment : AppCompatActivity() {
         // GET GUEST / ROOM / FLAGS
         // =========================================================
         guestName     = intent.getStringExtra("guest_name")   ?: ""
-        guestMobile   = intent.getStringExtra("guest_mobile") ?: ""
+        guestMobile   = intent.getStringExtra("guest_mobile_full")    ?: ""
+        country_Code  = intent.getStringExtra("country_code").orEmpty()
+        Mobile = intent.getStringExtra("guest_mobile").orEmpty()
+
+
         roomId        = intent.getStringExtra("room_id")      ?: ""
         roomNumber    = intent.getStringExtra("room_number")  ?: ""
         floorWing     = intent.getStringExtra("floor_wing")   ?: ""
@@ -228,7 +236,9 @@ class HotelPayment : AppCompatActivity() {
         Log.d("HotelPayment", "clientGender   = $clientGender")
         Log.d("HotelPayment", "selectedService= $selectedService")
         Log.d("HotelPayment", "guestName      = $guestName")
-        Log.d("HotelPayment", "guestMobile    = $guestMobile")
+        Log.d("HotelPayment", "guestMobileFull= $guestMobile")
+        Log.d("HotelPayment", "country_Code   = $country_Code")
+        Log.d("HotelPayment", "Mobile         = $Mobile")
         Log.d("HotelPayment", "roomId         = $roomId")
         Log.d("HotelPayment", "roomNumber     = $roomNumber")
         Log.d("HotelPayment", "floorWing      = $floorWing")
@@ -666,7 +676,8 @@ Empower your wellness journey with Jiifit
             .addFormDataPart("total_payable",    breakdown.totalPayable.toString())
             .addFormDataPart("total_items",      cartItems.size.toString())
             .addFormDataPart("guest_name",       guestName)
-            .addFormDataPart("guest_mobile",     guestMobile)
+            .addFormDataPart("country_code",     country_Code)
+            .addFormDataPart("guest_mobile", Mobile)
             .addFormDataPart("room_id",          roomId)
             .addFormDataPart("room_number",      roomNumber)
             .addFormDataPart("floor_wing",       floorWing)

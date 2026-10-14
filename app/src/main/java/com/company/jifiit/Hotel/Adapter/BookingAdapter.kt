@@ -1,9 +1,9 @@
 package com.company.jifiit.Hotel
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -13,11 +13,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.appcompat.widget.PopupMenu
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.company.jifiit.R
+import com.company.jifiit.ViewMoreMenu.RescheduleActivity
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.button.MaterialButton
 
 class BookingAdapter(
@@ -26,10 +34,15 @@ class BookingAdapter(
 ) : RecyclerView.Adapter<BookingAdapter.BookingViewHolder>() {
 
     inner class BookingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val shimmerLayout: ShimmerFrameLayout =
+            itemView.findViewById(R.id.shimmerLayout)
         val tvBookingId: TextView = itemView.findViewById(R.id.tvBookingId)
         val tvInRoomTag: TextView = itemView.findViewById(R.id.tvInRoomTag)
         val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
         val ivOverflow: ImageView = itemView.findViewById(R.id.ivOverflow)
+        val ivExpert: ImageView = itemView.findViewById(R.id.ivExpertAvatar)
+        val expertName: TextView = itemView.findViewById(R.id.tvExpertName)
+        val totalDuration: TextView = itemView.findViewById(R.id.tvTotalDuration)
 
         val tvCustomerName: TextView = itemView.findViewById(R.id.tvCustomerName)
         val tvRoomInfo: TextView = itemView.findViewById(R.id.tvRoomInfo)
@@ -38,7 +51,6 @@ class BookingAdapter(
         val tvTime: TextView = itemView.findViewById(R.id.tvTime)
 
         val btnCall: MaterialButton = itemView.findViewById(R.id.btnCall)
-        val btnViewDetails: MaterialButton = itemView.findViewById(R.id.btnViewDetails)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookingViewHolder {
@@ -105,19 +117,25 @@ class BookingAdapter(
 
         // 2. Customer Name & Room Info
         holder.tvCustomerName.text = booking.customerName
-        holder.tvRoomInfo.text = booking.room_number
+        holder.expertName.text = booking.expertName
+        holder.totalDuration.text = booking.duration +" mins"
 
-        // Room formatting: "Room 112" with "Room " in grey and number in bold
-        val rawRoom = booking.roomInfo.trim()
+
+        // ✅ Room formatting: "Room: 112" with "Room: " in grey and number in bold
+        val rawRoom = booking.room_number.trim()
         val roomNumber = if (rawRoom.startsWith("Room", ignoreCase = true)) {
             rawRoom.replace(Regex("(?i)^Room\\s*"), "")
         } else {
             rawRoom
         }
-        val roomText = if (roomNumber.isNotEmpty()) "Room $roomNumber" else "Room 101"
+        val numPart = if (roomNumber.isNotEmpty() && !roomNumber.equals("N/A", ignoreCase = true)) {
+            roomNumber
+        } else {
+            "101"
+        }
 
         val spannableRoom = SpannableStringBuilder()
-        val prefix = "Room "
+        val prefix = "Room: "
         spannableRoom.append(prefix)
         spannableRoom.setSpan(
             ForegroundColorSpan(Color.parseColor("#64748B")),
@@ -127,7 +145,6 @@ class BookingAdapter(
         )
 
         val numberStart = prefix.length
-        val numPart = if (roomNumber.isNotEmpty()) roomNumber else "101"
         spannableRoom.append(numPart)
         spannableRoom.setSpan(
             ForegroundColorSpan(Color.parseColor("#0F172A")),
@@ -143,17 +160,119 @@ class BookingAdapter(
         )
         holder.tvRoomInfo.text = spannableRoom
 
-        // 3. Time
-        holder.tvTime.text = if (booking.time.isNotBlank()) booking.time else "07:00 PM"
+        // 3. Time & Date
+        holder.tvTime.text = if (booking.time.isNotBlank() && booking.time != "N/A") booking.time else "07:00 PM"
         holder.tvDate.text = booking.date
 
         // 4. Clicks
         holder.itemView.setOnClickListener { onItemClick(booking) }
-        holder.btnViewDetails.setOnClickListener { onItemClick(booking) }
-        holder.btnCall.setOnClickListener { onItemClick(booking) }
-        holder.ivOverflow.setOnClickListener { /* popup menu */ }
+
+
+        holder.shimmerLayout.visibility = View.VISIBLE
+        holder.shimmerLayout.startShimmer()
+        holder.ivExpert.visibility = View.INVISIBLE
+
+        if (booking.image.isNotEmpty()) {
+
+            Glide.with(holder.itemView.context)
+                .load(booking.image)
+                .listener(object : RequestListener<Drawable> {
+
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+
+                        holder.shimmerLayout.stopShimmer()
+                        holder.shimmerLayout.visibility = View.GONE
+                        holder.ivExpert.visibility = View.VISIBLE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+
+                        holder.shimmerLayout.stopShimmer()
+                        holder.shimmerLayout.visibility = View.GONE
+                        holder.ivExpert.visibility = View.VISIBLE
+                        return false
+                    }
+
+                })
+                .error(R.mipmap.hotel_body_massage)
+                .into(holder.ivExpert)
+
+        } else {
+
+            holder.shimmerLayout.stopShimmer()
+            holder.shimmerLayout.visibility = View.GONE
+            holder.ivExpert.visibility = View.VISIBLE
+            holder.ivExpert.setImageResource(
+                R.mipmap.hotel_body_massage
+            )
+        }
+        // ✅ Call button → directly dial client_number
+        holder.btnCall.setOnClickListener {
+            val number = booking.client_number.trim()
+
+            if (number.isEmpty() || number.equals("N/A", ignoreCase = true)) {
+                Toast.makeText(context, "Phone number not available", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            try {
+                val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:$number")
+                }
+                context.startActivity(dialIntent)
+            } catch (e: Exception) {
+                Toast.makeText(context, "Unable to open dialer", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        holder.ivOverflow.setOnClickListener { anchor ->
+            val popup = PopupMenu(anchor.context, anchor)
+            popup.menuInflater.inflate(R.menu.menu_booking_overflow, popup.menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_reschedule -> {
+                        onReschedule(booking, context)
+                        true
+                    }
+                    R.id.action_cancel -> {
+//                        onCancel(booking)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
     }
 
+
+    private fun onReschedule(booking: BookingModel, context: android.content.Context) {
+
+        val intent = Intent(context, RescheduleActivity::class.java)
+
+        intent.putExtra("id", booking.bookingId)
+        intent.putExtra("time", booking.time)
+        intent.putExtra("duration", booking.duration)
+
+        // Replace these with the actual BookingModel property names
+        intent.putExtra("endTime", booking.EndTime)
+        intent.putExtra("date", booking.date)
+
+        context.startActivity(intent)
+    }
     private fun getServiceTagLabel(massageTypes: String?): String? {
         return when (massageTypes?.trim()?.lowercase()) {
             "massage at hotel"          -> "In-Room Massage"
@@ -163,6 +282,8 @@ class BookingAdapter(
             else                        -> null
         }
     }
+
+
 
     override fun getItemCount(): Int = bookingList.size
 }
