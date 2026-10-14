@@ -29,7 +29,7 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.button.MaterialButton
 
 class BookingAdapter(
-    private val bookingList: List<BookingModel>,
+    private var bookingList: List<BookingModel>,
     private val onItemClick: (BookingModel) -> Unit
 ) : RecyclerView.Adapter<BookingAdapter.BookingViewHolder>() {
 
@@ -286,4 +286,9 @@ class BookingAdapter(
 
 
     override fun getItemCount(): Int = bookingList.size
+
+    fun updateData(newList: List<BookingModel>) {
+        bookingList = newList
+        notifyDataSetChanged()
+    }
 }

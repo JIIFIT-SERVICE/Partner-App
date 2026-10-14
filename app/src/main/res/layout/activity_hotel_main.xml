@@ -20,23 +20,26 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:background="@android:color/transparent"
+            android:layout_marginHorizontal="0dp"
+            android:background="@color/hotel_primary"
             android:fitsSystemWindows="false"
             app:elevation="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:background="@drawable/bg_appbar_rounded"
+                android:background="@color/hotel_primary"
                 android:paddingHorizontal="12dp">
 
                 <ImageView
                     android:id="@+id/btnMenu"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Menu"
+                    android:padding="2dp"
                     android:src="@drawable/ic_menu"
-                    app:tint="#1E1E1E"
+                    app:tint="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -60,8 +63,8 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:text="Grand Orchid Hotel"
-                        android:textColor="#1E1E1E"
+                        android:text="Grand Orchid - Sector 14"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -72,8 +75,8 @@
                         android:layout_marginTop="2dp"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:text="Official Partner JIIFIT LLP"
-                        android:textColor="#757575"
+                        android:text="Sector 14 • Main Branch"
+                        android:textColor="#E1F5FE"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -81,6 +84,9 @@
                     android:id="@+id/btnNotification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Notifications"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -89,7 +95,7 @@
                         android:layout_width="26dp"
                         android:layout_height="26dp"
                         android:src="@drawable/ic_notification"
-                        app:tint="#1E1E1E" />
+                        app:tint="@color/white" />
 
                     <View
                         android:layout_width="8dp"
@@ -100,11 +106,12 @@
                         android:background="@drawable/bg_notification_dot" />
                 </FrameLayout>
 
+                <!-- 6. Straight Divider Line at Bottom -->
                 <View
                     android:id="@+id/bottomDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/hotel_primary_dark"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -141,7 +148,7 @@
                         android:gravity="center"
                         android:paddingVertical="10dp"
                         android:text="YESTERDAY\nMon • 25 Aug"
-                        android:textColor="#0B4F4F"
+                        android:textColor="@color/hotel_primary"
                         android:textSize="11sp"
                         android:clickable="true"
                         android:focusable="true"
@@ -169,7 +176,7 @@
                         android:gravity="center"
                         android:paddingVertical="10dp"
                         android:text="TOMORROW\nWed • 27 Aug"
-                        android:textColor="#0B4F4F"
+                        android:textColor="@color/hotel_primary"
                         android:textSize="11sp"
                         android:clickable="true"
                         android:focusable="true"
