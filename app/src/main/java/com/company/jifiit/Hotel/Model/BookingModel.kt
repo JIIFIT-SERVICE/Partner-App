@@ -8,6 +8,6 @@ data class BookingModel(
     val roomInfo: String,
     val date: String,
     val time: String,
-    val serviceName: String = "In-Room Massage",
-    val phone: String = "+91 98765 43210"
+    val room_number: String,
+    val massage_types: String
 )

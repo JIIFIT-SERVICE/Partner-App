@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White"
+    tools:context=".Hotel.HotelPayment">
+
+  <!-- ========================================================= -->
+  <!-- TOP HEADER -->
+  <!-- ========================================================= -->
+
+  <LinearLayout
+      android:id="@+id/headerLayout"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:background="@color/white"
+      android:orientation="vertical"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:paddingTop="14dp"
+      android:paddingBottom="14dp"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+      <ImageView
+          android:id="@+id/btnBack"
+          android:layout_width="30dp"
+          android:layout_height="30dp"
+          android:src="@drawable/ic_arrow_left"
+          android:background="@drawable/bg_circle_grey"
+          android:backgroundTint="@color/BackgroundBlue"
+          app:tint="@color/black"
+          android:contentDescription="Back" />
+
+      <LinearLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="12dp"
+          android:layout_weight="1"
+          android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment Collection"
+            android:textColor="#172033"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+      </LinearLayout>
+    </LinearLayout>
+  </LinearLayout>
+
+  <View
+      android:id="@+id/toolbarDivider"
+      android:layout_width="0dp"
+      android:layout_height="1dp"
+      android:background="#E6EAF0"
+      app:layout_constraintTop_toBottomOf="@id/headerLayout"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+
+  <!-- ========================================================= -->
+  <!-- CONTENT SCROLL -->
+  <!-- ========================================================= -->
+
+  <ScrollView
+      android:id="@+id/scrollView"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:fillViewport="true"
+      android:clipToPadding="false"
+      android:paddingBottom="90dp"
+      app:layout_constraintTop_toBottomOf="@id/headerLayout"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+      <!-- ================================================= -->
+      <!-- PAYMENT CARD -->
+      <!-- ================================================= -->
+
+      <LinearLayout
+          android:id="@+id/paymentCard"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="12dp"
+          android:layout_marginTop="16dp"
+          android:layout_marginEnd="12dp"
+          android:orientation="vertical"
+          android:padding="12dp"
+          android:background="@drawable/bg_payment_container">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment Collection:"
+            android:textColor="#17243A"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- ================================================= -->
+        <!-- CASH TO EXPERT -->
+        <!-- ================================================= -->
+
+        <!-- ================================================= -->
+        <!-- CASH TO EXPERT -->
+        <!-- ================================================= -->
+
+        <LinearLayout
+            android:id="@+id/paymentCash"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:background="@drawable/bg_payment_option">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivCashIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/cash"
+                app:tint="#243249"
+                android:contentDescription="Cash" />
+
+            <TextView
+                android:id="@+id/tvCashTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Pay Cash"
+                android:textColor="#243249"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+          </LinearLayout>
+
+          <TextView
+              android:id="@+id/tvCashDesc"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="6dp"
+              android:text="There's No extra click or extra step, simplest way to pay after the session relax now no need to hurry"
+              android:textColor="#273448"
+              android:textSize="10sp"
+              android:visibility="gone"
+              android:lineSpacingExtra="2dp" />
+
+        </LinearLayout>
+
+        <!-- ================================================= -->
+        <!-- PAY ONLINE -->
+        <!-- ================================================= -->
+
+        <LinearLayout
+            android:id="@+id/paymentOnline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:background="@drawable/bg_payment_option">
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivOnlineIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_online"
+                app:tint="#243249"
+                android:contentDescription="Online" />
+
+            <TextView
+                android:id="@+id/tvOnlineTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Pay Online"
+                android:textColor="#243249"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+          </LinearLayout>
+
+          <TextView
+              android:id="@+id/tvOnlineDesc"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="6dp"
+              android:text="Use contactless online payment method in a single one extra tab"
+              android:textColor="#273448"
+              android:textSize="10sp"
+              android:visibility="gone"
+              android:lineSpacingExtra="2dp" />
+
+        </LinearLayout>
+
+        <!-- ================================================= -->
+        <!-- PAY ONLINE AFTER MASSAGE -->
+        <!-- ================================================= -->
+
+        <LinearLayout
+            android:id="@+id/paymentOnlineAfter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:background="@drawable/bg_payment_option">
+
+          <ImageView
+              android:id="@+id/ivOnlineAfterIcon"
+              android:layout_width="24dp"
+              android:layout_height="24dp"
+              android:src="@drawable/ic_online"
+              app:tint="#243249"
+              android:contentDescription="Online After Massage" />
+
+          <TextView
+              android:id="@+id/tvOnlineAfterTitle"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="10dp"
+              android:text="Pay Online After Massage"
+              android:textColor="#243249"
+              android:textSize="12sp"
+              android:textStyle="bold" />
+
+        </LinearLayout>
+        <!-- Divider -->
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:background="#DCE2E6" />
+
+        <!-- ================================================= -->
+        <!-- PRICE (DYNAMIC FROM CART) -->
+        <!-- ================================================= -->
+
+        <!-- Service rows (RecyclerView) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPaymentServices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:nestedScrollingEnabled="false"
+            tools:itemCount="2"
+            tools:listitem="@layout/cart_category_list" />
+
+        <!-- Service Total (Original | Discounted) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+          <TextView
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="Service Total"
+              android:textColor="#273448"
+              android:textSize="11sp"
+              android:textStyle="bold" />
+
+          <TextView
+              android:id="@+id/tvServiceOriginal"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="₹0"
+              android:textColor="#E53935"
+              android:textSize="11sp" />
+
+          <TextView
+              android:id="@+id/tvServiceDiscounted"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="12dp"
+              android:text="₹0"
+              android:textColor="#2E7D32"
+              android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- GST -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+          <TextView
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="GST 5%"
+              android:textColor="#273448"
+              android:textSize="11sp" />
+
+          <TextView
+              android:id="@+id/tvGst"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="₹0"
+              android:textColor="#273448"
+              android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Hotel Commission -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+          <TextView
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="Hotel Commission"
+              android:textColor="#273448"
+              android:textSize="11sp" />
+
+          <TextView
+              android:id="@+id/tvHotelCommission"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="₹0"
+              android:textColor="#273448"
+              android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Total Divider -->
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="7dp"
+            android:background="#CDD6DB" />
+
+        <!-- Total -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+          <TextView
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="Total Payable"
+              android:textColor="#17243A"
+              android:textSize="12sp"
+              android:textStyle="bold" />
+
+          <TextView
+              android:id="@+id/tvTotalPayable"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="₹0"
+              android:textColor="#17243A"
+              android:textSize="12sp"
+              android:textStyle="bold" />
+
+        </LinearLayout>
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </ScrollView>
+
+
+  <!-- ========================================================= -->
+  <!-- BOTTOM ACTION BAR -->
+  <!-- ========================================================= -->
+
+  <LinearLayout
+      android:id="@+id/bottomActions"
+      android:layout_width="0dp"
+      android:layout_height="70dp"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:paddingStart="12dp"
+      android:paddingEnd="12dp"
+      android:paddingTop="7dp"
+      android:paddingBottom="7dp"
+      android:background="#F7F9F9"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+
+    <TextView
+        android:id="@+id/btnConfirmDispatch"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_weight="1"
+        android:layout_marginStart="7dp"
+        android:gravity="center"
+        android:text="✓ Confirm"
+        android:textColor="@android:color/white"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:background="@drawable/bg_confirm_button"
+        android:clickable="true"
+        android:focusable="true" />
+
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

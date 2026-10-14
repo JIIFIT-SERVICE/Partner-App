@@ -26,21 +26,17 @@ class BookingAdapter(
 ) : RecyclerView.Adapter<BookingAdapter.BookingViewHolder>() {
 
     inner class BookingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // Header
         val tvBookingId: TextView = itemView.findViewById(R.id.tvBookingId)
         val tvInRoomTag: TextView = itemView.findViewById(R.id.tvInRoomTag)
         val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
         val ivOverflow: ImageView = itemView.findViewById(R.id.ivOverflow)
 
-        // Customer
         val tvCustomerName: TextView = itemView.findViewById(R.id.tvCustomerName)
         val tvRoomInfo: TextView = itemView.findViewById(R.id.tvRoomInfo)
 
-        // Date + Time
         val tvDate: TextView = itemView.findViewById(R.id.tvDate)
         val tvTime: TextView = itemView.findViewById(R.id.tvTime)
 
-        // Buttons
         val btnCall: MaterialButton = itemView.findViewById(R.id.btnCall)
         val btnViewDetails: MaterialButton = itemView.findViewById(R.id.btnViewDetails)
     }
@@ -58,10 +54,14 @@ class BookingAdapter(
         // 1. Header: Booking ID
         holder.tvBookingId.text = if (booking.bookingId.startsWith("#")) booking.bookingId else "#${booking.bookingId}"
 
-        // Service Tag (e.g. In-Room Massage)
-        val serviceText = if (booking.serviceName.isNotBlank()) booking.serviceName else "In-Room Massage"
-        holder.tvInRoomTag.text = serviceText
-        holder.tvInRoomTag.visibility = View.VISIBLE
+        // ✅ Service tag based on massage_types
+        val tagLabel = getServiceTagLabel(booking.massage_types)
+        if (tagLabel.isNullOrEmpty()) {
+            holder.tvInRoomTag.visibility = View.GONE
+        } else {
+            holder.tvInRoomTag.visibility = View.VISIBLE
+            holder.tvInRoomTag.text = tagLabel
+        }
 
         // Status Badge styling
         val statusUpper = booking.status.trim().uppercase()
@@ -105,6 +105,7 @@ class BookingAdapter(
 
         // 2. Customer Name & Room Info
         holder.tvCustomerName.text = booking.customerName
+        holder.tvRoomInfo.text = booking.room_number
 
         // Room formatting: "Room 112" with "Room " in grey and number in bold
         val rawRoom = booking.roomInfo.trim()
@@ -146,38 +147,20 @@ class BookingAdapter(
         holder.tvTime.text = if (booking.time.isNotBlank()) booking.time else "07:00 PM"
         holder.tvDate.text = booking.date
 
-        // 4. Click listeners
+        // 4. Clicks
         holder.itemView.setOnClickListener { onItemClick(booking) }
         holder.btnViewDetails.setOnClickListener { onItemClick(booking) }
+        holder.btnCall.setOnClickListener { onItemClick(booking) }
+        holder.ivOverflow.setOnClickListener { /* popup menu */ }
+    }
 
-        holder.btnCall.setOnClickListener {
-            if (booking.phone.isNotBlank()) {
-                try {
-                    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${booking.phone}"))
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    onItemClick(booking)
-                }
-            } else {
-                onItemClick(booking)
-            }
-        }
-
-        holder.ivOverflow.setOnClickListener { v ->
-            val popup = PopupMenu(context, v)
-            popup.menu.add("View Booking #${booking.bookingId}")
-            popup.menu.add("Call Customer (${booking.customerName})")
-            popup.menu.add("Room Service Desk")
-            popup.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.title) {
-                    "Call Customer (${booking.customerName})" -> {
-                        holder.btnCall.performClick()
-                    }
-                    else -> onItemClick(booking)
-                }
-                true
-            }
-            popup.show()
+    private fun getServiceTagLabel(massageTypes: String?): String? {
+        return when (massageTypes?.trim()?.lowercase()) {
+            "massage at hotel"          -> "In-Room Massage"
+            "yoga at hotel"             -> "Yoga"
+            "personal trainer at hotel" -> "Personal Trainer"
+            "ayurveda at hotel"         -> "Ayurveda"
+            else                        -> null
         }
     }
 
