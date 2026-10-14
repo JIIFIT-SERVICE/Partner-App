@@ -4,50 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="14dp"
-    android:layout_marginVertical="7dp"
-    app:cardBackgroundColor="#FFFFFF"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="0dp">
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF">
 
-    <!-- Outer card container with clean rounded stroke -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_booking_card"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- ============ 1. HEADER ROW ============ -->
+        <!-- ============ HEADER ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <!-- Booking ID (#834) -->
             <TextView
                 android:id="@+id/tvBookingId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="#834"
-                android:textColor="#0F172A"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A" />
 
-            <!-- In-Room Tag -->
-
-            <!-- Spacer -->
             <TextView
                 android:id="@+id/tvInRoomTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:text="In-Room Massage"
+                android:textColor="#1A56DB"
                 android:background="@drawable/bg_tag_blue"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="3dp"
-                android:text="In-Room Massage"
-                android:textColor="#1A56DB"
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
@@ -56,175 +49,245 @@
                 android:layout_height="1dp"
                 android:layout_weight="1" />
 
-            <!-- Pending Tag -->
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_status_pending_pill"
-                android:drawableStart="@drawable/ic_pending"
-                android:drawablePadding="5dp"
-                android:drawableTint="#B45309"
-                android:gravity="center"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
                 android:text="PENDING"
-                android:textColor="#B45309"
-                android:textSize="11sp"
+                android:drawableTint="#FF9800"
+                android:drawablePadding="4dp"
+                android:textColor="#FF9800"
+                android:background="@drawable/bg_tag_pending"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:textSize="10sp"
                 android:textStyle="bold" />
 
-            <!-- Spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-
-            <!-- 3 Dots Overflow Menu -->
             <ImageView
                 android:id="@+id/ivOverflow"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="More options"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="4dp"
                 android:padding="4dp"
                 android:src="@drawable/three_dot_black"
                 app:tint="#757575"
-                android:visibility="gone"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
                 android:contentDescription="More options" />
         </LinearLayout>
 
-        <!-- ============ 2. CUSTOMER & ROOM ROW ============ -->
+        <!-- ============ CUSTOMER INFO ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical">
 
-            <!-- Rounded Circle Avatar with Person Outline -->
             <FrameLayout
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:background="@drawable/bg_circle_light_gray">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_person"
-                    app:tint="#64748B" />
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    app:tint="#546E7A" />
             </FrameLayout>
 
-            <!-- Customer Name -->
-            <TextView
-                android:id="@+id/tvCustomerName"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Megha Sharma"
-                android:textColor="#0F172A"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <!-- Room Info (Room 112) -->
-            <TextView
-                android:id="@+id/tvRoomInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Room 112"
-                android:textColor="#64748B"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvCustomerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Megha Sharma"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:textColor="#1A1A1A" />
+
+                <TextView
+                    android:id="@+id/tvRoomInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Room 112"
+                    android:textSize="13sp"
+                    android:textColor="#757575" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- ============ 3. TIME ROW ============ -->
+        <!-- ============ DATE • TIME • DURATION PILL ============ -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_booking_time_pill"
+            android:background="@drawable/bg_rounded_light_gray"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="10dp"
-            android:paddingVertical="5dp">
+            android:paddingVertical="8dp">
 
+            <!-- Calendar Icon -->
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:src="@drawable/calendar_month_24"
                 app:tint="#546E7A" />
 
+            <!-- Date -->
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Tue, 26 Aug"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A" />
+
+            <!-- Divider Dot -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:text="•"
+                android:textSize="13sp"
+                android:textColor="#B0BEC5" />
+
+            <!-- Clock Icon -->
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@android:drawable/ic_lock_idle_alarm"
+                app:tint="#546E7A" />
+
+            <!-- Time -->
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="07:00 PM"
-                android:textColor="#1E293B"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textSize="13sp"
+                android:textColor="#1A1A1A" />
 
-            <!-- Kept for compatibility -->
+            <!-- Spacer (pushes duration chip to the right) -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Duration Chip -->
             <TextView
-                android:id="@+id/tvDate"
+                android:id="@+id/tvTotalDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:text="1h 30m"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#1A56DB"
+                android:background="@drawable/bg_tag_blue"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:drawablePadding="4dp"
+                app:drawableStartCompat="@android:drawable/ic_lock_idle_alarm"
+                app:drawableTint="#1A56DB" />
         </LinearLayout>
 
-        <!-- ============ 4. ACTION BUTTONS ROW ============ -->
+        <!-- ============ ASSIGNED EXPERT ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_rounded_light_gray"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="10dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCall"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_weight="1"
-                android:text="Call Client"
-                android:textAllCaps="false"
-                android:textColor="@color/hotel_primary"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.02"
-                app:backgroundTint="#EFF6FF"
-                app:cornerRadius="12dp"
-                app:elevation="0dp"
-                app:icon="@drawable/baseline_call_24"
-                app:iconGravity="textStart"
-                app:iconPadding="6dp"
-                app:iconSize="18dp"
-                app:iconTint="@color/hotel_primary"
-                app:strokeColor="@color/hotel_primary"
-                app:strokeWidth="1.2dp" />
+            <!-- Expert Avatar -->
+            <FrameLayout
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_circle_expert_photo">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnViewDetails"
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:shimmer_auto_start="true">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white" />
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <ImageView
+                    android:id="@+id/ivExpertAvatar"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_avatar_placeholder"
+                    android:contentDescription="Expert avatar"
+                    app:tint="@null" />
+            </FrameLayout>
+
+            <!-- Expert Name + Role -->
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_marginStart="10dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="View Details"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.02"
-                app:backgroundTint="@color/hotel_primary"
-                app:cornerRadius="12dp"
-                app:elevation="0dp"
-                app:icon="@drawable/ic_eye"
-                app:iconGravity="textStart"
-                app:iconPadding="6dp"
-                app:iconSize="18dp"
-                app:iconTint="#FFFFFF" />
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Assigned Expert"
+                    android:textSize="11sp"
+                    android:textColor="#757575" />
+
+                <TextView
+                    android:id="@+id/tvExpertName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Jakir Hosen"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#1A1A1A" />
+            </LinearLayout>
         </LinearLayout>
+
+        <!-- ============ ACTION BUTTON ============ -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCall"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="16dp"
+            android:text="Call Expert"
+            android:textSize="13sp"
+            android:textAllCaps="true"
+            android:textColor="#1A56DB"
+            app:icon="@drawable/baseline_call_24"
+            app:iconSize="13sp"
+            app:iconTint="#1A56DB"
+            app:iconGravity="textStart"
+            app:iconPadding="6dp"
+            app:backgroundTint="#FFFFFF"
+            app:strokeColor="#1A56DB"
+            app:strokeWidth="1dp"
+            app:cornerRadius="10dp"
+            app:elevation="0dp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

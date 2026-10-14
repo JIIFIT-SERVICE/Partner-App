@@ -100,6 +100,9 @@ class Expert_activity : AppCompatActivity() {
     // =====================================================
     private var guestName: String = ""
     private var guestMobile: String = ""
+    private var country_Code: String = ""
+    private var Mobile: String = ""
+
     private var roomId: String = ""
     private var roomNumber: String = ""
     private var floorWing: String = ""
@@ -223,7 +226,11 @@ class Expert_activity : AppCompatActivity() {
 
         // ----- Guest / room / flags -----
         guestName     = intent.getStringExtra("guest_name")      ?: ""
-        guestMobile   = intent.getStringExtra("guest_mobile")    ?: ""
+        guestMobile   = intent.getStringExtra("guest_mobile_full")    ?: ""
+        country_Code  = intent.getStringExtra("country_code").orEmpty()
+        Mobile = intent.getStringExtra("guest_mobile").orEmpty()
+
+
         roomId        = intent.getStringExtra("room_id")         ?: ""
         roomNumber    = intent.getStringExtra("room_number")     ?: ""
         floorWing     = intent.getStringExtra("floor_wing")      ?: ""
@@ -244,7 +251,9 @@ class Expert_activity : AppCompatActivity() {
 
         // ----- Debug -----
         Log.d("EXPERT_INTENT", "guest_name     = $guestName")
-        Log.d("EXPERT_INTENT", "guest_mobile   = $guestMobile")
+        Log.d("EXPERT_INTENT", "guest_mobile_with_Full   = $guestMobile")
+        Log.d("EXPERT_INTENT", "country_code   = $country_Code")
+        Log.d("EXPERT_INTENT", "guest_mobile   = $Mobile")
         Log.d("EXPERT_INTENT", "room_id        = $roomId")
         Log.d("EXPERT_INTENT", "room_number    = $roomNumber")
         Log.d("EXPERT_INTENT", "floor_wing     = $floorWing")
@@ -568,7 +577,10 @@ class Expert_activity : AppCompatActivity() {
 
         // ----- Guest / Room / Flags forwarded from Slot_activity -----
         intent.putExtra("guest_name",      guestName)
-        intent.putExtra("guest_mobile",    guestMobile)
+        intent.putExtra("guest_mobile_full", guestMobile)
+        intent.putExtra("country_code", country_Code)
+        intent.putExtra("guest_mobile", Mobile)
+
         intent.putExtra("room_id",         roomId)
         intent.putExtra("room_number",     roomNumber)
         intent.putExtra("floor_wing",      floorWing)

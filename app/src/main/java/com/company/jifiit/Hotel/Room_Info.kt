@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
@@ -27,6 +28,8 @@ import java.math.BigInteger
 
 class Room_Info : AppCompatActivity() {
 
+    private val TAG = "Room_Info"
+
     private lateinit var btnBack: ImageView
 
     private lateinit var etGuestName: EditText
@@ -36,7 +39,6 @@ class Room_Info : AppCompatActivity() {
 
     private lateinit var countryCodePicker: CountryCodePicker
     private lateinit var btnContinue: MaterialButton
-    var phone: String = ""
 
     // =====================================================
     // ROOM DATA
@@ -82,6 +84,7 @@ class Room_Info : AppCompatActivity() {
             )
             insets
         }
+
         service = intent.getStringExtra("SELECTED_SERVICE") ?: ""
 
         val spCred = getSharedPreferences("credentials", MODE_PRIVATE)
@@ -92,6 +95,7 @@ class Room_Info : AppCompatActivity() {
         } catch (e: NumberFormatException) {
             BigInteger.ZERO
         }
+
         // =====================================================
         // FIND VIEWS
         // =====================================================
@@ -103,11 +107,9 @@ class Room_Info : AppCompatActivity() {
         etFloorWing = findViewById(R.id.etFloorWing)
         etGuestMobile = findViewById(R.id.etGuestMobile)
 
-        countryCodePicker =
-            findViewById(R.id.login_countrycode)
+        countryCodePicker = findViewById(R.id.login_countrycode)
 
-        btnContinue =
-            findViewById(R.id.btnContinue)
+        btnContinue = findViewById(R.id.btnContinue)
 
         // =====================================================
         // COUNTRY CODE
@@ -137,7 +139,6 @@ class Room_Info : AppCompatActivity() {
                 R.anim.slide_in_left,
                 R.anim.slide_out_right
             )
-            // অথবা সরাসরি: finish()
         }
 
         // =====================================================
@@ -145,22 +146,16 @@ class Room_Info : AppCompatActivity() {
         // =====================================================
 
         btnContinue.setOnClickListener {
-
             validateAndContinue()
-
         }
+
         countryCodePicker.setDialogBackgroundColor(Color.WHITE)
         countryCodePicker.setDialogTextColor(Color.BLACK)
-
     }
 
     // =========================================================
     // SETUP ROOM DROPDOWN
     // =========================================================
-
-    // =========================================================
-// SETUP ROOM DROPDOWN
-// =========================================================
 
     private fun setupRoomDropdown() {
 
@@ -177,25 +172,12 @@ class Room_Info : AppCompatActivity() {
             ): android.view.View {
 
                 val view = super.getView(position, convertView, parent)
-
                 val textView = view as android.widget.TextView
 
-                // Dropdown background
                 view.setBackgroundColor(Color.WHITE)
-
-                // Dropdown text
                 textView.setTextColor(Color.BLACK)
-
-                // Text size
                 textView.textSize = 15f
-
-                // Padding
-                textView.setPadding(
-                    20,
-                    18,
-                    20,
-                    18
-                )
+                textView.setPadding(20, 18, 20, 18)
 
                 return view
             }
@@ -213,18 +195,13 @@ class Room_Info : AppCompatActivity() {
 
                 selectedRoom = roomList[position]
 
-                // Selected room number
                 etRoomNumber.setText(
                     selectedRoom?.roomNumber ?: "",
                     false
                 )
 
-                // Dropdown closed
                 etRoomNumber.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.arrow_down,
-                    0
+                    0, 0, R.drawable.arrow_down, 0
                 )
             }
         }
@@ -236,43 +213,26 @@ class Room_Info : AppCompatActivity() {
         etRoomNumber.setOnClickListener {
 
             if (roomList.isEmpty()) {
-
                 Toast.makeText(
                     this,
                     "No rooms available",
                     Toast.LENGTH_SHORT
                 ).show()
-
             } else {
 
                 if (etRoomNumber.isPopupShowing) {
 
-                    // -----------------------------------------
-                    // DROPDOWN IS OPEN → CLOSE IT
-                    // -----------------------------------------
-
                     etRoomNumber.dismissDropDown()
 
                     etRoomNumber.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.arrow_down,
-                        0
+                        0, 0, R.drawable.arrow_down, 0
                     )
-
                 } else {
-
-                    // -----------------------------------------
-                    // DROPDOWN IS CLOSED → OPEN IT
-                    // -----------------------------------------
 
                     etRoomNumber.showDropDown()
 
                     etRoomNumber.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.arrow_up,
-                        0
+                        0, 0, R.drawable.arrow_up, 0
                     )
                 }
             }
@@ -283,12 +243,8 @@ class Room_Info : AppCompatActivity() {
         // =====================================================
 
         etRoomNumber.setOnDismissListener {
-
             etRoomNumber.setCompoundDrawablesWithIntrinsicBounds(
-                0,
-                0,
-                R.drawable.arrow_down,
-                0
+                0, 0, R.drawable.arrow_down, 0
             )
         }
     }
@@ -301,68 +257,48 @@ class Room_Info : AppCompatActivity() {
 
         val request = StringRequest(
             Request.Method.GET,
-            Constant.GET_HOTEL_ROOMS_API+Id,
+            Constant.GET_HOTEL_ROOMS_API + Id,
 
             { response ->
 
                 try {
 
-                    val jsonObject =
-                        JSONObject(response)
-
-                    val status =
-                        jsonObject.optBoolean("status", false)
+                    val jsonObject = JSONObject(response)
+                    val status = jsonObject.optBoolean("status", false)
 
                     if (!status) {
-
                         Toast.makeText(
                             this,
-                            jsonObject.optString(
-                                "message",
-                                "Unable to load rooms"
-                            ),
+                            jsonObject.optString("message", "Unable to load rooms"),
                             Toast.LENGTH_SHORT
                         ).show()
-
                         return@StringRequest
                     }
 
-                    val dataArray =
-                        jsonObject.optJSONArray("data")
+                    val dataArray = jsonObject.optJSONArray("data")
 
                     roomList.clear()
-
                     roomAdapter.clear()
 
                     if (dataArray != null) {
-
                         for (i in 0 until dataArray.length()) {
 
-                            val item =
-                                dataArray.getJSONObject(i)
+                            val item = dataArray.getJSONObject(i)
 
                             val room = RoomModel(
-
                                 id = item.optString("id"),
-
-                                roomNumber =
-                                item.optString("room_number")
+                                roomNumber = item.optString("room_number")
                             )
 
                             roomList.add(room)
-
-                            roomAdapter.add(
-                                room.roomNumber
-                            )
+                            roomAdapter.add(room.roomNumber)
                         }
                     }
 
                     roomAdapter.notifyDataSetChanged()
 
                 } catch (e: Exception) {
-
                     e.printStackTrace()
-
                     Toast.makeText(
                         this,
                         "Invalid server response",
@@ -372,9 +308,7 @@ class Room_Info : AppCompatActivity() {
             },
 
             { error ->
-
                 error.printStackTrace()
-
                 Toast.makeText(
                     this,
                     "Failed to load rooms",
@@ -383,9 +317,7 @@ class Room_Info : AppCompatActivity() {
             }
         )
 
-        Volley
-            .newRequestQueue(this)
-            .add(request)
+        Volley.newRequestQueue(this).add(request)
     }
 
     // =========================================================
@@ -394,29 +326,18 @@ class Room_Info : AppCompatActivity() {
 
     private fun validateAndContinue() {
 
-        val guestName =
-            etGuestName.text.toString().trim()
-
-        val roomNumber =
-            etRoomNumber.text.toString().trim()
-
-        val floorWing =
-            etFloorWing.text.toString().trim()
-
-        val mobile =
-            etGuestMobile.text.toString().trim()
+        val guestName = etGuestName.text.toString().trim()
+        val roomNumber = etRoomNumber.text.toString().trim()
+        val floorWing = etFloorWing.text.toString().trim()
+        val mobile = etGuestMobile.text.toString().trim()
 
         // =====================================================
         // GUEST NAME
         // =====================================================
 
         if (guestName.isEmpty()) {
-
-            etGuestName.error =
-                "Enter guest name"
-
+            etGuestName.error = "Enter guest name"
             etGuestName.requestFocus()
-
             return
         }
 
@@ -425,23 +346,14 @@ class Room_Info : AppCompatActivity() {
         // =====================================================
 
         if (roomNumber.isEmpty()) {
-
-            etRoomNumber.error =
-                "Select room number"
-
+            etRoomNumber.error = "Select room number"
             etRoomNumber.requestFocus()
-
             return
         }
 
-        // Make sure room was actually selected
         if (selectedRoom == null) {
-
-            etRoomNumber.error =
-                "Please select a room from the list"
-
+            etRoomNumber.error = "Please select a room from the list"
             etRoomNumber.requestFocus()
-
             return
         }
 
@@ -450,42 +362,55 @@ class Room_Info : AppCompatActivity() {
         // =====================================================
 
         if (mobile.isEmpty()) {
-
-            etGuestMobile.error =
-                "Enter mobile number"
-
+            etGuestMobile.error = "Enter mobile number"
             etGuestMobile.requestFocus()
-
             return
         }
-
-        // =====================================================
-        // MOBILE VALIDATION
-        // =====================================================
 
         if (!countryCodePicker.isValidFullNumber) {
-
-            etGuestMobile.error =
-                "Enter a valid mobile number"
-
+            etGuestMobile.error = "Enter a valid mobile number"
             etGuestMobile.requestFocus()
-
             return
+        }
+        val countryCodeWithPlus = "+" + countryCodePicker.selectedCountryCode
+
+        // Full number with "+" (kept for backward compat)
+        val fullMobileNumber = countryCodePicker.fullNumberWithPlus
+
+        // Digits only → "918927419800"
+        val digitsOnly = countryCodePicker.fullNumber.replace(Regex("[^0-9]"), "")
+
+        // Country-code digits only → "91"
+        val codeDigitsOnly = countryCodePicker.selectedCountryCode
+            .replace(Regex("[^0-9]"), "")
+
+        // Strip the country-code prefix from the front
+        val phoneNumberOnly: String = if (
+            codeDigitsOnly.isNotEmpty() && digitsOnly.startsWith(codeDigitsOnly)
+        ) {
+            digitsOnly.substring(codeDigitsOnly.length)
+        } else {
+            digitsOnly
         }
 
         // =====================================================
-        // COMPLETE MOBILE
+        // DEBUG LOGS
         // =====================================================
 
-        val fullMobileNumber =
-            countryCodePicker.fullNumberWithPlus
+        Log.d(TAG, "raw fullNumber       = ${countryCodePicker.fullNumber}")
+        Log.d(TAG, "raw fullNumberWithPlus= ${countryCodePicker.fullNumberWithPlus}")
+        Log.d(TAG, "selectedCountryCode  = ${countryCodePicker.selectedCountryCode}")
+        Log.d(TAG, "digitsOnly           = $digitsOnly")
+        Log.d(TAG, "codeDigitsOnly       = $codeDigitsOnly")
+        Log.d(TAG, "country_code (PUT)   = $countryCodeWithPlus")
+        Log.d(TAG, "guest_mobile (PUT)   = $phoneNumberOnly")
+        Log.d(TAG, "guest_mobile_full    = $fullMobileNumber")
 
         // =====================================================
         // SELECTED ROOM
         // =====================================================
 
-        val selectedRoomData =
-            selectedRoom ?: return
+        val selectedRoomData = selectedRoom ?: return
 
         // =====================================================
         // INTENT
@@ -494,29 +419,17 @@ class Room_Info : AppCompatActivity() {
         val intent = Intent(this, Preference_Bed::class.java)
 
         // Guest
-        intent.putExtra(
-            "guest_name",
-            guestName
-        )
-
-        intent.putExtra(
-            "guest_mobile",
-            fullMobileNumber
-        )
+        intent.putExtra("guest_name", guestName)
+        intent.putExtra("guest_mobile", phoneNumberOnly)       // e.g. 8927419800
+        intent.putExtra("country_code", countryCodeWithPlus)   // e.g. +91
+        intent.putExtra("guest_mobile_full", fullMobileNumber) // e.g. +918927419800
 
         // Room
-        intent.putExtra(
-            "room_id",
-            selectedRoomData.id
-        )
-
-        intent.putExtra(
-            "room_number",
-            selectedRoomData.roomNumber
-        )
-
+        intent.putExtra("room_id", selectedRoomData.id)
+        intent.putExtra("room_number", selectedRoomData.roomNumber)
         intent.putExtra("floor_wing", floorWing)
         intent.putExtra("SELECTED_SERVICE", service)
+
         startActivity(intent)
 
         overridePendingTransition(
@@ -531,9 +444,7 @@ class Room_Info : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-
         super.onBackPressed()
-
         overridePendingTransition(
             R.anim.slide_in_left,
             R.anim.slide_out_right
