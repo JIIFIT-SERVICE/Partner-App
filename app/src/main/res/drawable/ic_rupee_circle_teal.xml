@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
+    <!-- Blue circle -->
+    <path
+        android:fillColor="#1D4ED8"
+        android:pathData="M14,0C6.27,0 0,6.27 0,14s6.27,14 14,14 14,-6.27 14,-14S21.73,0 14,0z" />
+    <!-- Light blue rupee symbol -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M15.3,10.2c-0.4,-0.8 -1.2,-1.4 -2.6,-1.4h-2.8V7.4h8.4V6h-8.4V4.6h-1.4v1.4H6.5v1.4h2v1.4H6.5v1.4h2c0.2,2 1.8,3.5 4.2,3.5h1.2l-5,4.9H11l5.2,-5.1c0.4,-0.4 0.6,-0.8 0.7,-1.2L15.3,10.2z" />
+</vector>
