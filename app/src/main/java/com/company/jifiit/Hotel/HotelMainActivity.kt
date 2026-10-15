@@ -296,11 +296,55 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         if (bookingList.isEmpty()) {
             bookingList.addAll(getDefaultDemoBookings())
         }
-        bookingAdapter = BookingAdapter(bookingList) { booking ->
-            showBookingDetailsDialog(booking)
-        }
+
+        bookingAdapter = BookingAdapter(
+            bookingList = bookingList,
+            onItemClick = { booking -> showBookingDetailsDialog(booking) },
+            actionListener = object : BookingAdapter.BookingActionListener {
+                override fun onBookingUpdated() {
+                    runOnUiThread {
+                        refreshCurrentTab()
+                    }
+                }
+            }
+        )
+
         recyclerView.adapter = bookingAdapter
         recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun refreshCurrentTab() {
+        val savedButton = sp.getString("selected_button", "today") ?: "today"
+        val savedCal    = sp.getString("selected_calendar_date", "") ?: ""
+
+        when (savedButton) {
+            "today" -> {
+                selectDatePill("today")
+                fetchBookings(Id, "today")
+            }
+            "tomorrow" -> {
+                selectDatePill("tomorrow")
+                fetchBookings(Id, "tomorrow")
+            }
+            "yesterday" -> {
+                selectDatePill("yesterday")
+                fetchBookings(Id, "yesterday")
+            }
+            "calender" -> {
+                if (savedCal.isNotEmpty()) {
+                    fetchBookings(Id, "specific_date", savedCal)
+                    deselectAllPills()
+                    activateCalendarIcon()
+                } else {
+                    selectDatePill("today")
+                    fetchBookings(Id, "today")
+                }
+            }
+            else -> {
+                selectDatePill("today")
+                fetchBookings(Id, "today")
+            }
+        }
     }
 
     private fun getDefaultDemoBookings(): List<BookingModel> {
@@ -665,6 +709,7 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                                 val expertName = bookingObject.optString("expert_name", "")
                                 val totalDuration = bookingObject.optString("duration", "")
                                 val image      = bookingObject.optString("exper_photo", "")
+                                val expertId      = bookingObject.optString("expert_id", "")
 
                                 Log.d("FetchBookings", "massage_types='$massage_types'")
 
@@ -683,7 +728,8 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                                         expertName = expertName,
                                         duration = totalDuration,
                                         image = image,
-                                        EndTime = endTime
+                                        EndTime = endTime,
+                                        ExpertId = expertId
                                     )
                                 )
                             }
@@ -894,24 +940,8 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         updateNavHeaderBranchInfo()
 
-        currentSelectedButton = sp.getString("selected_button", "today") ?: "today"
-        selectedCalendarDate  = sp.getString("selected_calendar_date", "") ?: ""
-
-        when (currentSelectedButton) {
-            "today"     -> tvToday.performClick()
-            "tomorrow"  -> tvTomorrow.performClick()
-            "yesterday" -> tvYesterday.performClick()
-            "calender"  -> {
-                if (selectedCalendarDate.isNotEmpty()) {
-                    fetchBookings(Id, "specific_date", selectedCalendarDate)
-                    deselectAllPills()
-                    activateCalendarIcon()
-                } else {
-                    tvToday.performClick()
-                }
-            }
-            else -> tvToday.performClick()
-        }
+        // ✅ Single source of truth for refreshing bookings
+        refreshCurrentTab()
     }
 
     // ============================================================
