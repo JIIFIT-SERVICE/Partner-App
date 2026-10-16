@@ -202,6 +202,8 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                     if (status.equals("success", ignoreCase = true) && dataArray != null && dataArray.length() > 0) {
                         for (i in 0 until dataArray.length()) {
                             val obj = dataArray.getJSONObject(i)
+                            val rawMassageType = obj.optString("massage_types", "")
+                            val sName = if (rawMassageType.isNotBlank()) rawMassageType else obj.optString("service_name", "In-Room Massage")
                             allHistoryBookings.add(
                                 BookingModel(
                                     bookingId = obj.optString("id", "${800 + i}"),
@@ -211,8 +213,10 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                                     roomInfo = obj.optString("landmark", "Room ${101 + i}"),
                                     date = obj.optString("booking_date", "Tue, 26 Aug"),
                                     time = obj.optString("start_time", "01:00 PM"),
-                                    serviceName = "In-Room Massage",
-                                    phone = "+91 98765 43210"
+                                    room_number = obj.optString("room_number", obj.optString("landmark", "")),
+                                    massage_types = rawMassageType,
+                                    serviceName = sName,
+                                    phone = obj.optString("phone", "+91 98765 43210")
                                 )
                             )
                         }
@@ -250,6 +254,8 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 roomInfo = "112",
                 date = "Tue, 26 Aug",
                 time = "07:00 PM",
+                room_number = "112",
+                massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
                 phone = "+91 98765 43210"
             ),
@@ -261,6 +267,8 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 roomInfo = "304",
                 date = "Tue, 26 Aug",
                 time = "01:00 PM",
+                room_number = "304",
+                massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
                 phone = "+91 98765 43211"
             ),
@@ -272,6 +280,8 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 roomInfo = "205",
                 date = "Mon, 25 Aug",
                 time = "08:00 AM",
+                room_number = "205",
+                massage_types = "yoga at hotel",
                 serviceName = "In-Room Yoga",
                 phone = "+91 98765 43212"
             ),
@@ -283,6 +293,8 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 roomInfo = "410",
                 date = "Sun, 24 Aug",
                 time = "04:30 PM",
+                room_number = "410",
+                massage_types = "ayurveda at hotel",
                 serviceName = "Ayurveda Session",
                 phone = "+91 98765 43213"
             ),
@@ -294,6 +306,8 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 roomInfo = "101",
                 date = "Sat, 23 Aug",
                 time = "06:00 PM",
+                room_number = "101",
+                massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
                 phone = "+91 98765 43214"
             )

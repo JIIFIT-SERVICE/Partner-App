@@ -108,7 +108,7 @@ class BookingAdapter(
         holder.tvRoomInfo.text = booking.room_number
 
         // Room formatting: "Room 112" with "Room " in grey and number in bold
-        val rawRoom = booking.roomInfo.trim()
+        val rawRoom = if (booking.room_number.isNotBlank()) booking.room_number.trim() else booking.roomInfo.trim()
         val roomNumber = if (rawRoom.startsWith("Room", ignoreCase = true)) {
             rawRoom.replace(Regex("(?i)^Room\\s*"), "")
         } else {

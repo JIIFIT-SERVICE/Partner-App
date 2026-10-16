@@ -2,12 +2,14 @@ package com.company.jifiit.Hotel
 
 data class BookingModel(
     val bookingId: String,
-    val isInRoom: Boolean,
+    val isInRoom: Boolean = true,
     val status: String,
     val customerName: String,
     val roomInfo: String,
     val date: String,
     val time: String,
-    val room_number: String,
-    val massage_types: String
+    val room_number: String = "",
+    val massage_types: String = "",
+    val serviceName: String = "",
+    val phone: String = ""
 )

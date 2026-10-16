@@ -327,6 +327,8 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 roomInfo = "112",
                 date = "Tue, 26 Aug",
                 time = "07:00 PM",
+                room_number = "112",
+                massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
                 phone = "+91 98765 43210"
             ),
@@ -338,6 +340,8 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 roomInfo = "304",
                 date = "Tue, 26 Aug",
                 time = "01:00 PM",
+                room_number = "304",
+                massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
                 phone = "+91 98765 43211"
             )

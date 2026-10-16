@@ -90,8 +90,7 @@
                 android:padding="4dp"
                 android:src="@drawable/three_dot_black"
                 app:tint="#757575"
-                android:visibility="gone"
-                android:contentDescription="More options" />
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- ============ 2. CUSTOMER & ROOM ROW ============ -->
