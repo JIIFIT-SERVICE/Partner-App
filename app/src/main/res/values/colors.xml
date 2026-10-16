@@ -198,4 +198,6 @@
     <color name="PrimaryBlue">#005DCC</color>
     <color name="DarkText">#243249</color>
     <color name="BodyText">#273448</color>
+
+    <color name="field_bg">#F8FAFC</color>
 </resources>

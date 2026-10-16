@@ -454,6 +454,8 @@
             android:name=".Register"
             android:exported="false"
             android:label=""
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
