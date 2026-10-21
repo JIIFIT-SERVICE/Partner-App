@@ -14,5 +14,9 @@ data class BookingModel(
     val phone: String = "",
     val expertName: String = "",
     val expertPhoto: String = "",
-    val commissionAmount: String = "₹100"
+    val commissionAmount: String = "₹100",
+    val client_number: String = "",
+    val duration: String = "",
+    val image: String = "",
+    val EndTime: String = ""
 )

@@ -3,6 +3,7 @@ package com.company.jifiit.Hotel
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
@@ -32,6 +33,8 @@ class Slot_activity : AppCompatActivity() {
 
     private lateinit var guestName: String
     private lateinit var guestMobile: String
+    private lateinit var country_Code: String
+    private lateinit var Mobile: String
 
     // =====================================================
     // ROOM DATA
@@ -178,9 +181,12 @@ class Slot_activity : AppCompatActivity() {
         guestName =
             intent.getStringExtra("guest_name").orEmpty()
 
-        guestMobile =
-            intent.getStringExtra("guest_mobile").orEmpty()
+        guestMobile = intent.getStringExtra("guest_mobile_full").orEmpty()
+        country_Code  = intent.getStringExtra("country_code").orEmpty()
+        Mobile = intent.getStringExtra("guest_mobile").orEmpty()
 
+        Log.d("Preference_Bed", "country_code: $country_Code")
+        Log.d("Preference_Bed", "mobile: $Mobile")
 
         // Room
         roomId =
@@ -265,7 +271,10 @@ class Slot_activity : AppCompatActivity() {
             val intent = Intent(this, Expert_activity::class.java)
 
             intent.putExtra("guest_name", guestName)
-            intent.putExtra("guest_mobile", guestMobile)
+            intent.putExtra("guest_mobile_full", guestMobile)
+            intent.putExtra("country_code", country_Code)
+            intent.putExtra("guest_mobile", Mobile)
+
             intent.putExtra("room_id", roomId)
             intent.putExtra("room_number", roomNumber)
             intent.putExtra("floor_wing", floorWing)
