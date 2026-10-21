@@ -11,5 +11,8 @@ data class BookingModel(
     val room_number: String = "",
     val massage_types: String = "",
     val serviceName: String = "",
-    val phone: String = ""
+    val phone: String = "",
+    val expertName: String = "",
+    val expertPhoto: String = "",
+    val commissionAmount: String = "₹100"
 )

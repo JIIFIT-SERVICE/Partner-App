@@ -22,88 +22,139 @@
             android:id="@+id/layoutHotelHeader"
             layout="@layout/layout_hotel_header" />
 
-        <!-- Header Section (Matching Reference Design) -->
+        <!-- Header Section (Requirements 5 & 7) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="14dp">
+            android:paddingTop="14dp"
+            android:paddingBottom="12dp">
 
-            <TextView
-                android:id="@+id/tvHistoryTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="All Historical Bookings (5 Sessions)"
-                android:textColor="#0F172A"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvHistorySubtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="All past and completed room sessions for Grand Orchid Hotel"
-                android:textColor="#64748B"
-                android:textSize="13sp" />
-
-            <!-- Filter Tabs Row (All / Completed / Pending) -->
+            <!-- Title & Commission History Action Button -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- Heading Booking History without subtitles (Requirement 5) -->
                 <TextView
-                    android:id="@+id/filterAll"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvHistoryTitle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_pill_selected"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="7dp"
-                    android:text="All (5)"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
+                    android:layout_weight="1"
+                    android:text="Booking History"
+                    android:textColor="#0F172A"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/filterCompleted"
+                <!-- Commission History Quick Action Button (Requirement 7) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCommissionHistory"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_pill_unselected"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="7dp"
-                    android:text="Completed (3)"
-                    android:textColor="#475569"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/filterPending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_pill_unselected"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="7dp"
-                    android:text="Pending (2)"
-                    android:textColor="#475569"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:layout_height="38dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Commission History"
+                    android:textAllCaps="false"
+                    android:textColor="@color/hotel_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="10dp"
+                    app:icon="@drawable/rupee_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="4dp"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/hotel_primary"
+                    app:strokeColor="#CBD5E1"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
+
+            <!-- Filter Tabs Row (All / Completed / Pending / Cancelled - Requirements 3 & 4) -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:fillViewport="true"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Filter All -->
+                    <TextView
+                        android:id="@+id/filterAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill_selected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="7dp"
+                        android:text="All"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- Filter Completed (Requirement 3: UI changes in complete button) -->
+                    <TextView
+                        android:id="@+id/filterCompleted"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_pill_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="7dp"
+                        android:text="Completed"
+                        android:textColor="#475569"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- Filter Pending -->
+                    <TextView
+                        android:id="@+id/filterPending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_pill_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="7dp"
+                        android:text="Pending"
+                        android:textColor="#475569"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- Filter Cancelled (Requirement 4: add filter through cancel button) -->
+                    <TextView
+                        android:id="@+id/filterCancelled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_pill_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="7dp"
+                        android:text="Cancelled"
+                        android:textColor="#475569"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </HorizontalScrollView>
         </LinearLayout>
 
         <!-- Divider line -->
@@ -156,7 +207,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Completed and past guest sessions will appear here."
+                    android:text="Completed, pending, and cancelled bookings will appear here."
                     android:textColor="#64748B"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -175,14 +226,31 @@
 
     </LinearLayout>
 
-    <!-- Side Navigation Drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+    <!-- NAVIGATION DRAWER -->
+    <LinearLayout
+        android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/white"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/hotel_nav_header_drawer"
-        app:menu="@menu/hotel_menu_drawer" />
+        android:orientation="vertical">
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            app:headerLayout="@layout/hotel_nav_header_drawer"
+            app:menu="@menu/hotel_menu_drawer"
+            app:itemTextColor="@color/nav_menu_item_text_color"
+            app:itemIconTint="@color/nav_menu_item_icon_tint"
+            app:itemShapeFillColor="@color/nav_menu_item_shape_color"
+            app:itemHorizontalPadding="16dp"
+            app:itemVerticalPadding="4dp"/>
+
+        <include layout="@layout/nav_footer_drawer" />
+
+    </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

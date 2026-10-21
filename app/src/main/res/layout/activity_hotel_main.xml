@@ -452,13 +452,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/white"
             app:headerLayout="@layout/hotel_nav_header_drawer"
             app:menu="@menu/hotel_menu_drawer"
-            app:itemTextColor="@color/black"
-            app:itemIconTint="@color/Text_Blue"
+            app:itemTextColor="@color/nav_menu_item_text_color"
+            app:itemIconTint="@color/nav_menu_item_icon_tint"
+            app:itemShapeFillColor="@color/nav_menu_item_shape_color"
             app:itemHorizontalPadding="16dp"
-            app:itemVerticalPadding="4dp"
-            android:background="@color/white"/>
+            app:itemVerticalPadding="4dp"/>
 
         <include layout="@layout/nav_footer_drawer" />
 

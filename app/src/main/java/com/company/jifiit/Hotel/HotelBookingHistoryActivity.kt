@@ -3,11 +3,9 @@ package com.company.jifiit.Hotel
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -35,10 +33,11 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
     private lateinit var drawerLayout: androidx.drawerlayout.widget.DrawerLayout
     private lateinit var navView: com.google.android.material.navigation.NavigationView
     private lateinit var tvHistoryTitle: TextView
-    private lateinit var tvHistorySubtitle: TextView
+    private lateinit var btnCommissionHistory: View
     private lateinit var filterAll: TextView
     private lateinit var filterCompleted: TextView
     private lateinit var filterPending: TextView
+    private lateinit var filterCancelled: TextView
     private lateinit var rvBookingHistory: RecyclerView
     private lateinit var progressBarHistory: ProgressBar
     private lateinit var layoutEmptyHistory: View
@@ -46,7 +45,7 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
     private lateinit var bookingAdapter: BookingAdapter
     private val allHistoryBookings = mutableListOf<BookingModel>()
     private val displayedBookings = mutableListOf<BookingModel>()
-    private var currentFilter = "ALL" // "ALL" | "COMPLETED" | "PENDING"
+    private var currentFilter = "ALL" // "ALL" | "COMPLETED" | "PENDING" | "CANCELLED"
     private var hotelId: BigInteger = BigInteger.ZERO
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +53,7 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_hotel_booking_history)
 
-        // ✅ White icons on brand blue status bar matching application theme
+        // White icons on brand blue status bar matching application theme
         WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = true
@@ -91,13 +90,19 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navView = findViewById(R.id.nav_view)
         tvHistoryTitle = findViewById(R.id.tvHistoryTitle)
-        tvHistorySubtitle = findViewById(R.id.tvHistorySubtitle)
+        btnCommissionHistory = findViewById(R.id.btnCommissionHistory)
         filterAll = findViewById(R.id.filterAll)
         filterCompleted = findViewById(R.id.filterCompleted)
         filterPending = findViewById(R.id.filterPending)
+        filterCancelled = findViewById(R.id.filterCancelled)
         rvBookingHistory = findViewById(R.id.rvBookingHistory)
         progressBarHistory = findViewById(R.id.progressBarHistory)
         layoutEmptyHistory = findViewById(R.id.layoutEmptyHistory)
+
+        // Commission History click listener (Requirement 7)
+        btnCommissionHistory.setOnClickListener {
+            startActivity(Intent(this, HotelEarningsActivity::class.java))
+        }
 
         HotelHeaderHelper.setupHeader(this, drawerLayout, navView, R.id.nav_history)
     }
@@ -120,24 +125,49 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
         filterPending.setOnClickListener {
             applyFilter("PENDING")
         }
+        filterCancelled.setOnClickListener {
+            applyFilter("CANCELLED")
+        }
     }
 
     private fun applyFilter(filter: String) {
         currentFilter = filter
 
-        val activeBg = R.drawable.bg_pill_selected
-        val inactiveBg = R.drawable.bg_pill_unselected
-        val whiteColor = ContextCompat.getColor(this, android.R.color.white)
-        val darkColor = Color.parseColor("#334155")
+        val whiteColor = Color.WHITE
+        val darkColor = Color.parseColor("#475569")
 
-        filterAll.setBackgroundResource(if (filter == "ALL") activeBg else inactiveBg)
-        filterAll.setTextColor(if (filter == "ALL") whiteColor else darkColor)
+        // Reset all filter pills to unselected
+        filterAll.setBackgroundResource(R.drawable.bg_pill_unselected)
+        filterAll.setTextColor(darkColor)
 
-        filterCompleted.setBackgroundResource(if (filter == "COMPLETED") activeBg else inactiveBg)
-        filterCompleted.setTextColor(if (filter == "COMPLETED") whiteColor else darkColor)
+        filterCompleted.setBackgroundResource(R.drawable.bg_pill_unselected)
+        filterCompleted.setTextColor(darkColor)
 
-        filterPending.setBackgroundResource(if (filter == "PENDING") activeBg else inactiveBg)
-        filterPending.setTextColor(if (filter == "PENDING") whiteColor else darkColor)
+        filterPending.setBackgroundResource(R.drawable.bg_pill_unselected)
+        filterPending.setTextColor(darkColor)
+
+        filterCancelled.setBackgroundResource(R.drawable.bg_pill_unselected)
+        filterCancelled.setTextColor(darkColor)
+
+        // Highlight selected filter pill with distinct status color (Requirement 3 & 4)
+        when (filter) {
+            "ALL" -> {
+                filterAll.setBackgroundResource(R.drawable.bg_pill_selected)
+                filterAll.setTextColor(whiteColor)
+            }
+            "COMPLETED" -> {
+                filterCompleted.setBackgroundResource(R.drawable.bg_pill_completed_selected)
+                filterCompleted.setTextColor(whiteColor)
+            }
+            "PENDING" -> {
+                filterPending.setBackgroundResource(R.drawable.bg_pill_pending_selected)
+                filterPending.setTextColor(whiteColor)
+            }
+            "CANCELLED" -> {
+                filterCancelled.setBackgroundResource(R.drawable.bg_pill_cancelled_selected)
+                filterCancelled.setTextColor(whiteColor)
+            }
+        }
 
         filterAndDisplayList()
     }
@@ -150,6 +180,11 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
             }
             "PENDING" -> {
                 displayedBookings.addAll(allHistoryBookings.filter { it.status.equals("PENDING", ignoreCase = true) })
+            }
+            "CANCELLED" -> {
+                displayedBookings.addAll(allHistoryBookings.filter {
+                    it.status.equals("CANCELLED", ignoreCase = true) || it.status.equals("CANCELED", ignoreCase = true)
+                })
             }
             else -> {
                 displayedBookings.addAll(allHistoryBookings)
@@ -169,17 +204,19 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
 
     private fun updateHeaderSummary() {
         val totalSessions = allHistoryBookings.size
-        val totalCommission = totalSessions * 100 // ₹100 per session credited to hotel partner
-
-        tvHistoryTitle.text = "All Historical Bookings ($totalSessions Sessions)"
-        tvHistorySubtitle.text = "Complete audit trail of all guest sessions and ₹$totalCommission commission credits."
-
         val completedCount = allHistoryBookings.count { it.status.equals("COMPLETED", ignoreCase = true) }
         val pendingCount = allHistoryBookings.count { it.status.equals("PENDING", ignoreCase = true) }
+        val cancelledCount = allHistoryBookings.count {
+            it.status.equals("CANCELLED", ignoreCase = true) || it.status.equals("CANCELED", ignoreCase = true)
+        }
+
+        // Heading Booking History and remove subtitles (Requirement 5)
+        tvHistoryTitle.text = "Booking History"
 
         filterAll.text = "All ($totalSessions)"
         filterCompleted.text = "Completed ($completedCount)"
         filterPending.text = "Pending ($pendingCount)"
+        filterCancelled.text = "Cancelled ($cancelledCount)"
     }
 
     private fun loadHistoricalBookings() {
@@ -204,6 +241,26 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                             val obj = dataArray.getJSONObject(i)
                             val rawMassageType = obj.optString("massage_types", "")
                             val sName = if (rawMassageType.isNotBlank()) rawMassageType else obj.optString("service_name", "In-Room Massage")
+
+                            val expertName = obj.optString(
+                                "expert_name",
+                                obj.optString(
+                                    "therapist_name",
+                                    obj.optString(
+                                        "partner_name",
+                                        obj.optString("trainer_name", obj.optString("expert", "Rohan Sharma"))
+                                    )
+                                )
+                            )
+                            val expertPhoto = obj.optString(
+                                "expert_image",
+                                obj.optString(
+                                    "profile_photo",
+                                    obj.optString("therapist_image", obj.optString("image", ""))
+                                )
+                            )
+                            val commAmount = obj.optString("commission", obj.optString("commission_amount", "₹100"))
+
                             allHistoryBookings.add(
                                 BookingModel(
                                     bookingId = obj.optString("id", "${800 + i}"),
@@ -216,7 +273,10 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                                     room_number = obj.optString("room_number", obj.optString("landmark", "")),
                                     massage_types = rawMassageType,
                                     serviceName = sName,
-                                    phone = obj.optString("phone", "+91 98765 43210")
+                                    phone = obj.optString("phone", "+91 98765 43210"),
+                                    expertName = if (expertName.isNotBlank()) expertName else "Rohan Sharma",
+                                    expertPhoto = expertPhoto,
+                                    commissionAmount = if (commAmount.isNotBlank()) commAmount else "₹100"
                                 )
                             )
                         }
@@ -257,7 +317,10 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 room_number = "112",
                 massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
-                phone = "+91 98765 43210"
+                phone = "+91 98765 43210",
+                expertName = "Rohan Sharma",
+                expertPhoto = "",
+                commissionAmount = "₹100"
             ),
             BookingModel(
                 bookingId = "823",
@@ -270,7 +333,10 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 room_number = "304",
                 massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
-                phone = "+91 98765 43211"
+                phone = "+91 98765 43211",
+                expertName = "Pooja Verma",
+                expertPhoto = "",
+                commissionAmount = "₹100"
             ),
             BookingModel(
                 bookingId = "819",
@@ -283,7 +349,10 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 room_number = "205",
                 massage_types = "yoga at hotel",
                 serviceName = "In-Room Yoga",
-                phone = "+91 98765 43212"
+                phone = "+91 98765 43212",
+                expertName = "Amit Patel",
+                expertPhoto = "",
+                commissionAmount = "₹100"
             ),
             BookingModel(
                 bookingId = "810",
@@ -296,7 +365,10 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 room_number = "410",
                 massage_types = "ayurveda at hotel",
                 serviceName = "Ayurveda Session",
-                phone = "+91 98765 43213"
+                phone = "+91 98765 43213",
+                expertName = "Sunita Nair",
+                expertPhoto = "",
+                commissionAmount = "₹100"
             ),
             BookingModel(
                 bookingId = "798",
@@ -309,17 +381,42 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
                 room_number = "101",
                 massage_types = "massage at hotel",
                 serviceName = "In-Room Massage",
-                phone = "+91 98765 43214"
+                phone = "+91 98765 43214",
+                expertName = "Karan Kapoor",
+                expertPhoto = "",
+                commissionAmount = "₹100"
+            ),
+            BookingModel(
+                bookingId = "792",
+                isInRoom = true,
+                status = "CANCELLED",
+                customerName = "Kavita Singhal",
+                roomInfo = "208",
+                date = "Fri, 22 Aug",
+                time = "03:00 PM",
+                room_number = "208",
+                massage_types = "massage at hotel",
+                serviceName = "In-Room Massage",
+                phone = "+91 98765 43215",
+                expertName = "Rohan Sharma",
+                expertPhoto = "",
+                commissionAmount = "₹0"
             )
         )
     }
 
     private fun showBookingDetailsDialog(booking: BookingModel) {
-        val commission = if (booking.status.equals("COMPLETED", ignoreCase = true)) "₹100 (Credited)" else "Pending Completion"
+        val commission = when {
+            booking.status.equals("COMPLETED", ignoreCase = true) -> "+${booking.commissionAmount} (Credited)"
+            booking.status.equals("CANCELLED", ignoreCase = true) || booking.status.equals("CANCELED", ignoreCase = true) -> "₹0 (Cancelled)"
+            else -> "${booking.commissionAmount} (Pending Completion)"
+        }
+        val expert = if (booking.expertName.isNotBlank()) booking.expertName else "Rohan Sharma"
         val message = """
             Booking ID: #${booking.bookingId}
             Customer: ${booking.customerName}
             Room Number: ${booking.roomInfo}
+            Assigned Expert: $expert
             Service: ${booking.serviceName}
             Date & Time: ${booking.date} at ${booking.time}
             Status: ${booking.status}
@@ -330,17 +427,7 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Booking #${booking.bookingId} Details")
             .setMessage(message)
-            .setPositiveButton("Call Client") { _, _ ->
-                if (booking.phone.isNotBlank()) {
-                    try {
-                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${booking.phone}")))
-                    } catch (e: Exception) {
-                        Toast.makeText(this, "Calling ${booking.customerName}...", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .setNegativeButton("Close", null)
-            .create()
+            .setPositiveButton("Close", null)
             .show()
     }
 }

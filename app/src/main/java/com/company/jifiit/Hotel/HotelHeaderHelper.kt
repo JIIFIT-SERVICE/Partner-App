@@ -2,6 +2,7 @@ package com.company.jifiit.Hotel
 
 import android.app.Activity
 import android.content.Intent
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -65,6 +66,33 @@ object HotelHeaderHelper {
 
             if (currentNavId != 0) {
                 navView.setCheckedItem(currentNavId)
+            }
+
+            // Edit Hotel pencil icon in My Hotel item
+            val overviewItem = navView.menu.findItem(R.id.nav_overview)
+            overviewItem?.actionView?.findViewById<View>(R.id.btnEditHotelNav)?.setOnClickListener {
+                drawerLayout.closeDrawer(GravityCompat.START)
+                if (activity !is EditHotelDetailsActivity) {
+                    activity.startActivity(Intent(activity, EditHotelDetailsActivity::class.java))
+                }
+            }
+
+            // Sign out button in drawer footer
+            val btnSignOut = activity.findViewById<View>(R.id.btnPartnerSignOut)
+            btnSignOut?.setOnClickListener {
+                drawerLayout.closeDrawer(GravityCompat.START)
+                val builder = androidx.appcompat.app.AlertDialog.Builder(activity)
+                builder.setMessage("Are you sure you want to log out?")
+                    .setPositiveButton("Confirm") { _, _ ->
+                        val sp = activity.getSharedPreferences("credentials", android.content.Context.MODE_PRIVATE)
+                        sp.edit().clear().apply()
+                        val intent = Intent(activity, com.company.jifiit.LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        activity.startActivity(intent)
+                        activity.finish()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                builder.create().show()
             }
 
             navView.setNavigationItemSelectedListener { item ->
