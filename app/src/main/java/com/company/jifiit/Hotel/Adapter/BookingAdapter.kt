@@ -7,12 +7,12 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +22,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -45,10 +46,15 @@ import java.util.Calendar
 import java.util.Locale
 
 class BookingAdapter(
-    private val bookingList: List<BookingModel>,
-    private val onItemClick: (BookingModel) -> Unit,
+    private var bookingList: List<BookingModel>,
+    private val onItemClick: (BookingModel) -> Unit = {},
     private val actionListener: BookingActionListener? = null
 ) : RecyclerView.Adapter<BookingAdapter.BookingViewHolder>() {
+
+    constructor(
+        bookingList: List<BookingModel>,
+        onItemClick: (BookingModel) -> Unit
+    ) : this(bookingList, onItemClick, null)
 
     // ============================================================
     // ✅ CALLBACK INTERFACE — notifies Activity after success
@@ -60,7 +66,7 @@ class BookingAdapter(
     inner class BookingViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
-        val shimmerLayout: ShimmerFrameLayout =
+        val shimmerLayout: ShimmerFrameLayout? =
             itemView.findViewById(R.id.shimmerLayout)
 
         val tvBookingId: TextView =
@@ -72,25 +78,8 @@ class BookingAdapter(
         val tvStatus: TextView =
             itemView.findViewById(R.id.tvStatus)
 
-        val ivExpert: ImageView =
-            itemView.findViewById(R.id.ivExpertAvatar)
-
-        val expertName: TextView =
-            itemView.findViewById(R.id.tvExpertName)
-
-        val tvDate: TextView? = itemView.findViewById(R.id.tvDate)
-        val tvTime: TextView = itemView.findViewById(R.id.tvTime)
-        val tvTotalDuration: TextView? = itemView.findViewById(R.id.tvTotalDuration)
-
-        val shimmerLayout: ShimmerFrameLayout? = itemView.findViewById(R.id.shimmerLayout)
-        val ivExpertPhoto: ImageView? = itemView.findViewById(R.id.ivExpertPhoto)
-        val tvExpertName: TextView = itemView.findViewById(R.id.tvExpertName)
-        val tvExpertRole: TextView? = itemView.findViewById(R.id.tvExpertRole)
-        val tvCardCommission: TextView? = itemView.findViewById(R.id.tvCardCommission)
-
-        val btnCall: MaterialButton? = itemView.findViewById(R.id.btnCall)
-        val totalDuration: TextView =
-            itemView.findViewById(R.id.tvTotalDuration)
+        val ivOverflow: ImageView? =
+            itemView.findViewById(R.id.ivOverflow)
 
         val tvCustomerName: TextView =
             itemView.findViewById(R.id.tvCustomerName)
@@ -104,10 +93,25 @@ class BookingAdapter(
         val tvTime: TextView =
             itemView.findViewById(R.id.tvTime)
 
+        val tvTotalDuration: TextView =
+            itemView.findViewById(R.id.tvTotalDuration)
+
+        val ivExpertPhoto: ImageView? =
+            itemView.findViewById(R.id.ivExpertPhoto)
+
+        val tvExpertName: TextView =
+            itemView.findViewById(R.id.tvExpertName)
+
+        val tvExpertRole: TextView? =
+            itemView.findViewById(R.id.tvExpertRole)
+
+        val tvCardCommission: TextView? =
+            itemView.findViewById(R.id.tvCardCommission)
+
         val btnCall: MaterialButton =
             itemView.findViewById(R.id.btnCall)
 
-        val btnHelp: MaterialButton =
+        val btnHelp: MaterialButton? =
             itemView.findViewById(R.id.btnHelp)
     }
 
@@ -135,9 +139,8 @@ class BookingAdapter(
                 "#${booking.bookingId}"
             }
 
-        // Service tag based on massage_types
+        // 1. Service Tag (e.g. In-Room Massage)
         val tagLabel = getServiceTagLabel(booking.massage_types)
-
         if (tagLabel.isNullOrEmpty()) {
             holder.tvInRoomTag.visibility = View.GONE
         } else {
@@ -145,58 +148,7 @@ class BookingAdapter(
             holder.tvInRoomTag.text = tagLabel
         }
 
-        // Status Badge styling & proper icon coloring
-        val statusUpper = booking.status.trim().uppercase()
-        holder.tvStatus.text = statusUpper
-
-        when (statusUpper) {
-            "PENDING" -> {
-                val colorPending = Color.parseColor("#B45309")
-                holder.tvStatus.setTextColor(colorPending)
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_pending_pill)
-                val icon = ContextCompat.getDrawable(context, R.drawable.ic_pending)?.mutate()
-                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
-                icon?.setTint(colorPending)
-                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
-                holder.tvStatus.compoundDrawableTintList = ColorStateList.valueOf(colorPending)
-            }
-            "COMPLETED" -> {
-                val colorCompleted = Color.parseColor("#15803D")
-                holder.tvStatus.setTextColor(colorCompleted)
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_completed_pill)
-                val icon = ContextCompat.getDrawable(context, R.drawable.baseline_check_circle_outline_24)?.mutate()
-                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
-                icon?.setTint(colorCompleted)
-                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
-                holder.tvStatus.compoundDrawableTintList = ColorStateList.valueOf(colorCompleted)
-            }
-            "CANCELLED", "CANCELED" -> {
-                val colorCancelled = Color.parseColor("#DC2626")
-                holder.tvStatus.setTextColor(colorCancelled)
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_cancelled_pill)
-                val icon = ContextCompat.getDrawable(context, R.drawable.ic_close)?.mutate()
-                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
-                icon?.setTint(colorCancelled)
-                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
-                holder.tvStatus.compoundDrawableTintList = ColorStateList.valueOf(colorCancelled)
-            }
-            "CONFIRMED" -> {
-                val colorConfirmed = Color.parseColor("#1D4ED8")
-                holder.tvStatus.setTextColor(colorConfirmed)
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_status_confirmed_pill)
-                val icon = ContextCompat.getDrawable(context, R.drawable.baseline_check_circle_outline_24)?.mutate()
-                icon?.setBounds(0, 0, (14 * context.resources.displayMetrics.density).toInt(), (14 * context.resources.displayMetrics.density).toInt())
-                icon?.setTint(colorConfirmed)
-                holder.tvStatus.setCompoundDrawables(icon, null, null, null)
-                holder.tvStatus.compoundDrawableTintList = ColorStateList.valueOf(colorConfirmed)
-            }
-            else -> {
-                val colorDefault = Color.parseColor("#64748B")
-                holder.tvStatus.setTextColor(colorDefault)
-                holder.tvStatus.setBackgroundResource(R.drawable.bg_service_tag_pill)
-                holder.tvStatus.setCompoundDrawables(null, null, null, null)
-                holder.tvStatus.compoundDrawableTintList = null
-            }
+        // 2. Status Badge styling & proper icon coloring
         val statusUpper = booking.status.trim().uppercase(Locale.ROOT)
         holder.tvStatus.text = statusUpper
 
@@ -204,10 +156,9 @@ class BookingAdapter(
             "PENDING" -> Color.parseColor("#B45309")
             "COMPLETED" -> Color.parseColor("#15803D")
             "CONFIRMED" -> Color.parseColor("#1D4ED8")
-            "CANCELED", "CANCELLED" -> Color.parseColor("#DC2626") // red
+            "CANCELED", "CANCELLED" -> Color.parseColor("#DC2626")
             else -> Color.parseColor("#64748B")
         }
-
         holder.tvStatus.setTextColor(statusColor)
 
         val statusBackground = when (statusUpper) {
@@ -217,54 +168,33 @@ class BookingAdapter(
             "CANCELED", "CANCELLED" -> R.drawable.bg_status_canceled_pill
             else -> R.drawable.bg_service_tag_pill
         }
-
         holder.tvStatus.setBackgroundResource(statusBackground)
 
         val statusIcon = when (statusUpper) {
             "PENDING" -> R.drawable.ic_pending
-            "COMPLETED", "CONFIRMED" ->
-                R.drawable.baseline_check_circle_outline_24
+            "COMPLETED", "CONFIRMED" -> R.drawable.baseline_check_circle_outline_24
+            "CANCELED", "CANCELLED" -> R.drawable.ic_close
             else -> null
         }
 
         val icon = statusIcon?.let {
             ContextCompat.getDrawable(context, it)?.mutate()
         }
-
-        icon?.setBounds(
-            0,
-            0,
-            dp(context, 14),
-            dp(context, 14)
-        )
+        icon?.setBounds(0, 0, dp(context, 14), dp(context, 14))
         icon?.setTint(statusColor)
+        holder.tvStatus.setCompoundDrawables(icon, null, null, null)
+        holder.tvStatus.compoundDrawableTintList = ColorStateList.valueOf(statusColor)
 
-        holder.tvStatus.setCompoundDrawables(
-            icon, null, null, null
-        )
-
+        // 3. Customer & Room Info
         holder.tvCustomerName.text = booking.customerName
 
-        // Room formatting: "Room 112" with "Room " in grey and number in bold
         val rawRoom = if (booking.room_number.isNotBlank()) booking.room_number.trim() else booking.roomInfo.trim()
         val roomNumber = if (rawRoom.startsWith("Room", ignoreCase = true)) {
             rawRoom.replace(Regex("(?i)^Room\\s*:?\\s*"), "")
-        holder.expertName.text = booking.expertName
-        holder.totalDuration.text = "${booking.duration} mins"
-
-        val rawRoom = booking.room_number.trim()
-        val roomNumber = if (
-            rawRoom.startsWith("Room", ignoreCase = true)
-        ) {
-            rawRoom.replace(Regex("(?i)^Room\\s*"), "")
         } else {
             rawRoom
         }
-
-        val numPart = if (
-            roomNumber.isNotEmpty() &&
-            !roomNumber.equals("N/A", ignoreCase = true)
-        ) {
+        val numPart = if (roomNumber.isNotEmpty() && !roomNumber.equals("N/A", ignoreCase = true)) {
             roomNumber
         } else {
             "101"
@@ -272,7 +202,6 @@ class BookingAdapter(
 
         val spannableRoom = SpannableStringBuilder()
         val prefix = "Room: "
-
         spannableRoom.append(prefix)
         spannableRoom.setSpan(
             ForegroundColorSpan(Color.parseColor("#64748B")),
@@ -280,60 +209,46 @@ class BookingAdapter(
             prefix.length,
             SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
         val numberStart = prefix.length
         spannableRoom.append(numPart)
-
         spannableRoom.setSpan(
             ForegroundColorSpan(Color.parseColor("#0F172A")),
             numberStart,
             numberStart + numPart.length,
             SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
         spannableRoom.setSpan(
             StyleSpan(Typeface.BOLD),
             numberStart,
             numberStart + numPart.length,
             SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
         holder.tvRoomInfo.text = spannableRoom
 
-        // 3. Time, Date & Duration
-        val timeDisplay = if (booking.time.isNotBlank() && booking.time != "N/A") booking.time else "07:00 PM"
-        holder.tvTime.text = timeDisplay
-
-        if (holder.tvDate != null) {
-            val dateDisplay = if (booking.date.isNotBlank() && booking.date != "N/A") booking.date else "Tue, 26 Aug"
-            holder.tvDate.text = dateDisplay
+        // 4. Date, Time & Duration
+        holder.tvDate.text = if (booking.date.isNotBlank() && booking.date != "N/A") booking.date else "Tue, 26 Aug"
+        holder.tvTime.text = if (booking.time.isNotBlank() && booking.time != "N/A") booking.time else "07:00 PM"
+        holder.tvTotalDuration.text = if (booking.duration.contains("min", ignoreCase = true) || booking.duration.contains("h", ignoreCase = true)) {
+            booking.duration
+        } else if (booking.duration.isNotBlank() && booking.duration != "0" && !booking.duration.equals("N/A", ignoreCase = true)) {
+            "${booking.duration} mins"
+        } else {
+            "60 mins"
         }
 
-        if (holder.tvTotalDuration != null) {
-            if (booking.duration.isNotBlank() && booking.duration != "0" && !booking.duration.equals("N/A", ignoreCase = true)) {
-                holder.tvTotalDuration.visibility = View.VISIBLE
-                val durText = if (booking.duration.contains("min", ignoreCase = true) || booking.duration.contains("h", ignoreCase = true)) {
-                    booking.duration
-                } else {
-                    "${booking.duration} mins"
-                }
-                holder.tvTotalDuration.text = durText
-            } else {
-                holder.tvTotalDuration.visibility = View.GONE
-            }
-        }
-
-        // 4. Assigned Expert Info & Photo with Shimmer
-        val expertDisplayName = if (booking.expertName.isNotBlank()) booking.expertName else "Rohan Sharma"
-        holder.tvExpertName.text = expertDisplayName
+        // 5. Assigned Expert Info & Role
+        holder.tvExpertName.text = if (booking.expertName.isNotBlank()) booking.expertName else "Rohan Sharma"
         holder.tvExpertRole?.text = "ASSIGNED EXPERT"
 
+        // 6. Expert Photo with Shimmer
+        val targetIv = holder.ivExpertPhoto
         val photoUrl = if (booking.image.isNotBlank()) booking.image else booking.expertPhoto
-        if (holder.ivExpertPhoto != null) {
+
+        if (targetIv != null) {
             if (holder.shimmerLayout != null) {
                 holder.shimmerLayout.visibility = View.VISIBLE
                 holder.shimmerLayout.startShimmer()
-                holder.ivExpertPhoto.visibility = View.INVISIBLE
+                targetIv.visibility = View.INVISIBLE
 
                 if (photoUrl.isNotBlank()) {
                     Glide.with(context)
@@ -347,7 +262,7 @@ class BookingAdapter(
                             ): Boolean {
                                 holder.shimmerLayout.stopShimmer()
                                 holder.shimmerLayout.visibility = View.GONE
-                                holder.ivExpertPhoto.visibility = View.VISIBLE
+                                targetIv.visibility = View.VISIBLE
                                 return false
                             }
 
@@ -360,17 +275,17 @@ class BookingAdapter(
                             ): Boolean {
                                 holder.shimmerLayout.stopShimmer()
                                 holder.shimmerLayout.visibility = View.GONE
-                                holder.ivExpertPhoto.visibility = View.VISIBLE
+                                targetIv.visibility = View.VISIBLE
                                 return false
                             }
                         })
                         .error(R.drawable.ic_person)
-                        .into(holder.ivExpertPhoto)
+                        .into(targetIv)
                 } else {
                     holder.shimmerLayout.stopShimmer()
                     holder.shimmerLayout.visibility = View.GONE
-                    holder.ivExpertPhoto.visibility = View.VISIBLE
-                    holder.ivExpertPhoto.setImageResource(R.drawable.ic_person)
+                    targetIv.visibility = View.VISIBLE
+                    targetIv.setImageResource(R.drawable.ic_person)
                 }
             } else {
                 if (photoUrl.isNotBlank()) {
@@ -378,14 +293,14 @@ class BookingAdapter(
                         .load(photoUrl)
                         .placeholder(R.drawable.ic_person)
                         .error(R.drawable.ic_person)
-                        .into(holder.ivExpertPhoto)
+                        .into(targetIv)
                 } else {
-                    holder.ivExpertPhoto.setImageResource(R.drawable.ic_person)
+                    targetIv.setImageResource(R.drawable.ic_person)
                 }
             }
         }
 
-        // 5. Commission Info / Badge
+        // 7. Commission Info / Badge
         if (holder.tvCardCommission != null) {
             when (statusUpper) {
                 "COMPLETED" -> {
@@ -410,116 +325,71 @@ class BookingAdapter(
             }
         }
 
-        // 6. Clicks: Item Card
-        holder.itemView.setOnClickListener { onItemClick(booking) }
-
-        // 7. Clicks: Call Expert Button
-        holder.btnCall?.setOnClickListener {
-            val phoneNum = if (booking.client_number.isNotBlank()) booking.client_number else booking.phone
-            val number = phoneNum.trim()
-        holder.tvTime.text = if (
-            booking.time.isNotBlank() && booking.time != "N/A"
-        ) {
-            booking.time
-        } else {
-            "07:00 PM"
-        }
-
-        holder.tvDate.text = booking.date
-
+        // 8. Clicks: Item Card
         holder.itemView.setOnClickListener {
             onItemClick(booking)
         }
 
-        holder.shimmerLayout.visibility = View.VISIBLE
-        holder.shimmerLayout.startShimmer()
-        holder.ivExpert.visibility = View.INVISIBLE
-
-        if (booking.image.isNotEmpty()) {
-            Glide.with(holder.itemView.context)
-                .load(booking.image)
-                .listener(object : RequestListener<Drawable> {
-
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        holder.shimmerLayout.stopShimmer()
-                        holder.shimmerLayout.visibility = View.GONE
-                        holder.ivExpert.visibility = View.VISIBLE
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        holder.shimmerLayout.stopShimmer()
-                        holder.shimmerLayout.visibility = View.GONE
-                        holder.ivExpert.visibility = View.VISIBLE
-                        return false
-                    }
-                })
-                .error(R.mipmap.hotel_body_massage)
-                .into(holder.ivExpert)
-        } else {
-            holder.shimmerLayout.stopShimmer()
-            holder.shimmerLayout.visibility = View.GONE
-            holder.ivExpert.visibility = View.VISIBLE
-            holder.ivExpert.setImageResource(
-                R.mipmap.hotel_body_massage
-            )
-        }
-
+        // 9. Status Based Visibility for Actions
         val isCancelled = statusUpper == "CANCELED" || statusUpper == "CANCELLED"
-
         if (isCancelled) {
             holder.btnCall.visibility = View.GONE
-            holder.btnHelp.visibility = View.GONE
+            holder.btnHelp?.visibility = View.GONE
         } else {
             holder.btnCall.visibility = View.VISIBLE
-            holder.btnHelp.visibility = View.VISIBLE
+            holder.btnHelp?.visibility = View.VISIBLE
         }
 
+        // 10. Clicks: Call Expert Button
         holder.btnCall.setOnClickListener {
-            val number = booking.client_number.trim()
+            val phoneNum = if (booking.client_number.isNotBlank()) booking.client_number else booking.phone
+            val number = phoneNum.trim()
 
-            if (
-                number.isEmpty() ||
-                number.equals("N/A", ignoreCase = true)
-            ) {
-                Toast.makeText(
-                    context,
-                    "Phone number not available",
-                    Toast.LENGTH_SHORT
-                ).show()
+            if (number.isEmpty() || number.equals("N/A", ignoreCase = true)) {
+                Toast.makeText(context, "Phone number not available", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             try {
                 context.startActivity(
-                    Intent(
-                        Intent.ACTION_DIAL,
-                        Uri.parse("tel:$number")
-                    )
+                    Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
                 )
             } catch (e: Exception) {
-                Toast.makeText(
-                    context,
-                    "Unable to open dialer",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Unable to open dialer", Toast.LENGTH_SHORT).show()
             }
         }
 
-        holder.btnHelp.setOnClickListener {
+        // 11. Clicks: Help Button (Opens Reschedule/Cancel Options)
+        holder.btnHelp?.setOnClickListener {
             showHelpSheet(booking, context)
         }
+
+        // 12. Clicks: 3-dot overflow menu
+        holder.ivOverflow?.setOnClickListener { anchor ->
+            val popup = PopupMenu(anchor.context, anchor)
+            popup.menuInflater.inflate(R.menu.menu_booking_overflow, popup.menu)
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_reschedule -> {
+                        onReschedule(booking, context)
+                        true
+                    }
+                    R.id.action_cancel -> {
+                        showCancelSheet(booking, context)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
+    }
+
+    override fun getItemCount(): Int = bookingList.size
+
+    fun updateData(newList: List<BookingModel>) {
+        bookingList = newList
+        notifyDataSetChanged()
     }
 
     // ============================================================
@@ -530,27 +400,20 @@ class BookingAdapter(
         context: Context
     ) {
         val dialog = BottomSheetDialog(context)
-
         val sheetView = LayoutInflater.from(context)
             .inflate(R.layout.bottom_sheet_help, null)
-
         dialog.setContentView(sheetView)
 
         val btnClose = sheetView.findViewById<ImageView>(R.id.btnCloseHelp)
-        val optionReschedule =
-            sheetView.findViewById<LinearLayout>(R.id.optionReschedule)
-        val optionCancel =
-            sheetView.findViewById<LinearLayout>(R.id.optionCancel)
+        val optionReschedule = sheetView.findViewById<LinearLayout>(R.id.optionReschedule)
+        val optionCancel = sheetView.findViewById<LinearLayout>(R.id.optionCancel)
 
         val tvDateTime = sheetView.findViewById<TextView>(R.id.tvHelpDateTime)
         val tvTherapist = sheetView.findViewById<TextView>(R.id.tvHelpTherapist)
 
-        val timeText = if (
-            booking.time.isNotBlank() && booking.time != "N/A"
-        ) booking.time else "07:00 PM"
-
+        val timeText = if (booking.time.isNotBlank() && booking.time != "N/A") booking.time else "07:00 PM"
         tvDateTime.text = "${booking.date} at $timeText"
-        tvTherapist.text = booking.expertName
+        tvTherapist.text = if (booking.expertName.isNotBlank()) booking.expertName else "Assigned Expert"
 
         btnClose.setOnClickListener { dialog.dismiss() }
 
@@ -568,10 +431,8 @@ class BookingAdapter(
             val bottomSheet = dialog.findViewById<View>(
                 com.google.android.material.R.id.design_bottom_sheet
             )
-
             bottomSheet?.let { sheet ->
                 sheet.setBackgroundColor(Color.TRANSPARENT)
-
                 BottomSheetBehavior.from(sheet).apply {
                     state = BottomSheetBehavior.STATE_EXPANDED
                     skipCollapsed = true
@@ -582,6 +443,9 @@ class BookingAdapter(
         dialog.show()
     }
 
+    // ============================================================
+    // CANCEL BOTTOM SHEET
+    // ============================================================
     private fun showCancelSheet(
         booking: BookingModel,
         context: Context
@@ -621,7 +485,6 @@ class BookingAdapter(
         dialog.show()
     }
 
-
     private fun cancelBooking(
         booking: BookingModel,
         context: Context,
@@ -634,53 +497,61 @@ class BookingAdapter(
         btnYesCancel.text = "Cancelling..."
 
         val jsonBody = JSONObject().apply {
-            put("booking_id", booking.bookingId.toString()) // ensure string
+            put("booking_id", booking.bookingId)
+            put("reason", "Cancelled by Hotel Partner")
         }
-        Log.d("cancelBooking", "JSON body: $jsonBody")
 
-        val request = object : JsonObjectRequest(
-            Method.POST,
+        val request = JsonObjectRequest(
+            Request.Method.POST,
             Constant.CANCEL_HOTEL_BOOKING,
             jsonBody,
             { response ->
-                val status = response.optBoolean("status", false)
-                val message = response.optString("message", "Something went wrong")
-
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
-                if (status) {
-                    dialog.dismiss()
-                    actionListener?.onBookingUpdated()
-                } else {
-                    btnYesCancel.isEnabled = true
-                    btnYesCancel.text = originalText
-                }
-            },
-            { error ->
                 btnYesCancel.isEnabled = true
                 btnYesCancel.text = originalText
 
-                val msg = when (error) {
-                    is com.android.volley.TimeoutError -> "Request timed out. Please try again."
-                    is com.android.volley.NoConnectionError -> "No internet connection."
-                    is com.android.volley.ServerError -> "Server error. Please try again later."
-                    is com.android.volley.AuthFailureError -> "Authentication failed."
-                    else -> error.message ?: "Network error. Please try again."
+                val statusStr = response.optString("status", "").lowercase(Locale.ROOT)
+                val statusCap = response.optString("Status", "").lowercase(Locale.ROOT)
+                val successBool = response.optBoolean("success", false)
+
+                val isSuccess =
+                    statusStr == "success" ||
+                            statusCap == "success" ||
+                            successBool
+
+                val message = response.optString(
+                    "message",
+                    response.optString("Message", "Booking cancelled")
+                )
+
+                (context as? android.app.Activity)?.runOnUiThread {
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    if (isSuccess) {
+                        dialog.dismiss()
+                        actionListener?.onBookingUpdated()
+                    }
                 }
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            },
+            { error ->
+                (context as? android.app.Activity)?.runOnUiThread {
+                    btnYesCancel.isEnabled = true
+                    btnYesCancel.text = originalText
+
+                    val message = if (error.networkResponse != null) {
+                        val statusCode = error.networkResponse.statusCode
+                        val body = try {
+                            String(error.networkResponse.data ?: ByteArray(0))
+                        } catch (e: Exception) { "" }
+                        "HTTP $statusCode: $body"
+                    } else {
+                        error.message ?: "Failed to cancel booking"
+                    }
+
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                }
             }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                val headers = HashMap<String, String>()
-                headers["Content-Type"] = "application/json; charset=utf-8"
-                // If you use auth token, add it here:
-                // headers["Authorization"] = "Bearer $token"
-                return headers
-            }
-        }
+        )
 
         request.setShouldCache(false)
-        // Reuse a singleton queue instead of creating one each time
         VolleySingleton.getInstance(context).add(request)
     }
 
@@ -703,41 +574,26 @@ class BookingAdapter(
         context: Context
     ) {
         val dialog = BottomSheetDialog(context)
-
         val sheetView = LayoutInflater.from(context)
             .inflate(R.layout.bottom_sheet_reschedule, null)
-
         dialog.setContentView(sheetView)
 
-        val dateContainer =
-            sheetView.findViewById<LinearLayout>(R.id.dateContainer)
-
-        val timeContainer =
-            sheetView.findViewById<GridLayout>(R.id.timeContainer)
-
-        val btnClose =
-            sheetView.findViewById<TextView>(R.id.btnCloseReschedule)
-
-        val btnBack =
-            sheetView.findViewById<TextView>(R.id.btnBackReschedule)
-
-        val btnConfirm =
-            sheetView.findViewById<TextView>(R.id.btnConfirmReschedule)
+        val dateContainer = sheetView.findViewById<LinearLayout>(R.id.dateContainer)
+        val timeContainer = sheetView.findViewById<GridLayout>(R.id.timeContainer)
+        val btnClose = sheetView.findViewById<TextView>(R.id.btnCloseReschedule)
+        val btnBack = sheetView.findViewById<TextView>(R.id.btnBackReschedule)
+        val btnConfirm = sheetView.findViewById<TextView>(R.id.btnConfirmReschedule)
 
         val density = context.resources.displayMetrics.density
 
-        // 8. Clicks: 3-dot overflow menu
-        holder.ivOverflow?.setOnClickListener { anchor ->
-            val popup = PopupMenu(anchor.context, anchor)
-            popup.menuInflater.inflate(R.menu.menu_booking_overflow, popup.menu)
         fun dp(value: Int): Int = (value * density).toInt()
 
         fun makeBackground(
             fillColor: Int,
             strokeColor: Int,
             radiusDp: Int
-        ): android.graphics.drawable.GradientDrawable {
-            return android.graphics.drawable.GradientDrawable().apply {
+        ): GradientDrawable {
+            return GradientDrawable().apply {
                 setColor(fillColor)
                 cornerRadius = dp(radiusDp).toFloat()
                 setStroke(dp(1), strokeColor)
@@ -755,20 +611,9 @@ class BookingAdapter(
         val dateViews = mutableListOf<TextView>()
         val timeViews = mutableListOf<TextView>()
 
-        val dateFormat = SimpleDateFormat(
-            "yyyy-MM-dd",
-            Locale.getDefault()
-        )
-
-        val weekdayFormat = SimpleDateFormat(
-            "EEE",
-            Locale.getDefault()
-        )
-
-        val numberFormat = SimpleDateFormat(
-            "dd",
-            Locale.getDefault()
-        )
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val weekdayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+        val numberFormat = SimpleDateFormat("dd", Locale.getDefault())
 
         fun styleOption(
             textView: TextView,
@@ -796,31 +641,19 @@ class BookingAdapter(
                 val calendar = Calendar.getInstance().apply {
                     add(Calendar.DAY_OF_YEAR, index)
                 }
-
                 val dateValue = dateFormat.format(calendar.time)
-
-                styleOption(
-                    textView,
-                    dateValue == selectedDate,
-                    12
-                )
+                styleOption(textView, dateValue == selectedDate, 12)
             }
         }
 
         fun refreshTimes() {
             timeViews.forEach { textView ->
-                styleOption(
-                    textView,
-                    textView.tag == selectedTime,
-                    8
-                )
+                styleOption(textView, textView.tag == selectedTime, 8)
             }
         }
 
         val therapistId = booking.ExpertId
-
         val apiUrl = Constant.HOTEL_FETCH_TIME_SLOT
-
         val requestQueue = Volley.newRequestQueue(context)
 
         fun fetchTimeSlots(dateValue: String, duration: String, bookingId: String) {
@@ -870,14 +703,11 @@ class BookingAdapter(
                     if (slotsArray != null) {
                         for (i in 0 until slotsArray.length()) {
                             val slot = slotsArray.optString(i).trim()
-
                             if (slot.isNotEmpty()) {
                                 slots.add(slot)
                             }
                         }
                     }
-                    R.id.action_cancel -> {
-                        true
 
                     if (slots.isEmpty()) {
                         val emptyView = TextView(context).apply {
@@ -904,28 +734,13 @@ class BookingAdapter(
                             textSize = 10f
                             gravity = Gravity.CENTER
 
-                            setPadding(
-                                dp(3),
-                                dp(6),
-                                dp(3),
-                                dp(6)
-                            )
+                            setPadding(dp(3), dp(6), dp(3), dp(6))
 
                             layoutParams = GridLayout.LayoutParams().apply {
                                 width = 0
                                 height = dp(36)
-
-                                columnSpec = GridLayout.spec(
-                                    GridLayout.UNDEFINED,
-                                    1f
-                                )
-
-                                setMargins(
-                                    dp(3),
-                                    dp(4),
-                                    dp(3),
-                                    dp(4)
-                                )
+                                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                                setMargins(dp(3), dp(4), dp(3), dp(4))
                             }
 
                             setOnClickListener {
@@ -977,26 +792,18 @@ class BookingAdapter(
             }
 
             val dateValue = dateFormat.format(calendar.time)
-
             val dayLabel = when (index) {
                 0 -> "Today"
                 1 -> "Tomorrow"
                 else -> weekdayFormat.format(calendar.time)
             }
-
             val dateNumber = numberFormat.format(calendar.time)
 
             val dateView = TextView(context).apply {
                 text = "$dayLabel\n$dateNumber"
                 textSize = 10f
                 gravity = Gravity.CENTER
-
-                setPadding(
-                    dp(5),
-                    dp(7),
-                    dp(5),
-                    dp(7)
-                )
+                setPadding(dp(5), dp(7), dp(5), dp(7))
 
                 layoutParams = LinearLayout.LayoutParams(
                     dp(58),
@@ -1035,25 +842,6 @@ class BookingAdapter(
             dialog.dismiss()
         }
 
-    private fun onReschedule(booking: BookingModel, context: Context) {
-        try {
-            val intent = Intent(context, RescheduleActivity::class.java).apply {
-                putExtra("id", booking.bookingId)
-                putExtra("time", booking.time)
-                putExtra("duration", booking.duration)
-                putExtra("endTime", booking.EndTime)
-                putExtra("date", booking.date)
-            }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(context, "Unable to open reschedule screen", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun getServiceTagLabel(massageTypes: String?): String? {
-        return when (massageTypes?.trim()?.lowercase()) {
-            "massage at hotel"          -> "In-Room Massage"
-            "yoga at hotel"             -> "Yoga"
         btnBack.setOnClickListener {
             dialog.dismiss()
         }
@@ -1088,7 +876,6 @@ class BookingAdapter(
 
             bottomSheet?.let { sheet ->
                 sheet.setBackgroundColor(Color.TRANSPARENT)
-
                 BottomSheetBehavior.from(sheet).apply {
                     state = BottomSheetBehavior.STATE_EXPANDED
                     skipCollapsed = true
@@ -1099,23 +886,6 @@ class BookingAdapter(
         dialog.show()
     }
 
-    private fun getServiceTagLabel(
-        massageTypes: String?
-    ): String? {
-        return when (massageTypes?.trim()?.lowercase(Locale.ROOT)) {
-            "massage at hotel" -> "In-Room Massage"
-            "yoga at hotel" -> "Yoga"
-            "personal trainer at hotel" -> "Personal Trainer"
-            "ayurveda at hotel" -> "Ayurveda"
-            else -> null
-        }
-    }
-
-    override fun getItemCount(): Int = bookingList.size
-
-    fun updateData(newList: List<BookingModel>) {
-        bookingList = newList
-        notifyDataSetChanged()
     private fun rescheduleBooking(
         context: Context,
         dialog: Dialog,
@@ -1151,9 +921,8 @@ class BookingAdapter(
             url,
             params,
             { response ->
-                // ✅ Handle multiple possible success keys
-                val statusStr = response.optString("status", "").lowercase()
-                val statusCap = response.optString("Status", "").lowercase()
+                val statusStr = response.optString("status", "").lowercase(Locale.ROOT)
+                val statusCap = response.optString("Status", "").lowercase(Locale.ROOT)
                 val successBool = response.optBoolean("success", false)
 
                 val isSuccess =
@@ -1161,8 +930,10 @@ class BookingAdapter(
                             statusCap == "success" ||
                             successBool
 
-                val message = response.optString("message",
-                    response.optString("Message", "Something went wrong"))
+                val message = response.optString(
+                    "message",
+                    response.optString("Message", "Something went wrong")
+                )
 
                 (context as? android.app.Activity)?.runOnUiThread {
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -1199,7 +970,15 @@ class BookingAdapter(
         Volley.newRequestQueue(context).add(request)
     }
 
-    override fun getItemCount(): Int = bookingList.size
+    private fun getServiceTagLabel(massageTypes: String?): String? {
+        return when (massageTypes?.trim()?.lowercase(Locale.ROOT)) {
+            "massage at hotel" -> "In-Room Massage"
+            "yoga at hotel" -> "Yoga"
+            "personal trainer at hotel" -> "Personal Trainer"
+            "ayurveda at hotel" -> "Ayurveda"
+            else -> null
+        }
+    }
 
     private fun dp(context: Context, value: Int): Int {
         return (value * context.resources.displayMetrics.density).toInt()

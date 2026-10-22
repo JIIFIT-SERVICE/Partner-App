@@ -18,5 +18,6 @@ data class BookingModel(
     val client_number: String = "",
     val duration: String = "",
     val image: String = "",
-    val EndTime: String = ""
+    val EndTime: String = "",
+    val ExpertId: String = ""
 )

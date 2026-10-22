@@ -243,27 +243,6 @@
             </FrameLayout>
 
             <!-- Expert Name & Role -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="50dp"
-                    android:layout_height="45dp"
-                    android:layout_gravity="center"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp"
-                    app:cardBackgroundColor="@android:color/transparent">
-
-                    <ImageView
-                        android:id="@+id/ivExpertAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_avatar_placeholder"
-                        android:contentDescription="Expert avatar"
-                        app:tint="@null" />
-
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -310,31 +289,11 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- ============ 5. ACTION BUTTON ============ -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCall"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="14dp"
-            android:text="Call Expert"
-            android:textSize="13sp"
-            android:textAllCaps="true"
-            android:textColor="#1A56DB"
-            app:icon="@drawable/baseline_call_24"
-            app:iconSize="14dp"
-            app:iconTint="#1A56DB"
-            app:iconGravity="textStart"
-            app:iconPadding="6dp"
-            app:backgroundTint="#FFFFFF"
-            app:strokeColor="#1A56DB"
-            app:strokeWidth="1dp"
-            app:cornerRadius="10dp"
-            app:elevation="0dp" />
-        <!-- ============ ACTION BUTTONS ROW ============ -->
+        <!-- ============ 5. ACTION BUTTONS ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
@@ -347,7 +306,7 @@
                 android:textAllCaps="true"
                 android:textColor="#1A56DB"
                 app:icon="@drawable/baseline_call_24"
-                app:iconSize="13sp"
+                app:iconSize="14dp"
                 app:iconTint="#1A56DB"
                 app:iconGravity="textStart"
                 app:iconPadding="6dp"
@@ -367,7 +326,7 @@
                 android:textSize="13sp"
                 android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                app:iconSize="13sp"
+                app:iconSize="14dp"
                 app:iconTint="#FFFFFF"
                 app:iconGravity="textStart"
                 app:iconPadding="6dp"

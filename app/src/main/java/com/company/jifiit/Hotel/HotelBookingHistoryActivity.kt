@@ -109,9 +109,9 @@ class HotelBookingHistoryActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         rvBookingHistory.layoutManager = LinearLayoutManager(this)
-        bookingAdapter = BookingAdapter(displayedBookings) { booking ->
+        bookingAdapter = BookingAdapter(displayedBookings, { booking ->
             showBookingDetailsDialog(booking)
-        }
+        })
         rvBookingHistory.adapter = bookingAdapter
     }
 
