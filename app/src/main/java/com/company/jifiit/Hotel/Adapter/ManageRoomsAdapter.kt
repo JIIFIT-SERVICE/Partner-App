@@ -12,7 +12,7 @@ import com.company.jifiit.R
 
 class ManageRoomsAdapter(
     private var roomsList: List<HotelRoomItem>,
-    private val onBookClick: (HotelRoomItem) -> Unit,
+    private val onDeleteRoomClick: (HotelRoomItem) -> Unit,
     private val onRoomClick: (HotelRoomItem) -> Unit
 ) : RecyclerView.Adapter<ManageRoomsAdapter.RoomViewHolder>() {
 
@@ -21,8 +21,9 @@ class ManageRoomsAdapter(
         val tvRoomName: TextView = itemView.findViewById(R.id.tvRoomName)
         val tvRoomType: TextView = itemView.findViewById(R.id.tvRoomType)
         val ivBed: ImageView = itemView.findViewById(R.id.ivBed)
-        val btnBookSession: TextView = itemView.findViewById(R.id.btnBookSession)
+        val btnDeleteRoom: ImageView = itemView.findViewById(R.id.btnDeleteRoom)
         val tvActiveSessionBadge: TextView = itemView.findViewById(R.id.tvActiveSessionBadge)
+        val tvAvailableBadge: TextView = itemView.findViewById(R.id.tvAvailableBadge)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoomViewHolder {
@@ -39,19 +40,19 @@ class ManageRoomsAdapter(
 
         if (room.isBooked) {
             holder.container.setBackgroundResource(R.drawable.bg_room_card_active)
-            holder.ivBed.setColorFilter(Color.parseColor("#0D9488"))
-            holder.btnBookSession.visibility = View.GONE
+            holder.ivBed.setColorFilter(Color.parseColor("#1976D2"))
             holder.tvActiveSessionBadge.visibility = View.VISIBLE
             holder.tvActiveSessionBadge.text = room.activeSessionText ?: "IN SESSION"
+            holder.tvAvailableBadge.visibility = View.GONE
         } else {
             holder.container.setBackgroundResource(R.drawable.bg_room_card_default)
             holder.ivBed.setColorFilter(Color.parseColor("#64748B"))
-            holder.btnBookSession.visibility = View.VISIBLE
             holder.tvActiveSessionBadge.visibility = View.GONE
+            holder.tvAvailableBadge.visibility = View.VISIBLE
         }
 
-        holder.btnBookSession.setOnClickListener {
-            onBookClick(room)
+        holder.btnDeleteRoom.setOnClickListener {
+            onDeleteRoomClick(room)
         }
 
         holder.container.setOnClickListener {

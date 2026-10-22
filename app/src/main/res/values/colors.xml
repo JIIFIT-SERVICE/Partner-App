@@ -15,6 +15,14 @@
     <color name="Button_Blue">#FF1A56DB</color>
     <color name="Text_Blue">#1976D2</color>
     <color name="BackgroundBlue">#E3F0FF</color>
+
+    <!-- Brand Blue Theme Colors (Image Matching) -->
+    <color name="hotel_primary">#1976D2</color>
+    <color name="hotel_primary_dark">#1565C0</color>
+    <color name="hotel_primary_light">#E3F2FD</color>
+    <color name="hotel_primary_surface">#F4F7FB</color>
+    <color name="hotel_accent">#2196F3</color>
+
     <color name="Sky">#6F8BAE</color>
     <color name="Gray">#808080</color>
     <color name="light_gray">#D3D3D3</color>

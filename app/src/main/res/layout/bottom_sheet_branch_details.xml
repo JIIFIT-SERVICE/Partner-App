@@ -90,7 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PROPERTY OVERVIEW"
-                android:textColor="#0B4F4F"
+                android:textColor="@color/hotel_primary"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -233,7 +233,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="LOCATION &amp; ADDRESS"
-                android:textColor="#0B4F4F"
+                android:textColor="@color/hotel_primary"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
@@ -291,7 +291,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="CONTACT &amp; TAX IDENTIFIERS"
-                android:textColor="#0B4F4F"
+                android:textColor="@color/hotel_primary"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />

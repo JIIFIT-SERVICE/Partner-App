@@ -137,6 +137,11 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var sp: SharedPreferences
     private var currentSelectedButton: String = "today"
     private var selectedCalendarDate: String = ""
+    private var hasCheckedPermissions = false
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(applicationContext)
+    }
 
     // ✅ Profile image picker & launchers
     private var cameraImageUri: Uri? = null
@@ -168,14 +173,16 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // ✅ White icons on brand blue status bar (matching the brand header theme)
         WindowCompat.getInsetsController(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true
-            isAppearanceLightNavigationBars = true
+            isAppearanceLightStatusBars = false   // white icons on brand blue status bar
+            isAppearanceLightNavigationBars = true // black/dark icons on nav bar
         }
 
         setContentView(R.layout.activity_hotel_main)
 
-        window.statusBarColor = Color.WHITE
+        // ✅ Draw brand blue background behind the status bar
+        window.statusBarColor = ContextCompat.getColor(this, R.color.hotel_primary)
         window.navigationBarColor = Color.WHITE
 
         val root = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -218,6 +225,13 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setupCalendarIcon()
         setupFilterChips()
         styleBottomMenuItems()
+
+        // ---- Check permissions & updates once on creation (not repeatedly in onResume) ----
+        if (!hasCheckedPermissions) {
+            hasCheckedPermissions = true
+            checkRequiredPermissions()
+            checkForUpdate()
+        }
     }
 
     // ============================================================
@@ -349,26 +363,48 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private fun getDefaultDemoBookings(): List<BookingModel> {
         return listOf(
-
+            BookingModel(
+                bookingId = "834",
+                isInRoom = true,
+                status = "PENDING",
+                customerName = "Megha Sharma",
+                roomInfo = "112",
+                date = "Tue, 26 Aug",
+                time = "07:00 PM",
+                room_number = "112",
+                massage_types = "massage at hotel",
+                serviceName = "In-Room Massage",
+                phone = "+91 98765 43210",
+                client_number = "+91 98765 43210",
+                expertName = "Rohan Sharma",
+                duration = "60",
+                commissionAmount = "₹100"
+            ),
+            BookingModel(
+                bookingId = "823",
+                isInRoom = true,
+                status = "COMPLETED",
+                customerName = "Charu Khanna",
+                roomInfo = "304",
+                date = "Tue, 26 Aug",
+                time = "01:00 PM",
+                room_number = "304",
+                massage_types = "massage at hotel",
+                serviceName = "In-Room Massage",
+                phone = "+91 98765 43211",
+                client_number = "+91 98765 43211",
+                expertName = "Rohan Sharma",
+                duration = "90",
+                commissionAmount = "₹100"
+            )
         )
     }
 
     private fun showBookingDetailsDialog(booking: BookingModel) {
-//        val dialog = AlertDialog.Builder(this)
-//            .setTitle("Booking #${booking.bookingId}")
-//            .setMessage("Customer: ${booking.customerName}\nRoom: ${booking.roomInfo}\nService: ${booking.serviceName}\nStatus: ${booking.status}\nTime: ${booking.time}")
-//            .setPositiveButton("Call Client") { _, _ ->
-//                if (booking.phone.isNotBlank()) {
-//                    try {
-//                        startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${booking.phone}")))
-//                    } catch (e: Exception) {
-//                        Toast.makeText(this, "Calling ${booking.customerName}...", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//            }
-//            .setNegativeButton("Close", null)
-//            .create()
-//        dialog.show()
+        val intent = Intent(this, HotelBookingDetailsActivity::class.java).apply {
+            putExtra("booking_id", booking.bookingId)
+        }
+        startActivity(intent)
     }
 
     // ============================================================
@@ -499,33 +535,36 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         selectedDate = which
 
         sp.edit().putString("selected_button", which).apply()
-        if (which != "custom") {
+        if (which != "custom" && which != "calender") {
             sp.edit().putString("selected_calendar_date", "").apply()
             selectedCalendarDate = ""
         }
 
-        val tealColor  = Color.parseColor("#0B4F4F")
+        val brandBlue = ContextCompat.getColor(this, R.color.hotel_primary)
         val whiteColor = ContextCompat.getColor(this, android.R.color.white)
 
         listOf(tvYesterday, tvToday, tvTomorrow).forEach { pill ->
             pill.setBackgroundResource(0)
-            pill.setTextColor(tealColor)
+            pill.setTextColor(brandBlue)
         }
 
-        val activePill = when (which) {
-            "yesterday" -> tvYesterday
-            "tomorrow"  -> tvTomorrow
-            else        -> tvToday
+        if (which == "calender" || which == "custom") {
+            activateCalendarIcon()
+        } else {
+            resetCalendarIcon()
+            val activePill = when (which) {
+                "yesterday" -> tvYesterday
+                "tomorrow"  -> tvTomorrow
+                else        -> tvToday
+            }
+            activePill.setBackgroundResource(R.drawable.bg_active_date_pill)
+            activePill.setTextColor(whiteColor)
         }
-        activePill.setBackgroundResource(R.drawable.bg_active_date_pill)
-        activePill.setTextColor(whiteColor)
-
-        resetCalendarIcon()
     }
 
     private fun resetCalendarIcon() {
         ivCalendar.setBackgroundResource(0)
-        ivCalendar.setColorFilter(Color.parseColor("#0B4F4F"))
+        ivCalendar.setColorFilter(ContextCompat.getColor(this, R.color.hotel_primary))
     }
 
     private fun activateCalendarIcon() {
@@ -534,10 +573,10 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     private fun deselectAllPills() {
-        val tealColor = Color.parseColor("#0B4F4F")
+        val brandBlue = ContextCompat.getColor(this, R.color.hotel_primary)
         listOf(tvYesterday, tvToday, tvTomorrow).forEach { pill ->
             pill.setBackgroundResource(0)
-            pill.setTextColor(tealColor)
+            pill.setTextColor(brandBlue)
         }
     }
 
@@ -671,16 +710,15 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         Log.d("FetchBookings", "URL: $url")
 
-        progressBar.visibility = View.VISIBLE
+        // ---- Show progress only when empty to avoid UI flicker ----
         if (bookingList.isEmpty()) {
+            progressBar.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
         } else {
+            progressBar.visibility = View.GONE
             recyclerView.visibility = View.VISIBLE
         }
         bookingsNotFound.visibility = View.GONE
-
-        val requestQueue = Volley.newRequestQueue(this)
-
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
@@ -845,8 +883,15 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_rooms -> {
                 startActivity(Intent(this, ManageRoomsActivity::class.java))
             }
-            R.id.nav_history  -> { /* Navigate to history */ }
-            R.id.nav_earnings -> { /* Navigate to earnings */ }
+            R.id.nav_history  -> {
+                startActivity(Intent(this, HotelBookingHistoryActivity::class.java))
+            }
+            R.id.nav_earnings -> {
+                startActivity(Intent(this, HotelEarningsActivity::class.java))
+            }
+            R.id.nav_reports -> {
+                startActivity(Intent(this, HotelReportsActivity::class.java))
+            }
             R.id.nav_help     -> { /* Navigate to help */ }
             R.id.nav_terms    -> { /* Navigate to terms */ }
         }
@@ -928,8 +973,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     override fun onResume() {
         super.onResume()
-        checkForUpdate()
-        checkRequiredPermissions()
         loadHotelProfileImage()
 
         // ✅ Refresh branch details & hotel name if updated from Edit Hotel Details
@@ -940,6 +983,27 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
         updateNavHeaderBranchInfo()
 
+        currentSelectedButton = sp.getString("selected_button", "today") ?: "today"
+        selectedCalendarDate  = sp.getString("selected_calendar_date", "") ?: ""
+
+        // ✅ Visually restore selected pill without triggering simulated click events
+        selectDatePill(currentSelectedButton)
+
+        // ✅ Only load bookings if list is empty to prevent continuous page refresh / flickering
+        if (bookingList.isEmpty()) {
+            when (currentSelectedButton) {
+                "tomorrow"  -> fetchBookings(Id, "tomorrow")
+                "yesterday" -> fetchBookings(Id, "yesterday")
+                "calender"  -> {
+                    if (selectedCalendarDate.isNotEmpty()) {
+                        fetchBookings(Id, "specific_date", selectedCalendarDate)
+                    } else {
+                        fetchBookings(Id, "today")
+                    }
+                }
+                else        -> fetchBookings(Id, "today")
+            }
+        }
         // ✅ Single source of truth for refreshing bookings
         refreshCurrentTab()
     }
@@ -970,8 +1034,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val layoutDropdown = headerView.findViewById<View>(R.id.layoutHotelBranchDropdown)
         val btnDropdown = headerView.findViewById<View>(R.id.btnDropdownBranch)
         val btnPill = headerView.findViewById<View>(R.id.btnBranchSelectorPill)
-        val layoutBranchInfoCard = headerView.findViewById<View>(R.id.layoutBranchInfoCard)
-        val tvBranchViewMore = headerView.findViewById<View>(R.id.tvBranchViewMore)
 
         val openPickerListener = View.OnClickListener {
             showHotelBranchPickerBottomSheet()
@@ -980,12 +1042,6 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         layoutDropdown?.setOnClickListener(openPickerListener)
         btnDropdown?.setOnClickListener(openPickerListener)
         btnPill?.setOnClickListener(openPickerListener)
-
-        val openDetailsListener = View.OnClickListener {
-            showBranchDetailsBottomSheet()
-        }
-        layoutBranchInfoCard?.setOnClickListener(openDetailsListener)
-        tvBranchViewMore?.setOnClickListener(openDetailsListener)
 
         updateNavHeaderBranchInfo()
     }
@@ -1002,22 +1058,12 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val tvPartnerId = headerView.findViewById<TextView>(R.id.tvHotelPartnerId)
         val tvBadge = headerView.findViewById<TextView>(R.id.tvSelectedBranchBadge)
         val tvInitials = headerView.findViewById<TextView>(R.id.tvHotelProfileInitials)
-        val tvBranchCode = headerView.findViewById<TextView>(R.id.tvBranchCode)
-        val tvBranchLocation = headerView.findViewById<TextView>(R.id.tvBranchLocation)
-        val tvBranchRooms = headerView.findViewById<TextView>(R.id.tvBranchRooms)
-        val tvBranchCategory = headerView.findViewById<TextView>(R.id.tvBranchCategory)
-        val tvBranchPropertyType = headerView.findViewById<TextView>(R.id.tvBranchPropertyType)
 
         name = currentBranch.name
         tvHotelName?.text = currentBranch.name
         tvPartnerId?.text = currentBranch.partnerId
         tvBadge?.text = "${currentBranch.locality} (${currentBranch.branchTag})"
         tvInitials?.text = currentBranch.initials
-        tvBranchCode?.text = "BRANCH ID #${currentBranch.id}"
-        tvBranchLocation?.text = currentBranch.address
-        tvBranchRooms?.text = "${currentBranch.totalRooms} Rooms"
-        tvBranchCategory?.text = "${currentBranch.categoryStars}-Star Luxury"
-        tvBranchPropertyType?.text = currentBranch.propertyType
 
         // Update main screen toolbar
         findViewById<TextView>(R.id.hotelName)?.text = currentBranch.name
