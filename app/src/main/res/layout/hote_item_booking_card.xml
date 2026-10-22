@@ -66,20 +66,6 @@
                 android:textColor="#B45309"
                 android:textSize="11sp"
                 android:textStyle="bold" />
-
-            <!-- 3 Dots Overflow Menu -->
-            <ImageView
-                android:id="@+id/ivOverflow"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="6dp"
-                android:padding="4dp"
-                android:src="@drawable/three_dot_black"
-                app:tint="#757575"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:contentDescription="More options" />
         </LinearLayout>
 
         <!-- ============ 2. CUSTOMER INFO ROW ============ -->
@@ -141,14 +127,12 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="8dp">
 
-            <!-- Calendar Icon -->
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:src="@drawable/calendar_month_24"
                 app:tint="#546E7A" />
 
-            <!-- Date -->
             <TextView
                 android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
@@ -159,7 +143,6 @@
                 android:textStyle="bold"
                 android:textColor="#1A1A1A" />
 
-            <!-- Divider Dot -->
             <TextView
                 android:id="@+id/tvDateTimeDivider"
                 android:layout_width="wrap_content"
@@ -169,14 +152,12 @@
                 android:textSize="13sp"
                 android:textColor="#B0BEC5" />
 
-            <!-- Clock Icon -->
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:src="@android:drawable/ic_lock_idle_alarm"
                 app:tint="#546E7A" />
 
-            <!-- Time -->
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
@@ -187,13 +168,11 @@
                 android:textColor="#1A1A1A"
                 android:textStyle="bold" />
 
-            <!-- Spacer (pushes duration chip to the right) -->
             <View
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1" />
 
-            <!-- Duration Chip -->
             <TextView
                 android:id="@+id/tvTotalDuration"
                 android:layout_width="wrap_content"
@@ -221,7 +200,6 @@
             android:paddingHorizontal="12dp"
             android:paddingVertical="10dp">
 
-            <!-- Expert Profile Photo with Shimmer -->
             <FrameLayout
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -239,17 +217,27 @@
                         android:background="@color/white" />
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
-                <ImageView
-                    android:id="@+id/ivExpertPhoto"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="50dp"
+                    android:layout_height="45dp"
                     android:layout_gravity="center"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_person"
-                    android:contentDescription="Expert photo" />
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="@android:color/transparent">
+
+                    <ImageView
+                        android:id="@+id/ivExpertAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_avatar_placeholder"
+                        android:contentDescription="Expert avatar"
+                        app:tint="@null" />
+
+                </com.google.android.material.card.MaterialCardView>
             </FrameLayout>
 
-            <!-- Expert Name & Role -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -296,26 +284,51 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- ============ 5. ACTION BUTTON ============ -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCall"
+        <!-- ============ ACTION BUTTONS ROW ============ -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="14dp"
-            android:text="Call Expert"
-            android:textSize="13sp"
-            android:textAllCaps="true"
-            android:textColor="#1A56DB"
-            app:icon="@drawable/baseline_call_24"
-            app:iconSize="14dp"
-            app:iconTint="#1A56DB"
-            app:iconGravity="textStart"
-            app:iconPadding="6dp"
-            app:backgroundTint="#FFFFFF"
-            app:strokeColor="#1A56DB"
-            app:strokeWidth="1dp"
-            app:cornerRadius="10dp"
-            app:elevation="0dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCall"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:text="Call Expert"
+                android:textSize="13sp"
+                android:textAllCaps="true"
+                android:textColor="#1A56DB"
+                app:icon="@drawable/baseline_call_24"
+                app:iconSize="13sp"
+                app:iconTint="#1A56DB"
+                app:iconGravity="textStart"
+                app:iconPadding="6dp"
+                app:backgroundTint="#FFFFFF"
+                app:strokeColor="#1A56DB"
+                app:strokeWidth="1dp"
+                app:cornerRadius="10dp"
+                app:elevation="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHelp"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:text="Help"
+                android:textSize="13sp"
+                android:textAllCaps="true"
+                android:textColor="#FFFFFF"
+                app:iconSize="13sp"
+                app:iconTint="#FFFFFF"
+                app:iconGravity="textStart"
+                app:iconPadding="6dp"
+                app:backgroundTint="#1A56DB"
+                app:cornerRadius="10dp"
+                app:elevation="0dp" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

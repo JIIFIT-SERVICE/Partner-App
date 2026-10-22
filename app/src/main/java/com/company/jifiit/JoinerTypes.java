@@ -15,9 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -86,6 +89,23 @@ public class JoinerTypes extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+// EDGE TO EDGE
+// =========================
+
+        EdgeToEdge.enable(this);
+
+// =========================
+// SYSTEM BAR
+// =========================
+
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
 
         setContentView(R.layout.activity_joiner_types);
 
@@ -182,7 +202,11 @@ public class JoinerTypes extends AppCompatActivity {
 
             btnExpertApply.setOnClickListener(v -> {
 
-                // Open Expert application here
+                startActivity(new Intent(JoinerTypes.this, Register.class ));
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
 
             });
         }
