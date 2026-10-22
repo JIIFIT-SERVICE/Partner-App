@@ -128,7 +128,7 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
-
+    implementation("com.google.android.material:material:1.14.0")
 
 
 }
