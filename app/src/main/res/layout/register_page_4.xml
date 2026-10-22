@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F7FB"
+    android:fillViewport="true"
+    android:clipToPadding="false"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="22dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="28dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ALMOST THERE"
+                android:textColor="#64748B"
+                android:textSize="11sp"
+                android:letterSpacing="0.12"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="One last step."
+                android:textColor="#14213D"
+                android:textSize="29sp"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:text="Complete your registration and get started with your Jiifit professional account."
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                android:lineSpacingExtra="3dp" />
+
+        </LinearLayout>
+
+        <!-- Main card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Referral icon -->
+            <LinearLayout
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:background="#EFF6FF"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="%"
+                    android:textColor="#2563EB"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Got a referral code?"
+                android:textColor="#14213D"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="If someone referred you to Jiifit, enter their code below. You can also skip this step if you don't have one."
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                android:lineSpacingExtra="3dp" />
+
+            <!-- Optional badge -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="REFERRAL CODE"
+                android:textColor="#24324B"
+                android:textSize="12sp"
+                android:letterSpacing="0.04"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="9dp"
+                android:background="@drawable/bg_input_field"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="12dp">
+
+                <EditText
+                    android:id="@+id/reg_referral"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Enter referral code"
+                    android:inputType="textCapCharacters|textNoSuggestions"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:singleLine="true"
+                    android:textColor="#14213D"
+                    android:textColorHint="#94A3B8"
+                    android:textSize="15sp"
+                    android:letterSpacing="0.04" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#E2E8F0"
+                    android:paddingStart="9dp"
+                    android:paddingEnd="9dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="OPTIONAL"
+                    android:textColor="#475569"
+                    android:textSize="9sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Optional note -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="#F8FAFC"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:gravity="center"
+                    android:text="i"
+                    android:textColor="#2563EB"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="No referral code? No problem. You can continue without one."
+                    android:textColor="#64748B"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="2dp" />
+
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="#E8EDF4" />
+
+            <!-- Existing sign-in action -->
+            <TextView
+                android:id="@+id/do_you"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/do_you_have_an_account_sign_in"
+                android:textColor="#2563EB"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+        <!-- Footer -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="Your professional journey with Jiifit starts here."
+            android:textColor="#94A3B8"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+</ScrollView>

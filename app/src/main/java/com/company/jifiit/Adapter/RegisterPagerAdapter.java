@@ -1,3 +1,4 @@
+
 package com.company.jifiit.Adapter;
 
 import android.view.LayoutInflater;
@@ -15,29 +16,43 @@ public class RegisterPagerAdapter
     private final int[] layouts = {
             R.layout.register_page_1,
             R.layout.register_page_2,
-            R.layout.register_page_3
+            R.layout.register_page_3,
+            R.layout.register_page_4
     };
-
-    public RegisterPagerAdapter() { }
 
     @NonNull
     @Override
-    public PageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PageViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType
+    ) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(viewType, parent, false);
+
         return new PageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PageViewHolder holder, int position) { }
+    public void onBindViewHolder(
+            @NonNull PageViewHolder holder,
+            int position
+    ) {
+        // Page views are initialized from Register.java.
+    }
 
     @Override
-    public int getItemCount() { return layouts.length; }
+    public int getItemCount() {
+        return layouts.length;
+    }
 
     @Override
-    public int getItemViewType(int position) { return layouts[position]; }
+    public int getItemViewType(int position) {
+        return layouts[position];
+    }
 
     static class PageViewHolder extends RecyclerView.ViewHolder {
-        public PageViewHolder(@NonNull View itemView) { super(itemView); }
+        PageViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
     }
 }

@@ -187,6 +187,7 @@ public class Constant {
     public static String HOTEL_FETCH_TIME_SLOT = "https://jiifit.com/Jifiit/Hotel/get_available_slots.php";
     public static String CANCEL_HOTEL_BOOKING = "https://jiifit.com/Jifiit/Hotel/hotel_cancel_booking.php";
     public static String RESCHEDULE_HOTEL_BOOKING = "https://jiifit.com/Jifiit/Hotel/hotel_reshedule_booking.php";
+    public static String get_areas_by_city = "https://jiifit.com/Jifiit/Hotel/get_areas.php";
 }
 
 
