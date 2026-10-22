@@ -168,6 +168,12 @@
             android:label=""
             android:theme="@style/Theme.Jifiit.Fullscreen" />
         <activity
+            android:name=".ExpertEarningActivity"
+            android:exported="false"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Jifiit.Fullscreen" />
+        <activity
             android:name=".SplashActivityNew"
             android:exported="false"
             android:label=""
