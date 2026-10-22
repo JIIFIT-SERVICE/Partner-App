@@ -1,136 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="false"
+    tools:context=".Hotel.ManageRoomsActivity">
 
-    <!-- Top Navigation Header -->
+    <!-- MAIN CONTENT -->
     <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="12dp">
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:orientation="vertical">
 
-        <!-- Back Link Button -->
-        <LinearLayout
-            android:id="@+id/btnBackToDashboard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingVertical="4dp">
+        <!-- Unified Hotel Header -->
+        <include
+            android:id="@+id/layoutHotelHeader"
+            layout="@layout/layout_hotel_header" />
 
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/arrow_back_24"
-                app:tint="#0B4F4F" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Back to Concierge Dashboard"
-                android:textColor="#0B4F4F"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Title Row: Manage Hotel Rooms + Towers Badge -->
+        <!-- Top Navigation Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <!-- Top Row: Title + East & West Towers Badge -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvManageRoomsTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Manage Hotel Rooms"
+                    android:textColor="#0F172A"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <!-- East & West Towers Badge -->
+                <TextView
+                    android:id="@+id/tvTowersBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge_towers"
+                    android:gravity="center"
+                    android:lineSpacingExtra="2dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="6dp"
+                    android:text="East &amp; West\nTowers"
+                    android:textColor="@color/hotel_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tvManageRoomsTitle"
-                android:layout_width="0dp"
+                android:id="@+id/tvManageRoomsSubtitle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Manage Hotel Rooms\n(140 Keys)"
-                android:textColor="#0F172A"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="4dp"
+                android:text="Real-time guest occupancy &amp; in-room wellness ordering"
+                android:textColor="#64748B"
+                android:textSize="13sp" />
 
-            <!-- East & West Towers Badge -->
-            <TextView
-                android:id="@+id/tvTowersBadge"
-                android:layout_width="wrap_content"
+            <!-- Row with Add Floor, Delete Floor, Add Room -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_badge_towers"
-                android:gravity="center"
-                android:lineSpacingExtra="2dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="8dp"
-                android:text="East &amp; West\nTowers"
-                android:textColor="#0F766E"
-                android:textSize="11sp"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddFloor"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#EFF6FF"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="+ Add Floor"
+                    android:textAllCaps="false"
+                    android:textColor="@color/hotel_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="#93C5FD"
+                    app:strokeWidth="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDeleteFloor"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FEF2F2"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Delete Floor"
+                    android:textAllCaps="false"
+                    android:textColor="#DC2626"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="#FECACA"
+                    app:strokeWidth="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddRoom"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/hotel_primary"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="+ Add Room"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="8dp"
+                    app:strokeWidth="0dp" />
+            </LinearLayout>
+
+            <!-- Floor Selector Pills (Floor 1, 2, 3, 4, 5) -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutFloorTabs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <!-- Floor Status Summary -->
+            <TextView
+                android:id="@+id/tvFloorRoomsSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Floor 3 • 12 Active Rooms"
+                android:textColor="@color/hotel_primary"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Subtitle description -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:lineSpacingExtra="3dp"
-            android:text="Quick concierge booking by room number. Tap any room to dispatch In-Room Massage, Yoga, or Ayurveda."
-            android:textColor="#64748B"
-            android:textSize="13sp" />
-
+        <!-- Divider line -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="14dp"
-            android:background="#E2E8F0" />
-    </LinearLayout>
+            android:background="#F1F5F9" />
 
-    <!-- Floor Selector Horizontal Section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:paddingBottom="14dp">
-
-        <HorizontalScrollView
+        <!-- Empty State Container -->
+        <LinearLayout
+            android:id="@+id/layoutEmptyRooms"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingHorizontal="16dp"
-            android:scrollbars="none">
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone">
 
-            <LinearLayout
-                android:id="@+id/layoutFloorTabs"
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_bed"
+                app:tint="#CBD5E1" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" />
+                android:layout_marginTop="16dp"
+                android:text="No Rooms on this Floor"
+                android:textColor="#1E293B"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-        </HorizontalScrollView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Use the '+ Add Room' button above to create hotel rooms."
+                android:textColor="#64748B"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Rooms Grid Section -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRoomsGrid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#F8FAFC"
+            android:clipToPadding="false"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="24dp"
+            tools:listitem="@layout/item_manage_room_card" />
+
     </LinearLayout>
 
-    <!-- Rooms Grid Section -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvRoomsGrid"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingHorizontal="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="24dp"
-        tools:listitem="@layout/item_manage_room_card" />
+    <!-- NAVIGATION DRAWER -->
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/white"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            app:headerLayout="@layout/hotel_nav_header_drawer"
+            app:menu="@menu/hotel_menu_drawer"
+            app:itemTextColor="@color/nav_menu_item_text_color"
+            app:itemIconTint="@color/nav_menu_item_icon_tint"
+            app:itemShapeFillColor="@color/nav_menu_item_shape_color"
+            app:itemHorizontalPadding="16dp"
+            app:itemVerticalPadding="4dp"/>
+
+        <include layout="@layout/nav_footer_drawer" />
+
+    </LinearLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

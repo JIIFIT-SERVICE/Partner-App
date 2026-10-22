@@ -17,7 +17,7 @@
 
     <!-- Body -->
     <path
-        android:fillColor="#14B8A6"
+        android:fillColor="#3B82F6"
         android:pathData="M24,15 C20,15 17,18 17,22 L17,28 C17,29 18,30 19,30 L29,30 C30,30 31,29 31,28 L31,22 C31,18 28,15 24,15 Z" />
 
     <!-- Arms -->
@@ -30,9 +30,9 @@
 
     <!-- Crossed legs (meditation) -->
     <path
-        android:fillColor="#0B4F4F"
+        android:fillColor="#1E3A8A"
         android:pathData="M14,32 L34,32 L34,36 L14,36 Z" />
     <path
-        android:fillColor="#0B4F4F"
+        android:fillColor="#1E3A8A"
         android:pathData="M18,30 L30,30 L30,34 L18,34 Z" />
 </vector>

@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- ============ HEADER ROW ============ -->
+        <!-- ============ 1. HEADER ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,6 +31,7 @@
                 android:textStyle="bold"
                 android:textColor="#1A1A1A" />
 
+            <!-- In-Room Tag -->
             <TextView
                 android:id="@+id/tvInRoomTag"
                 android:layout_width="wrap_content"
@@ -44,31 +45,34 @@
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
+            <!-- Spacer -->
             <View
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1" />
 
+            <!-- Status Tag (COMPLETED / PENDING / CANCELLED) -->
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PENDING"
-                android:drawableTint="#FF9800"
-                android:drawablePadding="4dp"
-                android:textColor="#FF9800"
-                android:background="@drawable/bg_tag_pending"
+                android:background="@drawable/bg_status_pending_pill"
+                android:drawableStart="@drawable/ic_pending"
+                android:drawablePadding="5dp"
+                android:gravity="center"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="3dp"
-                android:textSize="10sp"
+                android:paddingVertical="4dp"
+                android:text="PENDING"
+                android:textColor="#B45309"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- ============ CUSTOMER INFO ROW ============ -->
+        <!-- ============ 2. CUSTOMER INFO ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:gravity="center_vertical">
 
             <FrameLayout
@@ -112,7 +116,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- ============ DATE • TIME • DURATION PILL ============ -->
+        <!-- ============ 3. DATE • TIME • DURATION PILL ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,6 +144,7 @@
                 android:textColor="#1A1A1A" />
 
             <TextView
+                android:id="@+id/tvDateTimeDivider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="6dp"
@@ -160,7 +165,8 @@
                 android:layout_marginStart="6dp"
                 android:text="07:00 PM"
                 android:textSize="13sp"
-                android:textColor="#1A1A1A" />
+                android:textColor="#1A1A1A"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="0dp"
@@ -183,19 +189,20 @@
                 app:drawableTint="#1A56DB" />
         </LinearLayout>
 
-        <!-- ============ ASSIGNED EXPERT ROW ============ -->
+        <!-- ============ 4. ASSIGNED EXPERT & COMMISSION ROW ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_rounded_light_gray"
+            android:background="@drawable/bg_expert_card_row"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="10dp">
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp">
 
             <FrameLayout
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/bg_circle_expert_photo">
 
                 <com.facebook.shimmer.ShimmerFrameLayout
@@ -234,26 +241,47 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:layout_marginStart="12dp"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvExpertRole"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Assigned Expert"
-                    android:textSize="11sp"
-                    android:textColor="#757575" />
+                    android:text="ASSIGNED EXPERT"
+                    android:textColor="#64748B"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.04" />
 
                 <TextView
                     android:id="@+id/tvExpertName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Jakir Hosen"
+                    android:layout_marginTop="2dp"
+                    android:text="Rohan Sharma"
+                    android:textColor="#0F172A"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#1A1A1A" />
+                    android:textStyle="bold" />
             </LinearLayout>
+
+            <!-- Commission Info / Badge -->
+            <TextView
+                android:id="@+id/tvCardCommission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_commission_badge"
+                android:drawableStart="@drawable/rupee_24"
+                android:drawablePadding="3dp"
+                android:drawableTint="#059669"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="9dp"
+                android:paddingVertical="4dp"
+                android:text="₹100 Commission"
+                android:textColor="#059669"
+                android:textSize="11sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- ============ ACTION BUTTONS ROW ============ -->

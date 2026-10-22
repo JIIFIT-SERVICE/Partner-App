@@ -7,44 +7,37 @@
             android:id="@+id/nav_overview"
             android:icon="@drawable/ic_hotel"
             android:title="My Hotel"
-            android:iconTint="@color/Gray"
             app:actionLayout="@layout/nav_item_hotel_edit" />
         <item
             android:id="@+id/nav_rooms"
             android:icon="@drawable/ic_bed"
-            android:title="Manage Rooms"
-            android:iconTint="@color/Gray"/>
+            android:title="Manage Rooms" />
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/history_24"
-            android:title="Booking History"
-            android:iconTint="@color/Gray"/>
+            android:title="Booking History" />
         <item
             android:id="@+id/nav_earnings"
             android:icon="@drawable/rupee_24"
-            android:title="My Earnings"
-            android:iconTint="@color/Gray"
-            app:actionLayout="@layout/nav_item_earnings"/>
+            android:title="Commission History"
+            app:actionLayout="@layout/nav_item_earnings" />
         <item
             android:id="@+id/nav_reports"
             android:icon="@drawable/ic_chart"
-            android:title="Reports"
-            android:iconTint="@color/Gray"/>
+            android:title="Reports" />
     </group>
+
     <item android:title="Comunicate">
         <menu>
             <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/help"
-                android:title="Help &amp; Support"
-                android:iconTint="@color/Gray"/>
+                android:title="Help &amp; Support" />
             <item
                 android:id="@+id/nav_terms"
                 android:icon="@drawable/ic_shield"
-                android:title="Terms &amp; Condition"
-                android:iconTint="@color/Gray"/>
-
-         </menu>
+                android:title="Terms &amp; Condition" />
+        </menu>
     </item>
 
 </menu>

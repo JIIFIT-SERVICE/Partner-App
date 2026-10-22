@@ -11,7 +11,7 @@
     android:orientation="vertical"
     android:padding="14dp">
 
-    <!-- Top Row: Room Title + Bed Icon -->
+    <!-- Top Row: Room Title + Bed Icon + Delete Room Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,10 +32,21 @@
 
         <ImageView
             android:id="@+id/ivBed"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:src="@drawable/ic_bed"
             app:tint="#64748B" />
+
+        <ImageView
+            android:id="@+id/btnDeleteRoom"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete Room"
+            android:padding="4dp"
+            android:src="@drawable/ic_delete"
+            app:tint="#EF4444" />
     </LinearLayout>
 
     <!-- Subtitle: Room Type -->
@@ -43,44 +54,48 @@
         android:id="@+id/tvRoomType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Presidential Suite"
         android:textColor="#64748B"
         android:textSize="12sp" />
 
-    <!-- Action container: Either Book Session button or Active Session badge -->
-    <FrameLayout
+    <!-- Status Row -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
 
-        <!-- Available State: + Book Session -->
-        <TextView
-            android:id="@+id/btnBookSession"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:background="@drawable/bg_btn_book_session"
-            android:gravity="center"
-            android:text="+ Book Session"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <!-- Booked / Active Session State -->
+        <!-- Active Session Badge -->
         <TextView
             android:id="@+id/tvActiveSessionBadge"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@drawable/bg_room_active_badge"
-            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
             android:text="MASSAGE • 01:00 PM"
-            android:textColor="#0F766E"
-            android:textSize="11sp"
+            android:textColor="@color/hotel_primary"
+            android:textSize="10sp"
             android:textStyle="bold"
             android:visibility="gone" />
 
-    </FrameLayout>
+        <!-- Available Badge -->
+        <TextView
+            android:id="@+id/tvAvailableBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge_towers"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="Available"
+            android:textColor="@color/hotel_primary"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
 </LinearLayout>

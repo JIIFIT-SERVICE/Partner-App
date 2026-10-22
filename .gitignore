@@ -27,6 +27,7 @@ local.properties
 .idea/navEditor.xml
 .idea/assetWizardSettings.xml
 .idea/deviceHardwareInput.xml
+
 .idea/usage.statistics.xml
 
 # Native builds

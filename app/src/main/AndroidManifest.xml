@@ -90,10 +90,27 @@
         <activity
             android:name=".Hotel.ManageRoomsActivity"
             android:exported="false"
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.HotelBookingHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.HotelEarningsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Hotel.HotelReportsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Hotel.EditHotelDetailsActivity"
             android:exported="false"
+            android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Hotel.Expert_activity"
