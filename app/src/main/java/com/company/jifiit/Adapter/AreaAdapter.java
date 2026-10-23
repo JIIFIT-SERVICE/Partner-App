@@ -1,4 +1,3 @@
-
 package com.company.jifiit.Adapter;
 
 import android.content.res.ColorStateList;
@@ -16,8 +15,6 @@ import com.company.jifiit.R;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Locale;
 import java.util.Set;
 
 public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.AreaViewHolder> {
@@ -36,9 +33,7 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.AreaViewHolder
         void onSelectionChanged();
     }
 
-    private final ArrayList<Area> allAreas = new ArrayList<>();
-    private final ArrayList<Area> visibleAreas = new ArrayList<>();
-
+    private final ArrayList<Area> selectedAreas = new ArrayList<>();
     private final Set<String> selectedIds;
     private final SelectionListener listener;
 
@@ -50,32 +45,70 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.AreaViewHolder
         this.listener = listener;
     }
 
-    public void setAreas(ArrayList<Area> areas) {
-        allAreas.clear();
-        allAreas.addAll(areas);
-        filter("");
+    public boolean addArea(Area area) {
+        if (area == null) return false;
+        if (!selectedIds.contains(area.id)) {
+            if (selectedIds.size() >= 15) {
+                return false;
+            }
+            selectedIds.add(area.id);
+            selectedAreas.add(area);
+            notifyItemInserted(selectedAreas.size() - 1);
+            if (listener != null) {
+                listener.onSelectionChanged();
+            }
+            return true;
+        }
+        return false;
     }
 
-    public void filter(String query) {
-        visibleAreas.clear();
-
-        String search = query == null
-                ? ""
-                : query.trim().toLowerCase(Locale.ROOT);
-
-        for (Area area : allAreas) {
-            if (area.name.toLowerCase(Locale.ROOT).contains(search)) {
-                visibleAreas.add(area);
+    public void removeArea(Area area) {
+        if (area == null) return;
+        int index = -1;
+        for (int i = 0; i < selectedAreas.size(); i++) {
+            if (selectedAreas.get(i).id.equals(area.id)) {
+                index = i;
+                break;
             }
         }
+        selectedIds.remove(area.id);
+        if (index != -1) {
+            selectedAreas.remove(index);
+            notifyItemRemoved(index);
+        } else {
+            notifyDataSetChanged();
+        }
+        if (listener != null) {
+            listener.onSelectionChanged();
+        }
+    }
 
+    public void syncSelected(ArrayList<Area> allAvailableAreas) {
+        selectedAreas.clear();
+        if (allAvailableAreas != null) {
+            for (Area a : allAvailableAreas) {
+                if (selectedIds.contains(a.id)) {
+                    selectedAreas.add(a);
+                }
+            }
+        }
         notifyDataSetChanged();
+        if (listener != null) {
+            listener.onSelectionChanged();
+        }
     }
 
     public void clear() {
-        allAreas.clear();
-        visibleAreas.clear();
+        selectedAreas.clear();
+        selectedIds.clear();
         notifyDataSetChanged();
+        if (listener != null) {
+            listener.onSelectionChanged();
+        }
+    }
+
+    public ArrayList<Area> getSelectedAreas() {
+        return selectedAreas;
     }
 
     @NonNull
@@ -95,55 +128,32 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.AreaViewHolder
             @NonNull AreaViewHolder holder,
             int position
     ) {
-        Area area = visibleAreas.get(position);
-        boolean selected = selectedIds.contains(area.id);
+        Area area = selectedAreas.get(position);
 
         holder.name.setText(area.name);
 
         holder.card.setStrokeColor(ColorStateList.valueOf(
-                Color.parseColor(selected ? "#1F5FE0" : "#DFE6F0")
+                Color.parseColor("#BFDBFE")
         ));
 
         holder.card.setCardBackgroundColor(
-                Color.parseColor(selected ? "#EAF1FF" : "#FFFFFF")
+                Color.parseColor("#EFF6FF")
         );
 
-        holder.check.setImageResource(
-                selected
-                        ? android.R.drawable.checkbox_on_background
-                        : android.R.drawable.checkbox_off_background
-        );
-
-        holder.check.setImageTintList(ColorStateList.valueOf(
-                Color.parseColor(selected ? "#1F5FE0" : "#8491A5")
-        ));
+        holder.check.setImageResource(R.drawable.ic_chip_close);
+        holder.check.setImageTintList(ColorStateList.valueOf(Color.parseColor("#EF4444")));
 
         holder.name.setTextColor(
-                Color.parseColor(selected ? "#1F5FE0" : "#24344D")
+                Color.parseColor("#1E3A8A")
         );
 
-        holder.itemView.setOnClickListener(v -> {
-            if (selectedIds.contains(area.id)) {
-                selectedIds.remove(area.id);
-            } else {
-                selectedIds.add(area.id);
-            }
-
-            int currentPosition = holder.getBindingAdapterPosition();
-
-            if (currentPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(currentPosition);
-            }
-
-            if (listener != null) {
-                listener.onSelectionChanged();
-            }
-        });
+        holder.itemView.setOnClickListener(v -> removeArea(area));
+        holder.check.setOnClickListener(v -> removeArea(area));
     }
 
     @Override
     public int getItemCount() {
-        return visibleAreas.size();
+        return selectedAreas.size();
     }
 
     static class AreaViewHolder extends RecyclerView.ViewHolder {

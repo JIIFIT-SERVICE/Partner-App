@@ -157,9 +157,11 @@ public class Register extends AppCompatActivity {
     // PAGE 3 - PREFERENCES / SERVICE AREAS
     // ============================================================
 
+    private MaterialAutoCompleteTextView actvCityDropdown;
     private MaterialAutoCompleteTextView actvAreaDropdown;
     private RecyclerView rvAreas;
     private TextView tvTotalAreas;
+    private View llNoAreasSelected;
 
     private AreaAdapter areaAdapter;
 
@@ -407,6 +409,9 @@ public class Register extends AppCompatActivity {
 
             case 2:
 
+                actvCityDropdown =
+                        pageView.findViewById(R.id.actvCityDropdown);
+
                 actvAreaDropdown =
                         pageView.findViewById(R.id.actvAreaDropdown);
 
@@ -415,6 +420,37 @@ public class Register extends AppCompatActivity {
                 tvTotalAreas =
                         pageView.findViewById(R.id.tvTotalAreas);
 
+                llNoAreasSelected =
+                        pageView.findViewById(R.id.llNoAreasSelected);
+
+                View cityContainer = pageView.findViewById(R.id.cityContainer);
+                if (cityContainer != null) {
+                    cityContainer.setOnClickListener(v -> {
+                        if (actvCityDropdown != null) {
+                            if (cityNames.isEmpty()) {
+                                loadCities();
+                            } else {
+                                actvCityDropdown.showDropDown();
+                            }
+                        }
+                    });
+                }
+
+                View areaContainer = pageView.findViewById(R.id.areaContainer);
+                if (areaContainer != null) {
+                    areaContainer.setOnClickListener(v -> {
+                        if (actvAreaDropdown != null) {
+                            actvAreaDropdown.requestFocus();
+                            if (TextUtils.isEmpty(selectedCityId)) {
+                                Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
+                            } else {
+                                actvAreaDropdown.showDropDown();
+                            }
+                        }
+                    });
+                }
+
+                setupCityDropdownPage3();
                 setupAreaPreferences();
 
                 break;
@@ -447,6 +483,93 @@ public class Register extends AppCompatActivity {
     }
 
     // ============================================================
+    // PAGE 3 - CITY PREFERENCES
+    // ============================================================
+
+    private void setupCityDropdownPage3() {
+        if (actvCityDropdown == null) {
+            return;
+        }
+
+        refreshCityDropdownPage3();
+
+        actvCityDropdown.setOnClickListener(v -> {
+            if (cityNames.isEmpty()) {
+                loadCities();
+            } else {
+                actvCityDropdown.showDropDown();
+            }
+        });
+
+        actvCityDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            Object selectedItem = parent.getItemAtPosition(position);
+            if (selectedItem == null) return;
+
+            String selectedCityName = selectedItem.toString();
+            int which = cityNames.indexOf(selectedCityName);
+            if (which >= 0 && which < cityIds.size()) {
+                onCitySelectedPage3(cityIds.get(which), selectedCityName);
+            }
+        });
+
+        if (cityNames.isEmpty() && !cityLoaded) {
+            loadCities();
+        }
+    }
+
+    private void refreshCityDropdownPage3() {
+        if (actvCityDropdown == null) return;
+
+        if (!cityNames.isEmpty()) {
+            ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    cityNames
+            );
+            actvCityDropdown.setAdapter(cityAdapter);
+        }
+
+        if (!TextUtils.isEmpty(selectedCityId) && !cityNames.isEmpty()) {
+            int idx = cityIds.indexOf(selectedCityId);
+            if (idx >= 0 && idx < cityNames.size()) {
+                actvCityDropdown.setText(cityNames.get(idx), false);
+            }
+        } else if (regCity != null && !TextUtils.isEmpty(regCity.getText())) {
+            actvCityDropdown.setText(regCity.getText().toString(), false);
+        }
+    }
+
+    private void onCitySelectedPage3(String newCityId, String newCityName) {
+        boolean cityChanged = !newCityId.equals(selectedCityId);
+        selectedCityId = newCityId;
+
+        if (actvCityDropdown != null) {
+            actvCityDropdown.setText(newCityName, false);
+        }
+        if (regCity != null) {
+            regCity.setText(newCityName);
+        }
+
+        if (cityChanged) {
+            allAreas.clear();
+            selectedAreaIds.clear();
+            areasLoaded = false;
+            isLoadingAreas = false;
+            areasLoadedCityId = "";
+
+            if (areaAdapter != null) {
+                areaAdapter.clear();
+            }
+
+            setupAreaDropdownAdapter();
+            updateAreaCount();
+        }
+
+        loadAreasByCity();
+        validateCurrentPage();
+    }
+
+    // ============================================================
     // PAGE 3 - AREA PREFERENCES
     // ============================================================
 
@@ -476,6 +599,20 @@ public class Register extends AppCompatActivity {
         actvAreaDropdown.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
         actvAreaDropdown.setFocusableInTouchMode(true);
 
+        actvAreaDropdown.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (TextUtils.isEmpty(selectedCityId)) {
+                    Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
+                    if (actvCityDropdown != null) {
+                        actvCityDropdown.requestFocus();
+                        actvCityDropdown.showDropDown();
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
+
         actvAreaDropdown.setOnItemClickListener(
                 (parent, view, position, id) -> {
 
@@ -488,13 +625,29 @@ public class Register extends AppCompatActivity {
                         if (area.name.equals(selectedName)) {
 
                             if (selectedAreaIds.contains(area.id)) {
-                                selectedAreaIds.remove(area.id);
-                            } else {
-                                selectedAreaIds.add(area.id);
+                                Toast.makeText(
+                                        Register.this,
+                                        "Area is already selected",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                actvAreaDropdown.setText("", false);
+                                return;
+                            }
+
+                            if (selectedAreaIds.size() >= 15) {
+                                Toast.makeText(
+                                        Register.this,
+                                        "You can select up to 15 areas only",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                actvAreaDropdown.setText("", false);
+                                return;
                             }
 
                             if (areaAdapter != null) {
-                                areaAdapter.notifyDataSetChanged();
+                                areaAdapter.addArea(area);
+                            } else {
+                                selectedAreaIds.add(area.id);
                             }
                             break;
                         }
@@ -503,7 +656,7 @@ public class Register extends AppCompatActivity {
                     updateAreaCount();
                     validateCurrentPage();
 
-                    // Clear text so dropdown doesn't stay open.
+                    // Clear text so dropdown doesn't stay open and user can select the next area.
                     actvAreaDropdown.setText("", false);
                 }
         );
@@ -513,33 +666,35 @@ public class Register extends AppCompatActivity {
         // Only load if the city is set.
         if (!TextUtils.isEmpty(selectedCityId)) {
             loadAreasByCity();
-        } else {
-            Toast.makeText(this, "Please select a city first", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void updateAreaCount() {
         if (tvTotalAreas != null) {
             tvTotalAreas.setText(
-                    selectedAreaIds.size() + " selected"
+                    selectedAreaIds.size() + " / 15 selected"
             );
+        }
+
+        if (llNoAreasSelected != null && rvAreas != null) {
+            if (selectedAreaIds.isEmpty()) {
+                llNoAreasSelected.setVisibility(View.VISIBLE);
+                rvAreas.setVisibility(View.GONE);
+            } else {
+                llNoAreasSelected.setVisibility(View.GONE);
+                rvAreas.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     /**
-     * Load service areas for the selected city.
-     *
-     * Expected response:
-     * {
-     *   "status": true,
-     *   "areas": [
-     *     {"id": "1", "name": "Salt Lake"},
-     *     {"id": "2", "name": "New Town"}
-     *   ]
-     * }
+     * Load service areas for the selected city from get_area.php?city_id=
      */
-
     private void loadAreasByCity() {
+        if (TextUtils.isEmpty(selectedCityId)) {
+            return;
+        }
+
         isLoadingAreas = true;
         areasLoaded = false;
 
@@ -547,52 +702,51 @@ public class Register extends AppCompatActivity {
         selectedAreaIds.clear();
 
         if (areaAdapter != null) {
-            areaAdapter.setAreas(allAreas);
+            areaAdapter.clear();
         }
 
         setupAreaDropdownAdapter();
         updateAreaCount();
         validateCurrentPage();
 
-        // No city_id parameter
-        String url = Constant.get_areas_by_city;
+        String url = Constant.get_localities + "?city_id=" + Uri.encode(selectedCityId);
 
         Log.d(TAG, "Area API URL: " + url);
 
-        com.android.volley.toolbox.JsonArrayRequest request =
-                new com.android.volley.toolbox.JsonArrayRequest(
+        com.android.volley.toolbox.StringRequest request =
+                new com.android.volley.toolbox.StringRequest(
                         Request.Method.GET,
                         url,
-                        null,
-
-                        // Success: API returns a JSON Array directly
-                        response -> {
+                        responseStr -> {
                             isLoadingAreas = false;
 
                             try {
-                                Log.d(TAG, "Total areas received: "
-                                        + response.length());
-
                                 allAreas.clear();
+                                String trimmed = responseStr != null ? responseStr.trim() : "";
+                                JSONArray dataArray = null;
 
-                                for (int i = 0; i < response.length(); i++) {
-                                    JSONObject item = response.optJSONObject(i);
-
-                                    if (item == null) {
-                                        continue;
+                                if (trimmed.startsWith("{")) {
+                                    JSONObject json = new JSONObject(trimmed);
+                                    if (json.has("data")) {
+                                        dataArray = json.optJSONArray("data");
+                                    } else if (json.has("areas")) {
+                                        dataArray = json.optJSONArray("areas");
                                     }
+                                } else if (trimmed.startsWith("[")) {
+                                    dataArray = new JSONArray(trimmed);
+                                }
 
-                                    String areaId = item.optString("id", "");
-                                    String areaName = item.optString("name", "");
+                                if (dataArray != null) {
+                                    for (int i = 0; i < dataArray.length(); i++) {
+                                        JSONObject item = dataArray.optJSONObject(i);
+                                        if (item == null) continue;
 
-                                    if (!TextUtils.isEmpty(areaId)
-                                            && !TextUtils.isEmpty(areaName)) {
-                                        allAreas.add(
-                                                new AreaAdapter.Area(
-                                                        areaId,
-                                                        areaName
-                                                )
-                                        );
+                                        String areaId = item.optString("id", "");
+                                        String areaName = item.optString("name", "");
+
+                                        if (!TextUtils.isEmpty(areaId) && !TextUtils.isEmpty(areaName)) {
+                                            allAreas.add(new AreaAdapter.Area(areaId, areaName));
+                                        }
                                     }
                                 }
 
@@ -600,10 +754,9 @@ public class Register extends AppCompatActivity {
                                 areasLoadedCityId = selectedCityId;
 
                                 if (areaAdapter != null) {
-                                    areaAdapter.setAreas(allAreas);
+                                    areaAdapter.syncSelected(allAreas);
                                 }
 
-                                // Refresh dropdown after areas are loaded
                                 setupAreaDropdownAdapter();
                                 updateAreaCount();
                                 validateCurrentPage();
@@ -611,7 +764,7 @@ public class Register extends AppCompatActivity {
                                 if (allAreas.isEmpty()) {
                                     Toast.makeText(
                                             Register.this,
-                                            "No areas available",
+                                            "No areas available for this city",
                                             Toast.LENGTH_SHORT
                                     ).show();
                                 }
@@ -631,8 +784,6 @@ public class Register extends AppCompatActivity {
                                 validateCurrentPage();
                             }
                         },
-
-                        // Error
                         error -> {
                             isLoadingAreas = false;
                             areasLoaded = false;
@@ -640,21 +791,15 @@ public class Register extends AppCompatActivity {
 
                             String errorMessage = "Unknown error";
 
-                            if (error instanceof
-                                    com.android.volley.TimeoutError) {
+                            if (error instanceof com.android.volley.TimeoutError) {
                                 errorMessage = "Request timeout";
-
-                            } else if (error instanceof
-                                    com.android.volley.NoConnectionError) {
+                            } else if (error instanceof com.android.volley.NoConnectionError) {
                                 errorMessage = "No internet connection";
-
                             } else if (error.networkResponse != null) {
-                                errorMessage = "HTTP "
-                                        + error.networkResponse.statusCode;
+                                errorMessage = "HTTP " + error.networkResponse.statusCode;
                             }
 
-                            Log.e(TAG, "Area API failed: "
-                                    + errorMessage, error);
+                            Log.e(TAG, "Area API failed: " + errorMessage, error);
 
                             Toast.makeText(
                                     Register.this,
@@ -831,7 +976,13 @@ public class Register extends AppCompatActivity {
                                 }
 
                                 cityLoaded = true;
-                                showCityDialog();
+                                refreshCityDropdownPage3();
+                                if (currentPage == 2 && actvCityDropdown != null) {
+                                    toggleArrowDirection(false);
+                                    actvCityDropdown.showDropDown();
+                                } else {
+                                    showCityDialog();
+                                }
 
                             } catch (Exception e) {
 
@@ -927,9 +1078,17 @@ public class Register extends AppCompatActivity {
 
                                     selectedCityId = newCityId;
 
-                                    regCity.setText(
-                                            cityNames.get(which)
-                                    );
+                                    if (regCity != null) {
+                                        regCity.setText(
+                                                cityNames.get(which)
+                                        );
+                                    }
+                                    if (actvCityDropdown != null) {
+                                        actvCityDropdown.setText(
+                                                cityNames.get(which),
+                                                false
+                                        );
+                                    }
 
                                     selectedLocalityId = "";
                                     selectedHubId = "";
@@ -949,7 +1108,7 @@ public class Register extends AppCompatActivity {
                                         areasLoadedCityId = "";
 
                                         if (areaAdapter != null) {
-                                            areaAdapter.setAreas(allAreas);
+                                            areaAdapter.clear();
                                         }
 
                                         setupAreaDropdownAdapter();
@@ -1634,8 +1793,10 @@ public class Register extends AppCompatActivity {
     }
 
     private boolean validatePreferences() {
-        return areasLoaded
-                && !selectedAreaIds.isEmpty();
+        return !TextUtils.isEmpty(selectedCityId)
+                && areasLoaded
+                && !selectedAreaIds.isEmpty()
+                && selectedAreaIds.size() <= 15;
     }
 
     private boolean validateReferral() {
