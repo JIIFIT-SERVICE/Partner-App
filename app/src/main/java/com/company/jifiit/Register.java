@@ -1,4 +1,3 @@
-
 package com.company.jifiit;
 
 import android.annotation.SuppressLint;
@@ -25,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -82,6 +82,7 @@ public class Register extends AppCompatActivity {
 
     private static final String TAG = "Register";
     private static final int TOTAL_PAGES = 4;
+    private static final int MIN_REQUIRED_AREAS = 50;
 
     private ViewPager2 viewPager;
     private Button btnNext, btnPrevious;
@@ -112,14 +113,20 @@ public class Register extends AppCompatActivity {
     private String selectedLocalityId = "";
     private String selectedHubId = "";
 
-    private final ArrayList<String> cityNames = new ArrayList<>();
-    private final ArrayList<String> cityIds = new ArrayList<>();
+    // Page 1 (status = 0)
+    private final ArrayList<String> cityNamesP1 = new ArrayList<>();
+    private final ArrayList<String> cityIdsP1 = new ArrayList<>();
+    private boolean cityLoadedP1 = false;
+
+    // Page 3 (status = 1)
+    private final ArrayList<String> cityNamesP3 = new ArrayList<>();
+    private final ArrayList<String> cityIdsP3 = new ArrayList<>();
+    private boolean cityLoadedP3 = false;
+    private boolean cityLoadingP3 = false;
 
     private final ArrayList<String> localityNames = new ArrayList<>();
     private final ArrayList<String> localityIds = new ArrayList<>();
     private final ArrayList<String> localityHubIds = new ArrayList<>();
-
-    private boolean cityLoaded = false;
 
     // ============================================================
     // PAGE 2 - PROFESSIONAL DETAILS
@@ -168,17 +175,15 @@ public class Register extends AppCompatActivity {
     private AreaAdapter areaAdapter;
     private AreaDropdownAdapter areaDropdownAdapter;
 
-    private final ArrayList<AreaAdapter.Area> allAreas =
-            new ArrayList<>();
-
-    private final LinkedHashSet<String> selectedAreaIds =
-            new LinkedHashSet<>();
+    private final ArrayList<AreaAdapter.Area> allAreas = new ArrayList<>();
+    private final LinkedHashSet<String> selectedAreaIds = new LinkedHashSet<>();
 
     private boolean areasLoaded = false;
     private boolean isLoadingAreas = false;
     private String areasLoadedCityId = "";
 
-    private TextWatcher areaSearchWatcher;
+    // Guard flag to prevent auto-complete dropdown blink loop
+    private boolean dropdownShowing = false;
 
     // ============================================================
     // PAGE 4 - REFERRAL
@@ -194,9 +199,7 @@ public class Register extends AppCompatActivity {
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
-                        if (result.getResultCode() == RESULT_OK
-                                && result.getData() != null) {
-
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                             Uri uri = result.getData().getData();
 
                             if (uri == null) {
@@ -208,15 +211,9 @@ public class Register extends AppCompatActivity {
                             }
 
                             try {
-                                InputStream is =
-                                        getContentResolver().openInputStream(uri);
-
+                                InputStream is = getContentResolver().openInputStream(uri);
                                 if (is == null) {
-                                    Toast.makeText(
-                                            this,
-                                            "Unable to open selected image",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
+                                    Toast.makeText(this, "Unable to open selected image", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
 
@@ -227,22 +224,16 @@ public class Register extends AppCompatActivity {
                                     encodedPhoto = encodeImage(bmp);
                                     validateCurrentPage();
                                 }
-
                             } catch (Exception e) {
                                 Log.e(TAG, "Image loading failed", e);
-
-                                Toast.makeText(
-                                        this,
-                                        "Unable to load image",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                                Toast.makeText(this, "Unable to load image", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
             );
 
     // ============================================================
-    // ACTIVITY
+    // ACTIVITY LIFECYCLE
     // ============================================================
 
     @Override
@@ -252,10 +243,7 @@ public class Register extends AppCompatActivity {
         EdgeToEdge.enable(this);
 
         WindowInsetsControllerCompat controller =
-                WindowCompat.getInsetsController(
-                        getWindow(),
-                        getWindow().getDecorView()
-                );
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
 
         controller.setAppearanceLightStatusBars(true);
         controller.setAppearanceLightNavigationBars(true);
@@ -280,7 +268,6 @@ public class Register extends AppCompatActivity {
         }
 
         View backButton = findViewById(R.id.backbtn);
-
         if (backButton != null) {
             backButton.setOnClickListener(v -> onBackPressed());
         }
@@ -295,13 +282,18 @@ public class Register extends AppCompatActivity {
 
         viewPager.registerOnPageChangeCallback(
                 new ViewPager2.OnPageChangeCallback() {
-
                     @Override
                     public void onPageSelected(int position) {
                         super.onPageSelected(position);
-
                         currentPage = position;
                         updateUI();
+
+                        // Safety net: if user somehow lands on page 2 (index 1),
+                        // make sure page-3 city list starts loading.
+                        if (position == 1 && !cityLoadedP3 && !cityLoadingP3
+                                && cityNamesP3.isEmpty()) {
+                            loadCities(1);
+                        }
 
                         viewPager.post(() -> {
                             initPageViews(position);
@@ -324,16 +316,12 @@ public class Register extends AppCompatActivity {
             return null;
         }
 
-        RecyclerView rv =
-                (RecyclerView) viewPager.getChildAt(0);
-
+        RecyclerView rv = (RecyclerView) viewPager.getChildAt(0);
         if (rv == null) {
             return null;
         }
 
-        RecyclerView.ViewHolder holder =
-                rv.findViewHolderForAdapterPosition(currentPage);
-
+        RecyclerView.ViewHolder holder = rv.findViewHolderForAdapterPosition(currentPage);
         return holder != null ? holder.itemView : null;
     }
 
@@ -345,21 +333,15 @@ public class Register extends AppCompatActivity {
         View pageView = getCurrentPageView();
 
         if (pageView == null) {
-            viewPager.postDelayed(
-                    () -> initPageViews(position),
-                    50
-            );
+            viewPager.postDelayed(() -> initPageViews(position), 50);
             return;
         }
 
         switch (position) {
-
             // ----------------------------------------------------
-            // PAGE 1
+            // PAGE 1 - PERSONAL
             // ----------------------------------------------------
-
             case 0:
-
                 regName = pageView.findViewById(R.id.reg_name);
                 regAadhaar = pageView.findViewById(R.id.reg_aadhaar);
                 regMobile = pageView.findViewById(R.id.reg_mobile);
@@ -371,8 +353,7 @@ public class Register extends AppCompatActivity {
                 rgGender = pageView.findViewById(R.id.radioGroup);
                 ccp = pageView.findViewById(R.id.VerifyCountryCode);
                 imgPhoto = pageView.findViewById(R.id.upLivePhoto);
-                btnUploadPhoto =
-                        pageView.findViewById(R.id.uploadLivePhotoButton);
+                btnUploadPhoto = pageView.findViewById(R.id.uploadLivePhotoButton);
 
                 if (ccp != null && regMobile != null) {
                     ccp.setDefaultCountryUsingNameCode("IN");
@@ -385,15 +366,12 @@ public class Register extends AppCompatActivity {
                 setupGenderChips();
                 setupDobPicker();
                 setupPhotoUpload();
-
                 break;
 
             // ----------------------------------------------------
-            // PAGE 2
+            // PAGE 2 - PROFESSIONAL
             // ----------------------------------------------------
-
             case 1:
-
                 rgCategory = pageView.findViewById(R.id.rgCategory);
                 glExperience = pageView.findViewById(R.id.glExperience);
                 etExpDesc = pageView.findViewById(R.id.reg_exp_desc);
@@ -403,35 +381,24 @@ public class Register extends AppCompatActivity {
                     buildExperienceChips();
                     categoryUiBuilt = true;
                 }
-
                 break;
 
             // ----------------------------------------------------
             // PAGE 3 - PREFERENCES
             // ----------------------------------------------------
-
             case 2:
-
-                actvCityDropdown =
-                        pageView.findViewById(R.id.actvCityDropdown);
-
-                actvAreaDropdown =
-                        pageView.findViewById(R.id.actvAreaDropdown);
-
+                actvCityDropdown = pageView.findViewById(R.id.actvCityDropdown);
+                actvAreaDropdown = pageView.findViewById(R.id.actvAreaDropdown);
                 rvAreas = pageView.findViewById(R.id.rvAreas);
-
-                tvTotalAreas =
-                        pageView.findViewById(R.id.tvTotalAreas);
-
-                llNoAreasSelected =
-                        pageView.findViewById(R.id.llNoAreasSelected);
+                tvTotalAreas = pageView.findViewById(R.id.tvTotalAreas);
+                llNoAreasSelected = pageView.findViewById(R.id.llNoAreasSelected);
 
                 View cityContainer = pageView.findViewById(R.id.cityContainer);
                 if (cityContainer != null) {
                     cityContainer.setOnClickListener(v -> {
                         if (actvCityDropdown != null) {
-                            if (cityNames.isEmpty()) {
-                                loadCities();
+                            if (cityNamesP3.isEmpty()) {
+                                loadCities(1);
                             } else {
                                 actvCityDropdown.showDropDown();
                             }
@@ -443,8 +410,8 @@ public class Register extends AppCompatActivity {
                 if (ivCityDropdownArrow != null) {
                     ivCityDropdownArrow.setOnClickListener(v -> {
                         if (actvCityDropdown != null) {
-                            if (cityNames.isEmpty()) {
-                                loadCities();
+                            if (cityNamesP3.isEmpty()) {
+                                loadCities(1);
                             } else {
                                 actvCityDropdown.showDropDown();
                             }
@@ -464,33 +431,147 @@ public class Register extends AppCompatActivity {
 
                 setupCityDropdownPage3();
                 setupAreaPreferences();
-
                 break;
 
             // ----------------------------------------------------
             // PAGE 4 - REFERRAL
             // ----------------------------------------------------
-
             case 3:
-
-                etReferral =
-                        pageView.findViewById(R.id.reg_referral);
-
-                TextView signIn =
-                        pageView.findViewById(R.id.do_you);
+                etReferral = pageView.findViewById(R.id.reg_referral);
+                TextView signIn = pageView.findViewById(R.id.do_you);
 
                 if (signIn != null) {
                     signIn.setOnClickListener(v ->
-                            startActivity(
-                                    new Intent(
-                                            Register.this,
-                                            LoginActivity.class
-                                    )
-                            )
+                            startActivity(new Intent(Register.this, LoginActivity.class))
                     );
                 }
-
                 break;
+        }
+    }
+
+    // ============================================================
+    // PAGE 1 - CITY
+    // ============================================================
+
+    private void setupCityDropdown() {
+        if (regCity == null) {
+            return;
+        }
+
+        regCity.setFocusable(false);
+        regCity.setFocusableInTouchMode(false);
+        regCity.setCursorVisible(false);
+        regCity.setClickable(true);
+        regCity.setLongClickable(false);
+        regCity.setInputType(android.text.InputType.TYPE_NULL);
+        regCity.setKeyListener(null);
+
+        View parent = (View) regCity.getParent();
+        if (parent != null) {
+            parent.setFocusable(false);
+            parent.setFocusableInTouchMode(false);
+            parent.setClickable(false);
+        }
+
+        regCity.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                v.clearFocus();
+                openCityPicker();
+                return true;
+            }
+            return true;
+        });
+    }
+
+    private void openCityPicker() {
+        if (cityLoadedP1 && !cityNamesP1.isEmpty()) {
+            showCityDialog();
+        } else {
+            loadCities(0);
+        }
+    }
+
+    private void showCityDialog() {
+        String[] cities = cityNamesP1.toArray(new String[0]);
+
+        ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.select_dialog_item,
+                cities
+        ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view;
+                textView.setTextColor(Color.BLACK);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                textView.setPadding(40, 24, 40, 24);
+                textView.setBackgroundColor(Color.WHITE);
+                return view;
+            }
+        };
+
+        AlertDialog cityDialog = new AlertDialog.Builder(this, R.style.WhiteAlertDialog)
+                .setTitle("Select City")
+                .setAdapter(cityAdapter, (dialog, which) -> {
+                    String newCityId = cityIdsP1.get(which);
+                    selectedCityId = newCityId;
+
+                    if (regCity != null) {
+                        regCity.setText(cityNamesP1.get(which));
+                    }
+
+                    selectedLocalityId = "";
+                    selectedHubId = "";
+
+                    localityNames.clear();
+                    localityIds.clear();
+                    localityHubIds.clear();
+
+                    loadDataByCityId(selectedCityId);
+                    validateCurrentPage();
+                    toggleArrowDirection(false);
+                })
+                .create();
+
+        cityDialog.setOnDismissListener(dialog -> toggleArrowDirection(false));
+
+        cityDialog.setOnShowListener(dialogInterface -> {
+            Window w = cityDialog.getWindow();
+            if (w != null) {
+                // Force whole dialog window white
+                w.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
+                // Title
+                int titleId = getResources().getIdentifier("alertTitle", "id", "android");
+                TextView title = cityDialog.findViewById(titleId);
+                if (title != null) {
+                    title.setTextColor(Color.BLACK);
+                    title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setPadding(40, 30, 40, 20);
+                    title.setBackgroundColor(Color.WHITE);
+                }
+
+                // List
+                ListView listView = cityDialog.getListView();
+                if (listView != null) {
+                    listView.setBackgroundColor(Color.WHITE);
+                    listView.setDivider(new ColorDrawable(Color.LTGRAY));
+                    listView.setDividerHeight(1);
+                    listView.setPadding(0, 10, 0, 10);
+                    listView.setVerticalScrollBarEnabled(true);
+                }
+            }
+        });
+
+        cityDialog.show();
+
+        if (cityDialog.getWindow() != null) {
+            cityDialog.getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.9),
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
+            );
         }
     }
 
@@ -506,8 +587,8 @@ public class Register extends AppCompatActivity {
         refreshCityDropdownPage3();
 
         actvCityDropdown.setOnClickListener(v -> {
-            if (cityNames.isEmpty()) {
-                loadCities();
+            if (cityNamesP3.isEmpty()) {
+                loadCities(1);
             } else {
                 actvCityDropdown.showDropDown();
             }
@@ -518,36 +599,34 @@ public class Register extends AppCompatActivity {
             if (selectedItem == null) return;
 
             String selectedCityName = selectedItem.toString();
-            int which = cityNames.indexOf(selectedCityName);
-            if (which >= 0 && which < cityIds.size()) {
-                onCitySelectedPage3(cityIds.get(which), selectedCityName);
+            int which = cityNamesP3.indexOf(selectedCityName);
+            if (which >= 0 && which < cityIdsP3.size()) {
+                onCitySelectedPage3(cityIdsP3.get(which), selectedCityName);
             }
         });
 
-        if (cityNames.isEmpty() && !cityLoaded) {
-            loadCities();
+        if (cityNamesP3.isEmpty() && !cityLoadedP3 && !cityLoadingP3) {
+            loadCities(1);
         }
     }
 
     private void refreshCityDropdownPage3() {
         if (actvCityDropdown == null) return;
 
-        if (!cityNames.isEmpty()) {
+        if (!cityNamesP3.isEmpty()) {
             ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    cityNames
+                    cityNamesP3
             );
             actvCityDropdown.setAdapter(cityAdapter);
         }
 
-        if (!TextUtils.isEmpty(selectedCityId) && !cityNames.isEmpty()) {
-            int idx = cityIds.indexOf(selectedCityId);
-            if (idx >= 0 && idx < cityNames.size()) {
-                actvCityDropdown.setText(cityNames.get(idx), false);
+        if (!TextUtils.isEmpty(selectedCityId) && !cityNamesP3.isEmpty()) {
+            int idx = cityIdsP3.indexOf(selectedCityId);
+            if (idx >= 0 && idx < cityNamesP3.size()) {
+                actvCityDropdown.setText(cityNamesP3.get(idx), false);
             }
-        } else if (regCity != null && !TextUtils.isEmpty(regCity.getText())) {
-            actvCityDropdown.setText(regCity.getText().toString(), false);
         }
     }
 
@@ -557,9 +636,6 @@ public class Register extends AppCompatActivity {
 
         if (actvCityDropdown != null) {
             actvCityDropdown.setText(newCityName, false);
-        }
-        if (regCity != null) {
-            regCity.setText(newCityName);
         }
 
         if (cityChanged) {
@@ -579,6 +655,212 @@ public class Register extends AppCompatActivity {
 
         loadAreasByCity();
         validateCurrentPage();
+    }
+
+    // ============================================================
+    // COMMON CITY LOADER (STATUS = 0 FOR P1, STATUS = 1 FOR P3)
+    // ============================================================
+
+    private void loadCities(int status) {
+        // Prevent duplicate calls while one is already in flight
+        if (status == 1 && cityLoadingP3) {
+            return;
+        }
+
+        if (status == 1) {
+            cityLoadingP3 = true;
+        }
+
+        toggleArrowDirection(true);
+
+        String url = "https://jiifit.com/Jifiit/get_cities_for_expert.php?status=" + status;
+        Log.d(TAG, "Fetching cities with URL: " + url);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    if (status == 1) {
+                        cityLoadingP3 = false;
+                    }
+
+                    try {
+                        boolean apiStatus = response.optBoolean("status", false);
+
+                        if (!apiStatus) {
+                            Toast.makeText(this, "Failed to load cities", Toast.LENGTH_SHORT).show();
+                            toggleArrowDirection(false);
+                            return;
+                        }
+
+                        JSONArray citiesArray = response.optJSONArray("cities");
+
+                        if (citiesArray == null) {
+                            toggleArrowDirection(false);
+                            return;
+                        }
+
+                        ArrayList<String> targetNames = (status == 0) ? cityNamesP1 : cityNamesP3;
+                        ArrayList<String> targetIds = (status == 0) ? cityIdsP1 : cityIdsP3;
+
+                        targetNames.clear();
+                        targetIds.clear();
+
+                        for (int i = 0; i < citiesArray.length(); i++) {
+                            JSONObject cityObject = citiesArray.optJSONObject(i);
+                            if (cityObject == null) continue;
+
+                            targetIds.add(cityObject.optString("id", ""));
+                            targetNames.add(cityObject.optString("name", ""));
+                        }
+
+                        if (targetNames.isEmpty()) {
+                            Toast.makeText(this, "No cities available", Toast.LENGTH_SHORT).show();
+                            toggleArrowDirection(false);
+                            return;
+                        }
+
+                        if (status == 0) {
+                            cityLoadedP1 = true;
+                            toggleArrowDirection(false);
+                            showCityDialog();
+                        } else {
+                            cityLoadedP3 = true;
+                            refreshCityDropdownPage3();
+                            toggleArrowDirection(false);
+                            if (actvCityDropdown != null) {
+                                actvCityDropdown.requestFocus();
+                                actvCityDropdown.showDropDown();
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "City parsing failed", e);
+                        Toast.makeText(this, "Error loading cities", Toast.LENGTH_SHORT).show();
+                        toggleArrowDirection(false);
+                    }
+                },
+                error -> {
+                    if (status == 1) {
+                        cityLoadingP3 = false;
+                    }
+                    Log.e(TAG, "City API error", error);
+                    Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show();
+                    toggleArrowDirection(false);
+                }
+        );
+
+        request.setRetryPolicy(
+                new DefaultRetryPolicy(
+                        8000,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                )
+        );
+
+        requestQueue.add(request);
+    }
+
+    private void toggleArrowDirection(boolean loading) {
+        runOnUiThread(() -> {
+            View pageView = getCurrentPageView();
+            if (pageView == null) return;
+
+            View ivCityArrowP1 = pageView.findViewById(R.id.ivCityDropdownArrow);
+            View ivCityArrowP3 = pageView.findViewById(R.id.ivCityDropdownArrow);
+
+            View arrowView = ivCityArrowP3 != null ? ivCityArrowP3 : ivCityArrowP1;
+
+            if (arrowView != null) {
+                if (loading) {
+                    arrowView.animate()
+                            .rotation(180f)
+                            .setDuration(200)
+                            .start();
+                    arrowView.setEnabled(false);
+                } else {
+                    arrowView.animate()
+                            .rotation(0f)
+                            .setDuration(200)
+                            .start();
+                    arrowView.setEnabled(true);
+                }
+            }
+        });
+    }
+
+    private void loadDataByCityId(String cityId) {
+        if (TextUtils.isEmpty(cityId)) {
+            return;
+        }
+
+        localityNames.clear();
+        localityIds.clear();
+        localityHubIds.clear();
+        selectedLocalityId = "";
+        selectedHubId = "";
+
+        String url = Constant.get_localities + "?city_id=" + Uri.encode(cityId);
+        Log.d(TAG, "Loading localities from: " + url);
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        JSONArray localityArray = null;
+                        if (response.has("localities")) {
+                            localityArray = response.optJSONArray("localities");
+                        } else if (response.has("data")) {
+                            localityArray = response.optJSONArray("data");
+                        }
+
+                        if (localityArray != null && localityArray.length() > 0) {
+                            for (int i = 0; i < localityArray.length(); i++) {
+                                JSONObject obj = localityArray.optJSONObject(i);
+                                if (obj == null) continue;
+
+                                String id = obj.optString("id", "");
+                                String name = obj.optString("name", "");
+                                String hubId = obj.optString("hub_id", "");
+
+                                if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(name)) {
+                                    localityIds.add(id.trim());
+                                    localityNames.add(name.trim());
+                                    localityHubIds.add(hubId.trim());
+                                }
+                            }
+                        }
+
+                        Log.d(TAG, "Loaded " + localityNames.size() + " localities for city ID: " + cityId);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to parse locality/hub data", e);
+                    }
+                },
+                error -> {
+                    String errorMsg = "Failed to load area hubs";
+                    if (error instanceof TimeoutError) {
+                        errorMsg = "Timeout loading area hubs";
+                    } else if (error.networkResponse != null) {
+                        errorMsg = "HTTP Error " + error.networkResponse.statusCode;
+                    }
+                    Log.e(TAG, "Locality API error: " + errorMsg, error);
+                }
+        );
+
+        request.setRetryPolicy(
+                new DefaultRetryPolicy(
+                        10000,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                )
+        );
+
+        Volley.newRequestQueue(getApplicationContext()).add(request);
     }
 
     // ============================================================
@@ -603,24 +885,18 @@ public class Register extends AppCompatActivity {
 
         setupAreaDropdownAdapter();
 
+        // Read-only display field — dropdown is opened programmatically only.
+        // This prevents the blink loop caused by focus/touch re-entrancy.
+        actvAreaDropdown.setKeyListener(null);
+        actvAreaDropdown.setCursorVisible(false);
+        actvAreaDropdown.setFocusable(false);
+        actvAreaDropdown.setFocusableInTouchMode(false);
+        actvAreaDropdown.setInputType(android.text.InputType.TYPE_NULL);
+        actvAreaDropdown.setDropDownHeight(600);
         actvAreaDropdown.setThreshold(1);
-        actvAreaDropdown.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
-        actvAreaDropdown.setFocusableInTouchMode(true);
 
+        // Single entry point to open the dropdown
         actvAreaDropdown.setOnClickListener(v -> showAllAreasDropdown());
-
-        actvAreaDropdown.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                showAllAreasDropdown();
-            }
-        });
-
-        actvAreaDropdown.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                showAllAreasDropdown();
-            }
-            return false;
-        });
 
         actvAreaDropdown.setOnItemClickListener(
                 (parent, view, position, id) -> {
@@ -642,21 +918,7 @@ public class Register extends AppCompatActivity {
                     if (selectedArea == null) return;
 
                     if (selectedAreaIds.contains(selectedArea.id)) {
-                        Toast.makeText(
-                                Register.this,
-                                "Area is already selected",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        actvAreaDropdown.post(() -> actvAreaDropdown.setText("", false));
-                        return;
-                    }
-
-                    if (selectedAreaIds.size() >= 15) {
-                        Toast.makeText(
-                                Register.this,
-                                "You can select up to 15 areas only",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        Toast.makeText(Register.this, "Area is already selected", Toast.LENGTH_SHORT).show();
                         actvAreaDropdown.post(() -> actvAreaDropdown.setText("", false));
                         return;
                     }
@@ -670,7 +932,6 @@ public class Register extends AppCompatActivity {
                     updateAreaCount();
                     validateCurrentPage();
 
-                    // Clear text so dropdown doesn't stay open and user can select the next area.
                     actvAreaDropdown.post(() -> {
                         actvAreaDropdown.setText("", false);
                         if (areaDropdownAdapter != null) {
@@ -682,7 +943,6 @@ public class Register extends AppCompatActivity {
 
         updateAreaCount();
 
-        // Only load if the city is set.
         if (!TextUtils.isEmpty(selectedCityId)) {
             loadAreasByCity();
         }
@@ -690,9 +950,7 @@ public class Register extends AppCompatActivity {
 
     private void updateAreaCount() {
         if (tvTotalAreas != null) {
-            tvTotalAreas.setText(
-                    selectedAreaIds.size() + " / 15 selected"
-            );
+            tvTotalAreas.setText(String.valueOf(selectedAreaIds.size()));
         }
 
         if (llNoAreasSelected != null && rvAreas != null) {
@@ -706,9 +964,6 @@ public class Register extends AppCompatActivity {
         }
     }
 
-    /**
-     * Load service areas for the selected city from get_area.php?city_id=
-     */
     private void loadAreasByCity() {
         if (TextUtils.isEmpty(selectedCityId)) {
             return;
@@ -729,111 +984,90 @@ public class Register extends AppCompatActivity {
         validateCurrentPage();
 
         String url = Constant.get_localities + "?city_id=" + Uri.encode(selectedCityId);
-
         Log.d(TAG, "Area API URL: " + url);
 
-        com.android.volley.toolbox.StringRequest request =
-                new com.android.volley.toolbox.StringRequest(
-                        Request.Method.GET,
-                        url,
-                        responseStr -> {
-                            isLoadingAreas = false;
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                responseStr -> {
+                    isLoadingAreas = false;
 
-                            try {
-                                allAreas.clear();
-                                String trimmed = responseStr != null ? responseStr.trim() : "";
-                                JSONArray dataArray = null;
+                    try {
+                        allAreas.clear();
+                        String trimmed = responseStr != null ? responseStr.trim() : "";
+                        JSONArray dataArray = null;
 
-                                if (trimmed.startsWith("{")) {
-                                    JSONObject json = new JSONObject(trimmed);
-                                    if (json.has("data")) {
-                                        dataArray = json.optJSONArray("data");
-                                    } else if (json.has("areas")) {
-                                        dataArray = json.optJSONArray("areas");
-                                    }
-                                } else if (trimmed.startsWith("[")) {
-                                    dataArray = new JSONArray(trimmed);
-                                }
-
-                                if (dataArray != null) {
-                                    for (int i = 0; i < dataArray.length(); i++) {
-                                        JSONObject item = dataArray.optJSONObject(i);
-                                        if (item == null) continue;
-
-                                        String areaId = item.optString("id", "");
-                                        String areaName = item.optString("name", "");
-
-                                        if (!TextUtils.isEmpty(areaId) && !TextUtils.isEmpty(areaName)) {
-                                            allAreas.add(new AreaAdapter.Area(areaId.trim(), areaName.trim()));
-                                        }
-                                    }
-                                }
-
-                                // Sort ascending A-Z
-                                Collections.sort(allAreas, (a, b) ->
-                                        a.name.trim().compareToIgnoreCase(b.name.trim())
-                                );
-
-                                areasLoaded = true;
-                                areasLoadedCityId = selectedCityId;
-
-                                if (areaAdapter != null) {
-                                    areaAdapter.syncSelected(allAreas);
-                                }
-
-                                setupAreaDropdownAdapter();
-                                updateAreaCount();
-                                validateCurrentPage();
-
-                                if (allAreas.isEmpty()) {
-                                    Toast.makeText(
-                                            Register.this,
-                                            "No areas available for this city",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-
-                            } catch (Exception e) {
-                                areasLoaded = false;
-                                areasLoadedCityId = "";
-
-                                Log.e(TAG, "Area parsing failed", e);
-
-                                Toast.makeText(
-                                        Register.this,
-                                        "Unable to read area data",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                                validateCurrentPage();
+                        if (trimmed.startsWith("{")) {
+                            JSONObject json = new JSONObject(trimmed);
+                            if (json.has("data")) {
+                                dataArray = json.optJSONArray("data");
+                            } else if (json.has("areas")) {
+                                dataArray = json.optJSONArray("areas");
                             }
-                        },
-                        error -> {
-                            isLoadingAreas = false;
-                            areasLoaded = false;
-                            areasLoadedCityId = "";
-
-                            String errorMessage = "Unknown error";
-
-                            if (error instanceof com.android.volley.TimeoutError) {
-                                errorMessage = "Request timeout";
-                            } else if (error instanceof com.android.volley.NoConnectionError) {
-                                errorMessage = "No internet connection";
-                            } else if (error.networkResponse != null) {
-                                errorMessage = "HTTP " + error.networkResponse.statusCode;
-                            }
-
-                            Log.e(TAG, "Area API failed: " + errorMessage, error);
-
-                            Toast.makeText(
-                                    Register.this,
-                                    "Area loading failed: " + errorMessage,
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            validateCurrentPage();
+                        } else if (trimmed.startsWith("[")) {
+                            dataArray = new JSONArray(trimmed);
                         }
-                );
+
+                        if (dataArray != null) {
+                            for (int i = 0; i < dataArray.length(); i++) {
+                                JSONObject item = dataArray.optJSONObject(i);
+                                if (item == null) continue;
+
+                                String areaId = item.optString("id", "");
+                                String areaName = item.optString("name", "");
+
+                                if (!TextUtils.isEmpty(areaId) && !TextUtils.isEmpty(areaName)) {
+                                    allAreas.add(new AreaAdapter.Area(areaId.trim(), areaName.trim()));
+                                }
+                            }
+                        }
+
+                        Collections.sort(allAreas, (a, b) ->
+                                a.name.trim().compareToIgnoreCase(b.name.trim())
+                        );
+
+                        areasLoaded = true;
+                        areasLoadedCityId = selectedCityId;
+
+                        if (areaAdapter != null) {
+                            areaAdapter.syncSelected(allAreas);
+                        }
+
+                        setupAreaDropdownAdapter();
+                        updateAreaCount();
+                        validateCurrentPage();
+
+                        if (allAreas.isEmpty()) {
+                            Toast.makeText(Register.this, "No areas available for this city", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (Exception e) {
+                        areasLoaded = false;
+                        areasLoadedCityId = "";
+                        Log.e(TAG, "Area parsing failed", e);
+                        Toast.makeText(Register.this, "Unable to read area data", Toast.LENGTH_SHORT).show();
+                        validateCurrentPage();
+                    }
+                },
+                error -> {
+                    isLoadingAreas = false;
+                    areasLoaded = false;
+                    areasLoadedCityId = "";
+
+                    String errorMessage = "Unknown error";
+                    if (error instanceof TimeoutError) {
+                        errorMessage = "Request timeout";
+                    } else if (error instanceof com.android.volley.NoConnectionError) {
+                        errorMessage = "No internet connection";
+                    } else if (error.networkResponse != null) {
+                        errorMessage = "HTTP " + error.networkResponse.statusCode;
+                    }
+
+                    Log.e(TAG, "Area API failed: " + errorMessage, error);
+                    Toast.makeText(Register.this, "Area loading failed: " + errorMessage, Toast.LENGTH_LONG).show();
+                    validateCurrentPage();
+                }
+        );
 
         request.setRetryPolicy(
                 new DefaultRetryPolicy(
@@ -846,11 +1080,9 @@ public class Register extends AppCompatActivity {
         Volley.newRequestQueue(getApplicationContext()).add(request);
     }
 
-
     private void setupAreaDropdownAdapter() {
         if (actvAreaDropdown == null) return;
 
-        // Ensure allAreas is sorted in ascending alphabetical order
         Collections.sort(allAreas, (a, b) ->
                 a.name.trim().compareToIgnoreCase(b.name.trim())
         );
@@ -866,7 +1098,7 @@ public class Register extends AppCompatActivity {
     }
 
     private void showAllAreasDropdown() {
-        if (actvAreaDropdown == null) return;
+        if (actvAreaDropdown == null || dropdownShowing) return;
 
         if (TextUtils.isEmpty(selectedCityId)) {
             Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
@@ -888,357 +1120,22 @@ public class Register extends AppCompatActivity {
             setupAreaDropdownAdapter();
         }
 
-        if (areaDropdownAdapter != null) {
-            areaDropdownAdapter.getFilter().filter("", count -> {
-                if (actvAreaDropdown != null && !isFinishing() && !isDestroyed()) {
-                    actvAreaDropdown.requestFocus();
+        dropdownShowing = true;
+
+        actvAreaDropdown.post(() -> {
+            try {
+                if (areaDropdownAdapter != null) {
+                    // Clear any stale filter so the full list shows
+                    areaDropdownAdapter.getFilter().filter(null);
+                }
+                if (!isFinishing() && !isDestroyed()) {
                     actvAreaDropdown.showDropDown();
                 }
-            });
-        }
-    }
-    // ============================================================
-    // PAGE 1 - CITY
-    // ============================================================
-
-    private void setupCityDropdown() {
-        if (regCity == null) {
-            return;
-        }
-
-        regCity.setFocusable(false);
-        regCity.setFocusableInTouchMode(false);
-        regCity.setCursorVisible(false);
-        regCity.setClickable(true);
-        regCity.setLongClickable(false);
-        regCity.setInputType(
-                android.text.InputType.TYPE_NULL
-        );
-        regCity.setKeyListener(null);
-
-        View parent = (View) regCity.getParent();
-
-        if (parent != null) {
-            parent.setFocusable(false);
-            parent.setFocusableInTouchMode(false);
-            parent.setClickable(false);
-        }
-
-        regCity.setOnTouchListener((v, event) -> {
-
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                v.clearFocus();
-                openCityPicker();
-                return true;
-            }
-
-            return true;
-        });
-    }
-
-    private void openCityPicker() {
-        if (cityLoaded && !cityNames.isEmpty()) {
-            showCityDialog();
-        } else {
-            loadCities();
-        }
-    }
-
-    private void loadCities() {
-
-        toggleArrowDirection(true);
-
-        RequestQueue requestQueue =
-                Volley.newRequestQueue(this);
-
-        JsonObjectRequest request =
-                new JsonObjectRequest(
-                        Request.Method.GET,
-                        Constant.get_cities,
-                        null,
-
-                        response -> {
-
-                            try {
-
-                                boolean status =
-                                        response.optBoolean(
-                                                "status",
-                                                false
-                                        );
-
-                                if (!status) {
-
-                                    Toast.makeText(
-                                            this,
-                                            "Failed to load cities",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-
-                                    toggleArrowDirection(false);
-                                    return;
-                                }
-
-                                JSONArray citiesArray =
-                                        response.optJSONArray("cities");
-
-                                if (citiesArray == null) {
-                                    toggleArrowDirection(false);
-                                    return;
-                                }
-
-                                cityNames.clear();
-                                cityIds.clear();
-
-                                for (int i = 0;
-                                     i < citiesArray.length();
-                                     i++) {
-
-                                    JSONObject cityObject =
-                                            citiesArray.optJSONObject(i);
-
-                                    if (cityObject == null) {
-                                        continue;
-                                    }
-
-                                    cityIds.add(
-                                            cityObject.optString("id", "")
-                                    );
-
-                                    cityNames.add(
-                                            cityObject.optString("name", "")
-                                    );
-                                }
-
-                                if (cityNames.isEmpty()) {
-
-                                    Toast.makeText(
-                                            this,
-                                            "No cities available",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-
-                                    toggleArrowDirection(false);
-                                    return;
-                                }
-
-                                cityLoaded = true;
-                                refreshCityDropdownPage3();
-                                if (currentPage == 2 && actvCityDropdown != null) {
-                                    toggleArrowDirection(false);
-                                    actvCityDropdown.showDropDown();
-                                } else {
-                                    showCityDialog();
-                                }
-
-                            } catch (Exception e) {
-
-                                Log.e(TAG, "City parsing failed", e);
-
-                                Toast.makeText(
-                                        this,
-                                        "Error loading cities",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                                toggleArrowDirection(false);
-                            }
-                        },
-
-                        error -> {
-
-                            Log.e(TAG, "City API error", error);
-
-                            Toast.makeText(
-                                    this,
-                                    "Unable to connect to server",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-
-                            toggleArrowDirection(false);
-                        }
-                );
-
-        request.setRetryPolicy(
-                new DefaultRetryPolicy(
-                        5000,
-                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
-        );
-
-        requestQueue.add(request);
-    }
-
-    private void showCityDialog() {
-
-        String[] cities = cityNames.toArray(new String[0]);
-
-        ArrayAdapter<String> cityAdapter =
-                new ArrayAdapter<String>(
-                        this,
-                        android.R.layout.select_dialog_item,
-                        cities
-                ) {
-
-                    @Override
-                    public View getView(
-                            int position,
-                            View convertView,
-                            ViewGroup parent
-                    ) {
-
-                        View view = super.getView(
-                                position,
-                                convertView,
-                                parent
-                        );
-
-                        TextView textView = (TextView) view;
-
-                        textView.setTextColor(Color.BLACK);
-                        textView.setTextSize(
-                                TypedValue.COMPLEX_UNIT_SP,
-                                16
-                        );
-
-                        textView.setPadding(40, 20, 40, 20);
-
-                        return view;
-                    }
-                };
-
-        AlertDialog cityDialog =
-                new AlertDialog.Builder(this)
-                        .setTitle("Select City")
-                        .setAdapter(
-                                cityAdapter,
-                                (dialog, which) -> {
-
-                                    String newCityId =
-                                            cityIds.get(which);
-
-                                    boolean cityChanged =
-                                            !newCityId.equals(
-                                                    selectedCityId
-                                            );
-
-                                    selectedCityId = newCityId;
-
-                                    if (regCity != null) {
-                                        regCity.setText(
-                                                cityNames.get(which)
-                                        );
-                                    }
-                                    if (actvCityDropdown != null) {
-                                        actvCityDropdown.setText(
-                                                cityNames.get(which),
-                                                false
-                                        );
-                                    }
-
-                                    selectedLocalityId = "";
-                                    selectedHubId = "";
-
-                                    localityNames.clear();
-                                    localityIds.clear();
-                                    localityHubIds.clear();
-
-                                    // Reset selected areas if the city changes.
-                                    if (cityChanged) {
-
-                                        allAreas.clear();
-                                        selectedAreaIds.clear();
-
-                                        areasLoaded = false;
-                                        isLoadingAreas = false;
-                                        areasLoadedCityId = "";
-
-                                        if (areaAdapter != null) {
-                                            areaAdapter.clear();
-                                        }
-
-                                        setupAreaDropdownAdapter();
-                                        updateAreaCount();
-                                    }
-
-                                    loadDataByCityId(selectedCityId);
-
-                                    validateCurrentPage();
-                                    toggleArrowDirection(false);
-                                }
-                        )
-                        .create();
-
-        cityDialog.setOnDismissListener(
-                dialog -> toggleArrowDirection(false)
-        );
-
-        cityDialog.setOnShowListener(dialogInterface -> {
-
-            if (cityDialog.getWindow() != null) {
-
-                GradientDrawable drawable =
-                        new GradientDrawable();
-
-                drawable.setColor(Color.WHITE);
-                drawable.setCornerRadius(20);
-
-                cityDialog.getWindow().setBackgroundDrawable(
-                        drawable
-                );
-            }
-
-            int titleId = getResources().getIdentifier(
-                    "alertTitle",
-                    "id",
-                    "android"
-            );
-
-            TextView title = cityDialog.findViewById(titleId);
-
-            if (title != null) {
-                title.setTextColor(Color.BLACK);
-                title.setTextSize(
-                        TypedValue.COMPLEX_UNIT_SP,
-                        20
-                );
-                title.setTypeface(null, Typeface.BOLD);
-                title.setPadding(40, 30, 40, 20);
-            }
-
-            ListView listView = cityDialog.getListView();
-
-            if (listView != null) {
-                listView.setDivider(
-                        new ColorDrawable(Color.LTGRAY)
-                );
-                listView.setDividerHeight(1);
-                listView.setPadding(0, 10, 0, 10);
-                listView.setVerticalScrollBarEnabled(true);
+            } finally {
+                // Release the guard after the dropdown animation settles
+                actvAreaDropdown.postDelayed(() -> dropdownShowing = false, 300);
             }
         });
-
-        cityDialog.show();
-
-        if (cityDialog.getWindow() != null) {
-            cityDialog.getWindow().setLayout(
-                    (int) (
-                            getResources()
-                                    .getDisplayMetrics()
-                                    .widthPixels * 0.9
-                    ),
-                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
-            );
-        }
-    }
-
-    private void toggleArrowDirection(boolean loading) {
-        // Keep your existing city arrow/loading implementation here.
-    }
-
-    private void loadDataByCityId(String cityId) {
-        // Keep your existing locality/hub API implementation here.
     }
 
     // ============================================================
@@ -1251,49 +1148,28 @@ public class Register extends AppCompatActivity {
         }
 
         regAadhaar.addTextChangedListener(new TextWatcher() {
-
             private boolean isFormatting;
 
             @Override
-            public void beforeTextChanged(
-                    CharSequence s,
-                    int start,
-                    int count,
-                    int after
-            ) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(
-                    CharSequence s,
-                    int start,
-                    int before,
-                    int count
-            ) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
             public void afterTextChanged(Editable s) {
-
-                if (isFormatting) {
-                    return;
-                }
+                if (isFormatting) return;
 
                 isFormatting = true;
-
-                String input = s.toString()
-                        .replaceAll("\\s+", "");
+                String input = s.toString().replaceAll("\\s+", "");
 
                 if (input.length() > 12) {
                     input = input.substring(0, 12);
                 }
 
                 StringBuilder formatted = new StringBuilder();
-
                 for (int i = 0; i < input.length(); i++) {
-
                     formatted.append(input.charAt(i));
-
                     if (i == 3 || i == 7) {
                         formatted.append(" ");
                     }
@@ -1301,7 +1177,6 @@ public class Register extends AppCompatActivity {
 
                 regAadhaar.setText(formatted.toString());
                 regAadhaar.setSelection(formatted.length());
-
                 isFormatting = false;
             }
         });
@@ -1317,36 +1192,23 @@ public class Register extends AppCompatActivity {
         }
 
         rgGender.setOnCheckedChangeListener((group, checkedId) -> {
-
-            for (int i = 0;
-                 i < group.getChildCount();
-                 i++) {
-
+            for (int i = 0; i < group.getChildCount(); i++) {
                 View child = group.getChildAt(i);
-
-                if (!(child instanceof RadioButton)) {
-                    continue;
-                }
+                if (!(child instanceof RadioButton)) continue;
 
                 RadioButton rb = (RadioButton) child;
-
                 boolean selected = rb.getId() == checkedId;
 
                 rb.setBackgroundResource(
-                        selected
-                                ? R.drawable.bg_chip_selected
-                                : R.drawable.bg_chip_unselected
+                        selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected
                 );
 
                 rb.setTextColor(
                         getResources().getColor(
-                                selected
-                                        ? R.color.white
-                                        : R.color.Text_Blue
+                                selected ? R.color.white : R.color.Text_Blue
                         )
                 );
             }
-
             validateCurrentPage();
         });
     }
@@ -1361,94 +1223,46 @@ public class Register extends AppCompatActivity {
         }
 
         regDob.setOnClickListener(v -> {
-
             Calendar calendar = Calendar.getInstance();
 
-            DatePickerDialog dialog =
-                    new DatePickerDialog(
-                            Register.this,
-                            (view, year, month, day) -> {
+            DatePickerDialog dialog = new DatePickerDialog(
+                    Register.this,
+                    (view, year, month, day) -> {
+                        Calendar dob = Calendar.getInstance();
+                        dob.set(year, month, day);
 
-                                Calendar dob = Calendar.getInstance();
+                        selectedDob = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dob.getTime());
+                        regDob.setText(new SimpleDateFormat("MM / dd / yyyy", Locale.getDefault()).format(dob.getTime()));
 
-                                dob.set(
-                                        year,
-                                        month,
-                                        day
-                                );
+                        Calendar today = Calendar.getInstance();
+                        int years = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+                        int months = today.get(Calendar.MONTH) - dob.get(Calendar.MONTH);
 
-                                selectedDob =
-                                        new SimpleDateFormat(
-                                                "yyyy-MM-dd",
-                                                Locale.getDefault()
-                                        ).format(dob.getTime());
+                        if (today.get(Calendar.DAY_OF_MONTH) < dob.get(Calendar.DAY_OF_MONTH)) {
+                            months--;
+                        }
 
-                                regDob.setText(
-                                        new SimpleDateFormat(
-                                                "MM / dd / yyyy",
-                                                Locale.getDefault()
-                                        ).format(dob.getTime())
-                                );
+                        if (months < 0) {
+                            years--;
+                            months += 12;
+                        }
 
-                                Calendar today =
-                                        Calendar.getInstance();
+                        if (years < 18) {
+                            tvAge.setText(R.string.age_warning);
+                            tvAge.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                        } else {
+                            tvAge.setText("Your current age is : " + years + " years and " + months + " months");
+                            tvAge.setTextColor(getResources().getColor(R.color.green_success));
+                        }
 
-                                int years =
-                                        today.get(Calendar.YEAR)
-                                                - dob.get(Calendar.YEAR);
-
-                                int months =
-                                        today.get(Calendar.MONTH)
-                                                - dob.get(Calendar.MONTH);
-
-                                if (today.get(Calendar.DAY_OF_MONTH)
-                                        < dob.get(Calendar.DAY_OF_MONTH)) {
-                                    months--;
-                                }
-
-                                if (months < 0) {
-                                    years--;
-                                    months += 12;
-                                }
-
-                                if (years < 18) {
-
-                                    tvAge.setText(R.string.age_warning);
-
-                                    tvAge.setTextColor(
-                                            getResources().getColor(
-                                                    android.R.color.holo_red_dark
-                                            )
-                                    );
-
-                                } else {
-
-                                    tvAge.setText(
-                                            "Your current age is : "
-                                                    + years
-                                                    + " years and "
-                                                    + months
-                                                    + " months"
-                                    );
-
-                                    tvAge.setTextColor(
-                                            getResources().getColor(
-                                                    R.color.green_success
-                                            )
-                                    );
-                                }
-
-                                validateCurrentPage();
-                            },
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DAY_OF_MONTH)
-                    );
-
-            dialog.getDatePicker().setMaxDate(
-                    new Date().getTime()
+                        validateCurrentPage();
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
             );
 
+            dialog.getDatePicker().setMaxDate(new Date().getTime());
             dialog.show();
         });
     }
@@ -1463,17 +1277,9 @@ public class Register extends AppCompatActivity {
         }
 
         btnUploadPhoto.setOnClickListener(v -> {
-
-            Intent intent = new Intent(
-                    Intent.ACTION_OPEN_DOCUMENT
-            );
-
-            intent.addCategory(
-                    Intent.CATEGORY_OPENABLE
-            );
-
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("image/*");
-
             galleryLauncher.launch(intent);
         });
     }
@@ -1488,26 +1294,14 @@ public class Register extends AppCompatActivity {
         }
 
         rgCategory.removeAllViews();
-
-        LayoutInflater inflater =
-                LayoutInflater.from(this);
+        LayoutInflater inflater = LayoutInflater.from(this);
 
         for (String[] category : CATEGORIES) {
-
-            View row = inflater.inflate(
-                    R.layout.item_category_option,
-                    rgCategory,
-                    false
-            );
-
-            RadioButton rb =
-                    row.findViewById(R.id.rbOption);
-
-            TextView title =
-                    row.findViewById(R.id.tvCatTitle);
+            View row = inflater.inflate(R.layout.item_category_option, rgCategory, false);
+            RadioButton rb = row.findViewById(R.id.rbOption);
+            TextView title = row.findViewById(R.id.tvCatTitle);
 
             title.setText(category[0]);
-
             String categoryName = category[0];
 
             row.setOnClickListener(view -> {
@@ -1517,16 +1311,13 @@ public class Register extends AppCompatActivity {
                 validateCurrentPage();
             });
 
-            rb.setOnCheckedChangeListener(
-                    (button, checked) -> {
-
-                        if (checked) {
-                            selectedCategory = categoryName;
-                            highlightCategoryRows();
-                            validateCurrentPage();
-                        }
-                    }
-            );
+            rb.setOnCheckedChangeListener((button, checked) -> {
+                if (checked) {
+                    selectedCategory = categoryName;
+                    highlightCategoryRows();
+                    validateCurrentPage();
+                }
+            });
 
             rgCategory.addView(row);
         }
@@ -1537,14 +1328,9 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        for (int i = 0;
-             i < rgCategory.getChildCount();
-             i++) {
-
+        for (int i = 0; i < rgCategory.getChildCount(); i++) {
             View row = rgCategory.getChildAt(i);
-
-            RadioButton rb =
-                    row.findViewById(R.id.rbOption);
+            RadioButton rb = row.findViewById(R.id.rbOption);
 
             row.setBackgroundResource(
                     rb.isChecked()
@@ -1566,48 +1352,23 @@ public class Register extends AppCompatActivity {
         glExperience.removeAllViews();
 
         for (String experience : EXPERIENCE) {
-
             RadioButton rb = new RadioButton(this);
-
             rb.setText(experience);
             rb.setButtonDrawable(null);
             rb.setGravity(Gravity.CENTER);
-
-            rb.setBackgroundResource(
-                    R.drawable.bg_chip_unselected
-            );
-
-            rb.setTextColor(
-                    getResources().getColor(
-                            R.color.Text_Blue
-                    )
-            );
-
+            rb.setBackgroundResource(R.drawable.bg_chip_unselected);
+            rb.setTextColor(getResources().getColor(R.color.Text_Blue));
             rb.setPadding(24, 24, 24, 24);
 
-            GridLayout.LayoutParams lp =
-                    new GridLayout.LayoutParams();
-
+            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
             lp.width = 0;
-            lp.columnSpec = GridLayout.spec(
-                    GridLayout.UNDEFINED,
-                    1f
-            );
-
+            lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
             lp.setMargins(6, 6, 6, 6);
-
-            lp.height = (int) (
-                    52 * getResources()
-                            .getDisplayMetrics()
-                            .density
-            );
-
+            lp.height = (int) (52 * getResources().getDisplayMetrics().density);
             rb.setLayoutParams(lp);
 
             rb.setOnClickListener(view -> {
-
                 selectedExperience = experience;
-
                 updateExperienceChips();
                 validateCurrentPage();
             });
@@ -1621,37 +1382,21 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        for (int i = 0;
-             i < glExperience.getChildCount();
-             i++) {
-
-            RadioButton rb =
-                    (RadioButton) glExperience.getChildAt(i);
-
-            boolean selected =
-                    rb.getText().toString()
-                            .equals(selectedExperience);
+        for (int i = 0; i < glExperience.getChildCount(); i++) {
+            RadioButton rb = (RadioButton) glExperience.getChildAt(i);
+            boolean selected = rb.getText().toString().equals(selectedExperience);
 
             rb.setBackgroundResource(
-                    selected
-                            ? R.drawable.bg_chip_selected
-                            : R.drawable.bg_chip_unselected
+                    selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected
             );
 
             rb.setTextColor(
                     getResources().getColor(
-                            selected
-                                    ? R.color.white
-                                    : R.color.Text_Blue
+                            selected ? R.color.white : R.color.Text_Blue
                     )
             );
 
-            rb.setTypeface(
-                    null,
-                    selected
-                            ? Typeface.BOLD
-                            : Typeface.NORMAL
-            );
+            rb.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
         }
     }
 
@@ -1660,77 +1405,38 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void setupTextWatchers(int position) {
-
         TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void beforeTextChanged(
-                    CharSequence s,
-                    int start,
-                    int count,
-                    int after
-            ) {
-            }
-
-            @Override
-            public void onTextChanged(
-                    CharSequence s,
-                    int start,
-                    int before,
-                    int count
-            ) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 validateCurrentPage();
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         };
 
         switch (position) {
-
             case 0:
-
-                if (regName != null) {
-                    regName.addTextChangedListener(watcher);
-                }
-
-                if (regEmail != null) {
-                    regEmail.addTextChangedListener(watcher);
-                }
-
-                if (regAddress != null) {
-                    regAddress.addTextChangedListener(watcher);
-                }
-
-                if (regCity != null) {
-                    regCity.addTextChangedListener(watcher);
-                }
-
-                if (regMobile != null) {
-                    regMobile.addTextChangedListener(watcher);
-                }
-
+                if (regName != null) regName.addTextChangedListener(watcher);
+                if (regEmail != null) regEmail.addTextChangedListener(watcher);
+                if (regAddress != null) regAddress.addTextChangedListener(watcher);
+                if (regCity != null) regCity.addTextChangedListener(watcher);
+                if (regMobile != null) regMobile.addTextChangedListener(watcher);
                 break;
 
             case 1:
-
-                if (etExpDesc != null) {
-                    etExpDesc.addTextChangedListener(watcher);
-                }
-
+                if (etExpDesc != null) etExpDesc.addTextChangedListener(watcher);
                 break;
 
             case 2:
-                // Area selection is validated through AreaAdapter callback.
+                // Checked via AreaAdapter callbacks
                 break;
 
             case 3:
-
-                if (etReferral != null) {
-                    etReferral.addTextChangedListener(watcher);
-                }
-
+                if (etReferral != null) etReferral.addTextChangedListener(watcher);
                 break;
         }
     }
@@ -1740,96 +1446,53 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private boolean validateCurrentPage() {
-
         boolean valid = false;
 
         switch (currentPage) {
-
             case 0:
                 valid = validatePersonal();
                 break;
-
             case 1:
                 valid = validateProfessional();
                 break;
-
             case 2:
                 valid = validatePreferences();
                 break;
-
             case 3:
                 valid = validateReferral();
                 break;
         }
 
         updateNextButtonState(valid);
-
         return valid;
     }
 
     private boolean validatePersonal() {
+        if (regName == null || regAadhaar == null) return false;
+        if (TextUtils.isEmpty(regName.getText())) return false;
 
-        if (regName == null || regAadhaar == null) {
+        String aadhaar = regAadhaar.getText().toString().trim();
+        if (aadhaar.length() != 14) return false;
+
+        if (ccp == null || !ccp.isValidFullNumber()) return false;
+
+        String email = regEmail != null && regEmail.getText() != null
+                ? regEmail.getText().toString().trim()
+                : "";
+
+        if (!isValidEmail(email)) return false;
+
+        if (rgGender == null || rgGender.getCheckedRadioButtonId() == -1) return false;
+        if (selectedDob == null) return false;
+
+        if (tvAge != null && tvAge.getText().toString().equals(getString(R.string.age_warning))) {
             return false;
         }
 
-        if (TextUtils.isEmpty(regName.getText())) {
-            return false;
-        }
-
-        String aadhaar =
-                regAadhaar.getText().toString().trim();
-
-        if (aadhaar.length() != 14) {
-            return false;
-        }
-
-        if (ccp == null || !ccp.isValidFullNumber()) {
-            return false;
-        }
-
-        String email =
-                regEmail != null && regEmail.getText() != null
-                        ? regEmail.getText().toString().trim()
-                        : "";
-
-        if (!isValidEmail(email)) {
-            return false;
-        }
-
-        if (rgGender == null
-                || rgGender.getCheckedRadioButtonId() == -1) {
-            return false;
-        }
-
-        if (selectedDob == null) {
-            return false;
-        }
-
-        // Do not allow registration below 18 years.
-        if (tvAge != null
-                && tvAge.getText().toString()
-                .equals(getString(R.string.age_warning))) {
-            return false;
-        }
-
-        if (regCity == null
-                || TextUtils.isEmpty(regCity.getText())) {
-            return false;
-        }
-
-        if (TextUtils.isEmpty(selectedCityId)) {
-            return false;
-        }
-
-        if (regAddress == null
-                || TextUtils.isEmpty(regAddress.getText())) {
-            return false;
-        }
-
-        if (encodedPhoto == null) {
-            return false;
-        }
+        if (regCity == null || TextUtils.isEmpty(regCity.getText())) return false;
+        if (TextUtils.isEmpty(selectedCityId)) return false;
+        if (regAddress == null || TextUtils.isEmpty(regAddress.getText())) return false;
+        if (encodedPhoto == null) return false;
 
         return true;
     }
@@ -1842,24 +1505,17 @@ public class Register extends AppCompatActivity {
     private boolean validatePreferences() {
         return !TextUtils.isEmpty(selectedCityId)
                 && areasLoaded
-                && !selectedAreaIds.isEmpty()
-                && selectedAreaIds.size() <= 15;
+                && selectedAreaIds != null
+                && selectedAreaIds.size() >= MIN_REQUIRED_AREAS;
     }
 
     private boolean validateReferral() {
-        return true; // Referral code is optional.
+        return true;
     }
 
     private boolean isValidEmail(String email) {
-
-        if (TextUtils.isEmpty(email)) {
-            return false;
-        }
-
-        Pattern pattern = Pattern.compile(
-                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-        );
-
+        if (TextUtils.isEmpty(email)) return false;
+        Pattern pattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
         return pattern.matcher(email).matches();
     }
 
@@ -1868,39 +1524,22 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void updateNextButtonState(boolean valid) {
-        if (btnNext == null) {
-            return;
-        }
+        if (btnNext == null) return;
 
         if (valid) {
-
             btnNext.setEnabled(true);
-            btnNext.setBackgroundColor(
-                    Color.parseColor("#1F5FE0")
-            );
+            btnNext.setBackgroundColor(Color.parseColor("#1F5FE0"));
             btnNext.setTextColor(Color.WHITE);
-
         } else {
-
             btnNext.setEnabled(false);
-            btnNext.setBackgroundColor(
-                    Color.parseColor("#BDBDBD")
-            );
-            btnNext.setTextColor(
-                    Color.parseColor("#757575")
-            );
+            btnNext.setBackgroundColor(Color.parseColor("#BDBDBD"));
+            btnNext.setTextColor(Color.parseColor("#757575"));
         }
     }
 
     private void updateUI() {
-
-        tvStep.setText(
-                (currentPage + 1) + " / " + TOTAL_PAGES
-        );
-
-        progressBar.setProgress(
-                (currentPage + 1) * 100 / TOTAL_PAGES
-        );
+        tvStep.setText((currentPage + 1) + " / " + TOTAL_PAGES);
+        progressBar.setProgress((currentPage + 1) * 100 / TOTAL_PAGES);
 
         btnPrevious.setVisibility(View.VISIBLE);
 
@@ -1910,57 +1549,40 @@ public class Register extends AppCompatActivity {
             btnNext.setText("CONTINUE");
         }
 
-        btnPrevious.setText(
-                currentPage == 0 ? "BACK" : "PREVIOUS"
-        );
+        btnPrevious.setText(currentPage == 0 ? "BACK" : "PREVIOUS");
     }
 
     private void setupButtons() {
-
         btnNext.setOnClickListener(v -> {
-
             if (currentPage == TOTAL_PAGES - 1) {
-
                 submitRegistration();
-
             } else if (validateCurrentPage()) {
 
-                viewPager.setCurrentItem(
-                        currentPage + 1,
-                        true
-                );
+                // ✅ Preload Page-3 city list as soon as user leaves Page 1
+                if (currentPage == 0 && !cityLoadedP3 && !cityLoadingP3) {
+                    loadCities(1);
+                }
 
+                viewPager.setCurrentItem(currentPage + 1, true);
             } else {
-
                 String message;
 
                 if (currentPage == 2 && !areasLoaded) {
                     message = "Please wait for areas to load";
                 } else if (currentPage == 2) {
-                    message = "Please select at least one area";
+                    message = "Please select at least " + MIN_REQUIRED_AREAS + " areas (Currently selected: " + selectedAreaIds.size() + ")";
                 } else {
                     message = "Please fill all required fields";
                 }
 
-                Toast.makeText(
-                        this,
-                        message,
-                        Toast.LENGTH_SHORT
-                ).show();
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             }
         });
 
         btnPrevious.setOnClickListener(v -> {
-
             if (currentPage > 0) {
-
-                viewPager.setCurrentItem(
-                        currentPage - 1,
-                        true
-                );
-
+                viewPager.setCurrentItem(currentPage - 1, true);
             } else {
-
                 onBackPressed();
             }
         });
@@ -1971,15 +1593,11 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private String encodeImage(Bitmap bitmap) {
-
-        ByteArrayOutputStream baos =
-                new ByteArrayOutputStream();
-
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
         float ratio = (float) width / (float) height;
-
         if (ratio > 1) {
             width = 500;
             height = (int) (width / ratio);
@@ -1988,23 +1606,10 @@ public class Register extends AppCompatActivity {
             width = (int) (height * ratio);
         }
 
-        Bitmap resized = Bitmap.createScaledBitmap(
-                bitmap,
-                width,
-                height,
-                true
-        );
+        Bitmap resized = Bitmap.createScaledBitmap(bitmap, width, height, true);
+        resized.compress(Bitmap.CompressFormat.JPEG, 80, baos);
 
-        resized.compress(
-                Bitmap.CompressFormat.JPEG,
-                80,
-                baos
-        );
-
-        return Base64.encodeToString(
-                baos.toByteArray(),
-                Base64.DEFAULT
-        );
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
     }
 
     // ============================================================
@@ -2012,202 +1617,93 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void submitRegistration() {
-
-        // Recheck all required pages before submitting.
-        if (!validatePersonal()
-                || !validateProfessional()
-                || !validatePreferences()) {
-
+        if (!validatePersonal() || !validateProfessional() || !validatePreferences()) {
             Toast.makeText(
                     this,
                     "Please complete all required registration steps",
                     Toast.LENGTH_SHORT
             ).show();
-
             return;
         }
 
-        final String name =
-                regName.getText().toString().trim();
-
-        final String aadhaar =
-                regAadhaar.getText().toString().trim();
-
-        final String mobile =
-                ccp.getFullNumberWithPlus();
-
-        final String email =
-                regEmail.getText().toString().trim();
-
+        final String name = regName.getText().toString().trim();
+        final String aadhaar = regAadhaar.getText().toString().trim();
+        final String mobile = ccp.getFullNumberWithPlus();
+        final String email = regEmail.getText().toString().trim();
         final String dob = selectedDob;
-
-        final String address =
-                regAddress.getText().toString().trim();
-
-        final String referral =
-                etReferral != null
-                        ? etReferral.getText().toString().trim()
-                        : "";
-
-        final String expDesc =
-                etExpDesc != null
-                        ? etExpDesc.getText().toString().trim()
-                        : "";
-
+        final String address = regAddress.getText().toString().trim();
+        final String referral = etReferral != null ? etReferral.getText().toString().trim() : "";
+        final String expDesc = etExpDesc != null ? etExpDesc.getText().toString().trim() : "";
         final String cityId = selectedCityId;
-
-        final String areaIds =
-                TextUtils.join(",", selectedAreaIds);
+        final String areaIds = TextUtils.join(",", selectedAreaIds);
 
         String gender = "";
-
-        RadioButton selectedGender =
-                findViewById(
-                        rgGender.getCheckedRadioButtonId()
-                );
-
+        RadioButton selectedGender = findViewById(rgGender.getCheckedRadioButtonId());
         if (selectedGender != null) {
             gender = selectedGender.getText().toString();
         }
-
         final String finalGender = gender;
 
-        ProgressDialog progressDialog =
-                new ProgressDialog(this);
-
+        ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        StringRequest request =
-                new StringRequest(
-                        Request.Method.POST,
-                        Constant.RegisterUrl,
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                Constant.RegisterUrl,
+                response -> {
+                    progressDialog.dismiss();
+                    Log.d(TAG, "Response: " + response);
 
-                        response -> {
+                    if (response.contains("Aadhaar number already exists")) {
+                        Toast.makeText(this, "This Aadhaar is already registered.", Toast.LENGTH_SHORT).show();
+                    } else if (response.contains("Mobile number already exists")) {
+                        Toast.makeText(this, "This mobile is already registered.", Toast.LENGTH_SHORT).show();
+                    } else if (response.contains("The code is not valid")) {
+                        Toast.makeText(this, "Invalid referral code", Toast.LENGTH_SHORT).show();
+                    } else if (response.contains("Successfully added user")) {
+                        Toast.makeText(this, "Registration Success", Toast.LENGTH_SHORT).show();
+                        sendEmail(mobile);
 
-                            progressDialog.dismiss();
-
-                            Log.d(TAG, "Response: " + response);
-
-                            if (response.contains(
-                                    "Aadhaar number already exists")) {
-
-                                Toast.makeText(
-                                        this,
-                                        "This Aadhaar is already registered.",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else if (response.contains(
-                                    "Mobile number already exists")) {
-
-                                Toast.makeText(
-                                        this,
-                                        "This mobile is already registered.",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else if (response.contains(
-                                    "The code is not valid")) {
-
-                                Toast.makeText(
-                                        this,
-                                        "Invalid referral code",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else if (response.contains(
-                                    "Successfully added user")) {
-
-                                Toast.makeText(
-                                        this,
-                                        "Registration Success",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                                sendEmail(mobile);
-
-                                Intent intent =
-                                        new Intent(
-                                                Register.this,
-                                                LoginActivity.class
-                                        );
-
-                                intent.addFlags(
-                                        Intent.FLAG_ACTIVITY_NEW_TASK
-                                                | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                );
-
-                                startActivity(intent);
-                                finish();
-
-                            } else {
-
-                                Toast.makeText(
-                                        this,
-                                        "Registration failed, try again later",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        },
-
-                        error -> {
-
-                            progressDialog.dismiss();
-
-                            if (error instanceof TimeoutError) {
-
-                                Toast.makeText(
-                                        this,
-                                        "Network timeout",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else {
-
-                                Log.e(
-                                        TAG,
-                                        "Registration request failed",
-                                        error
-                                );
-
-                                Toast.makeText(
-                                        this,
-                                        "Unable to submit registration",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        }
-                ) {
-
-                    @Override
-                    protected Map<String, String> getParams() {
-
-                        Map<String, String> params =
-                                new HashMap<>();
-
-                        params.put("name", name);
-                        params.put("email", email);
-                        params.put("aadhar_card_no", aadhaar);
-                        params.put("phone", mobile);
-                        params.put("date_of_birth", dob);
-                        params.put("gender", finalGender);
-                        params.put("address", address);
-                        params.put("city_id", cityId);
-                        params.put("bounsReferral", referral);
-                        params.put("profile_photo", encodedPhoto);
-                        params.put("expert_category", selectedCategory);
-                        params.put("experience", selectedExperience);
-                        params.put("experience_desc", expDesc);
-
-                        // Selected area IDs, comma-separated.
-                        // Backend must accept and save this parameter.
-                        params.put("area_ids", areaIds);
-
-                        return params;
+                        Intent intent = new Intent(Register.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Registration failed, try again later", Toast.LENGTH_SHORT).show();
                     }
-                };
+                },
+                error -> {
+                    progressDialog.dismiss();
+                    if (error instanceof TimeoutError) {
+                        Toast.makeText(this, "Network timeout", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.e(TAG, "Registration request failed", error);
+                        Toast.makeText(this, "Unable to submit registration", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("name", name);
+                params.put("email", email);
+                params.put("aadhar_card_no", aadhaar);
+                params.put("phone", mobile);
+                params.put("date_of_birth", dob);
+                params.put("gender", finalGender);
+                params.put("address", address);
+                params.put("city_id", cityId);
+                params.put("bounsReferral", referral);
+                params.put("profile_photo", encodedPhoto);
+                params.put("expert_category", selectedCategory);
+                params.put("experience", selectedExperience);
+                params.put("experience_desc", expDesc);
+                params.put("area_ids", areaIds);
+                return params;
+            }
+        };
 
         request.setRetryPolicy(
                 new DefaultRetryPolicy(
@@ -2226,33 +1722,20 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void sendEmail(String mobile) {
-
-        RequestQueue queue =
-                Volley.newRequestQueue(this);
-
-        StringRequest request =
-                new StringRequest(
-                        Request.Method.POST,
-                        Constant.email,
-                        response -> {
-                            Log.d(TAG, "Email response: " + response);
-                        },
-                        error -> {
-                            Log.e(TAG, "Email request failed", error);
-                        }
-                ) {
-
-                    @Override
-                    protected Map<String, String> getParams() {
-
-                        Map<String, String> params =
-                                new HashMap<>();
-
-                        params.put("phone", mobile);
-
-                        return params;
-                    }
-                };
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                Constant.email,
+                response -> Log.d(TAG, "Email response: " + response),
+                error -> Log.e(TAG, "Email request failed", error)
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("phone", mobile);
+                return params;
+            }
+        };
 
         queue.add(request);
     }
@@ -2263,16 +1746,9 @@ public class Register extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         if (currentPage > 0) {
-
-            viewPager.setCurrentItem(
-                    currentPage - 1,
-                    true
-            );
-
+            viewPager.setCurrentItem(currentPage - 1, true);
         } else {
-
             super.onBackPressed();
         }
     }

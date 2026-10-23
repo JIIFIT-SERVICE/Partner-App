@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ExpertEarningActivity">
+    >
 
     <!-- ============ TOP TOOLBAR ============ -->
     <LinearLayout
@@ -42,24 +44,30 @@
                 android:text="Expert Earnings &amp; Benefits"
                 android:textColor="#0F172A"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Jiifit Certified Partner Program"
                 android:textColor="#64748B"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
+            android:id="@+id/helpBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_earning_pill_green"
+            android:backgroundTint="@color/Text_Blue"
+            android:drawableStart="@drawable/ic_help_small"
+            android:drawablePadding="4dp"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            android:text="High Demand"
-            android:textColor="#16A34A"
+            android:text="Help"
+            android:textColor="@color/white"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -133,39 +141,40 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvExpertDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="4dp"
-                    android:text="Designed for verified wellness and therapy experts specializing in massage, yoga, physiotherapy and more . Receive doorstep booking requests right from your home Earn based on completed bookings, service rates, and customer demand in your area with high commission earnings better than any other company."
                     android:textColor="#E0E7FF"
                     android:textSize="13sp" />
             </LinearLayout>
 
             <!-- ============ 2. KEY EXPERT HIGHLIGHTS ============ -->
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:strokeColor="#E2E8F0"
-                app:strokeWidth="1dp">
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/_20sdp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="14dp">
+                <!-- Box 1: Max Earnings -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="#E2E8F0"
+                    app:strokeWidth="1dp">
 
-                    <!-- Highlight 1: Max Earnings -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
 
                         <FrameLayout
                             android:layout_width="40dp"
@@ -181,44 +190,44 @@
                                 app:tint="#16A34A" />
                         </FrameLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="14dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:layout_marginTop="10dp"
+                            android:text="Max Earnings"
+                            android:textColor="#0F172A"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="👉 Max Earnings"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="High Commission &amp; Low platform Fees"
-                                android:textColor="#64748B"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="High Commission &amp; Low platform Fees"
+                            android:textColor="#64748B"
+                            android:gravity="center"
+                            android:textSize="11sp" />
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginVertical="12dp"
-                        android:background="#F1F5F9" />
+                <!-- Box 2: Flexible Hours -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="#E2E8F0"
+                    app:strokeWidth="1dp">
 
-                    <!-- Highlight 2: Flexible Hours -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
 
                         <FrameLayout
                             android:layout_width="40dp"
@@ -234,44 +243,53 @@
                                 app:tint="#D97706" />
                         </FrameLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="14dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:layout_marginTop="10dp"
+                            android:text="Flexible Hours"
+                            android:textColor="#0F172A"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="👉 Flexible Hours"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Work From Home anytime between 8:00 am to 9:45 pm"
-                                android:textColor="#64748B"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Work From Home anytime between 8:00 am to 9:45 pm"
+                            android:textColor="#64748B"
+                            android:textSize="11sp"
+                            android:gravity="center"/>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginVertical="12dp"
-                        android:background="#F1F5F9" />
+            </LinearLayout>
 
-                    <!-- Highlight 3: Serve Nearby -->
+            <!-- Row 2: Serve Nearby & Weekly Leave -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <!-- Box 3: Serve Nearby -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="#E2E8F0"
+                    app:strokeWidth="1dp">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
 
                         <FrameLayout
                             android:layout_width="40dp"
@@ -287,44 +305,44 @@
                                 app:tint="#7C3AED" />
                         </FrameLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="14dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:layout_marginTop="10dp"
+                            android:text="Serve Nearby"
+                            android:textColor="#0F172A"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="👉 Serve Nearby"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Serve Nearby area without traveling far."
-                                android:textColor="#64748B"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Serve Nearby area without traveling far."
+                            android:textColor="#64748B"
+                            android:textSize="11sp"
+                            android:gravity="center"/>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginVertical="12dp"
-                        android:background="#F1F5F9" />
+                <!-- Box 4: Weekly Leave -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="#E2E8F0"
+                    app:strokeWidth="1dp">
 
-                    <!-- Highlight 4: Weekly Leave -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
 
                         <FrameLayout
                             android:layout_width="40dp"
@@ -340,44 +358,40 @@
                                 app:tint="#1A56DB" />
                         </FrameLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="14dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:layout_marginTop="10dp"
+                            android:text="Weekly Leave"
+                            android:textColor="#0F172A"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="👉 Weekly Leave"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="1 Fixed Weekly Day Off"
-                                android:textColor="#64748B"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="1 Fixed Weekly Day Off"
+                            android:textColor="#64748B"
+                            android:textSize="11sp"
+                            android:gravity="center"/>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
             <!-- ============ 3. HOW YOU ARE EARNING WITH JIIFIT ============ -->
             <com.google.android.material.card.MaterialCardView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:strokeColor="#E2E8F0"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#BFDBFE"
+                app:strokeWidth="1.5dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -385,21 +399,22 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Header Row -->
+                    <!-- Top Header Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
+                        android:gravity="top"
                         android:orientation="horizontal">
 
+                        <!-- Rounded Wallet Icon Container -->
                         <FrameLayout
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             android:background="@drawable/bg_wallet_box">
 
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:layout_gravity="center"
                                 android:contentDescription="Wallet"
                                 android:src="@drawable/ic_wallet_amber" />
@@ -412,22 +427,23 @@
                             android:layout_weight="1"
                             android:orientation="vertical">
 
-                            <!-- Pill: Transparent Earning Slab -->
+                            <!-- Pill Badge -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/bg_earning_pill_green"
-                                android:paddingHorizontal="9dp"
-                                android:paddingVertical="3dp"
-                                android:text="● Transparent Earning Slab"
-                                android:textColor="#16A34A"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="4dp"
+                                android:text="●  Transparent Earning Slab"
+                                android:textColor="#059669"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
+                            <!-- Heading -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
                                 android:text="How You Are Earning with Jiifit"
                                 android:textColor="#0F172A"
                                 android:textSize="16sp"
@@ -435,225 +451,37 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Example Text -->
+                    <!-- Example Description Text -->
                     <TextView
                         android:id="@+id/tvExampleText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:lineSpacingExtra="3dp"
-                        android:text="Example: If you get a ₹1,000 booking, Jiifit fee is ₹215 → You receive ₹785 directly into your bank account!"
-                        android:textColor="#334155"
+                        android:layout_marginLeft="@dimen/_40sdp"
+                        android:lineSpacingExtra="4dp"
+                        android:text="@string/earning_example_text"
+                        android:textColor="#475569"
                         android:textSize="13sp" />
 
-                    <!-- Slab Selection Chips -->
-                    <HorizontalScrollView
+
+                    <!-- Full-Width Blue Action Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnViewFullSlab"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="52dp"
                         android:layout_marginTop="14dp"
-                        android:overScrollMode="never"
-                        android:scrollbars="none">
+                        android:backgroundTint="@color/BackgroundBlue"
+                        android:text="View Full Earning Slabs &amp; Details"
+                        android:textAllCaps="false"
+                        android:textColor="@color/Text_Blue"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp"
+                        app:elevation="0dp"
+                        app:iconGravity="textEnd"
+                        app:iconPadding="8dp"
+                        app:iconSize="18dp" />
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <!-- Chip 1: ₹550 - ₹750 -->
-                            <TextView
-                                android:id="@+id/chipSlab1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_slab_chip_unselected"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:paddingHorizontal="14dp"
-                                android:paddingVertical="8dp"
-                                android:text="₹550 - ₹750"
-                                android:textColor="#475569"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <!-- Chip 2: ₹1,000 Booking (Default selected) -->
-                            <TextView
-                                android:id="@+id/chipSlab2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_slab_chip_selected"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:paddingHorizontal="14dp"
-                                android:paddingVertical="8dp"
-                                android:text="₹1,000 Booking"
-                                android:textColor="#1A56DB"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <!-- Chip 3: ₹1,500 Booking -->
-                            <TextView
-                                android:id="@+id/chipSlab3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_slab_chip_unselected"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:paddingHorizontal="14dp"
-                                android:paddingVertical="8dp"
-                                android:text="₹1,500 Booking"
-                                android:textColor="#475569"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <!-- Chip 4: ₹2,500+ Booking -->
-                            <TextView
-                                android:id="@+id/chipSlab4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_slab_chip_unselected"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:paddingHorizontal="14dp"
-                                android:paddingVertical="8dp"
-                                android:text="₹2,500+ Booking"
-                                android:textColor="#475569"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </HorizontalScrollView>
-
-                    <!-- Interactive Calculation Breakdown Box -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/bg_breakdown_inner_box"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Client Booking Amount"
-                                android:textColor="#64748B"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/tvBookingAmount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₹1,000"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvJiifitFeeLabel"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Jiifit Platform &amp; Support Fee (~21.5%)"
-                                android:textColor="#64748B"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/tvJiifitFee"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="- ₹215"
-                                android:textColor="#DC2626"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginVertical="10dp"
-                            android:background="#E2E8F0" />
-
-                        <!-- Final Payout Row -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Your Direct Bank Payout"
-                                    android:textColor="#0F172A"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/tvPayoutSharePercentage"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Keep 78.5% of booking fee"
-                                    android:textColor="#059669"
-                                    android:textSize="11sp" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tvTakeHomeAmount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₹785"
-                                android:textColor="#059669"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- Trust note below calculation -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:contentDescription="Check"
-                            android:src="@drawable/ic_check_circle_green"
-                            app:tint="#16A34A" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:text="Automated weekly payout direct to your bank account • Zero hidden charges"
-                            android:textColor="#64748B"
-                            android:textSize="11sp" />
-                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -666,11 +494,13 @@
                 android:text="Why Join as a Certified Expert?"
                 android:textColor="#0F172A"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="1dp"
@@ -851,7 +681,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:backgroundTint="#1A56DB"
-            android:text="Join as Certified Expert"
+            android:text="Join as a Expert"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
@@ -869,7 +699,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="6dp"
-            android:text="100% Free Registration • Instant Support &amp; Verification"
+            android:text="100% Safe &amp; Secure • Guaranted Bookings • Verified Appointments Only"
             android:textColor="#94A3B8"
             android:textSize="11sp" />
     </LinearLayout>

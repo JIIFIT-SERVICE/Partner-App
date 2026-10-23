@@ -96,6 +96,14 @@
                     android:src="@drawable/ic_arrow_drop_down"
                     app:tint="#64748B" />
 
+                <ProgressBar
+                    android:id="@+id/cityLoadingProgressBar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="12dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <!-- Area Search & Selection Section -->
@@ -123,7 +131,7 @@
                     android:paddingEnd="8dp"
                     android:paddingTop="3dp"
                     android:paddingBottom="3dp"
-                    android:text="Max 15"
+                    android:text="Min 50"
                     android:textColor="#1A56DB"
                     android:textSize="11sp"
                     android:textStyle="bold" />

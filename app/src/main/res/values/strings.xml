@@ -325,6 +325,12 @@ We look forward to providing you a relaxing and rejuvenating experience right in
 *Warm regards*,
 *Team Jiifit*
 Empower your wellness journey with Jiifit</string>
+
+
+
+    <string name="earning_example_text">
+    <![CDATA[Example: If you get a <b>₹1,000 booking</b>, Jiifit fee is ₹215 → <font color="#047857"><b>You receive ₹785</b></font> directly into your wallet!]]>
+</string>
 </resources>
 
 
