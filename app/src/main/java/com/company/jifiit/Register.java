@@ -54,6 +54,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.company.jifiit.Adapter.AreaAdapter;
+import com.company.jifiit.Adapter.AreaDropdownAdapter;
 import com.company.jifiit.Adapter.RegisterPagerAdapter;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -67,6 +68,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -164,6 +166,7 @@ public class Register extends AppCompatActivity {
     private View llNoAreasSelected;
 
     private AreaAdapter areaAdapter;
+    private AreaDropdownAdapter areaDropdownAdapter;
 
     private final ArrayList<AreaAdapter.Area> allAreas =
             new ArrayList<>();
@@ -436,18 +439,27 @@ public class Register extends AppCompatActivity {
                     });
                 }
 
-                View areaContainer = pageView.findViewById(R.id.areaContainer);
-                if (areaContainer != null) {
-                    areaContainer.setOnClickListener(v -> {
-                        if (actvAreaDropdown != null) {
-                            actvAreaDropdown.requestFocus();
-                            if (TextUtils.isEmpty(selectedCityId)) {
-                                Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
+                View ivCityDropdownArrow = pageView.findViewById(R.id.ivCityDropdownArrow);
+                if (ivCityDropdownArrow != null) {
+                    ivCityDropdownArrow.setOnClickListener(v -> {
+                        if (actvCityDropdown != null) {
+                            if (cityNames.isEmpty()) {
+                                loadCities();
                             } else {
-                                actvAreaDropdown.showDropDown();
+                                actvCityDropdown.showDropDown();
                             }
                         }
                     });
+                }
+
+                View areaContainer = pageView.findViewById(R.id.areaContainer);
+                if (areaContainer != null) {
+                    areaContainer.setOnClickListener(v -> showAllAreasDropdown());
+                }
+
+                View ivAreaDropdownArrow = pageView.findViewById(R.id.ivAreaDropdownArrow);
+                if (ivAreaDropdownArrow != null) {
+                    ivAreaDropdownArrow.setOnClickListener(v -> showAllAreasDropdown());
                 }
 
                 setupCityDropdownPage3();
@@ -589,75 +601,82 @@ public class Register extends AppCompatActivity {
         );
         rvAreas.setAdapter(areaAdapter);
 
-        // Remove any previous watcher (defensive).
-        if (areaSearchWatcher != null) {
-            actvAreaDropdown.removeTextChangedListener(areaSearchWatcher);
-            areaSearchWatcher = null;
-        }
+        setupAreaDropdownAdapter();
 
         actvAreaDropdown.setThreshold(1);
         actvAreaDropdown.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
         actvAreaDropdown.setFocusableInTouchMode(true);
 
+        actvAreaDropdown.setOnClickListener(v -> showAllAreasDropdown());
+
+        actvAreaDropdown.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                showAllAreasDropdown();
+            }
+        });
+
         actvAreaDropdown.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (TextUtils.isEmpty(selectedCityId)) {
-                    Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
-                    if (actvCityDropdown != null) {
-                        actvCityDropdown.requestFocus();
-                        actvCityDropdown.showDropDown();
-                    }
-                    return true;
-                }
+                showAllAreasDropdown();
             }
             return false;
         });
 
         actvAreaDropdown.setOnItemClickListener(
                 (parent, view, position, id) -> {
-
                     Object selectedItem = parent.getItemAtPosition(position);
-                    if (selectedItem == null) return;
+                    AreaAdapter.Area selectedArea = null;
 
-                    String selectedName = selectedItem.toString();
-
-                    for (AreaAdapter.Area area : allAreas) {
-                        if (area.name.equals(selectedName)) {
-
-                            if (selectedAreaIds.contains(area.id)) {
-                                Toast.makeText(
-                                        Register.this,
-                                        "Area is already selected",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                                actvAreaDropdown.setText("", false);
-                                return;
+                    if (selectedItem instanceof AreaAdapter.Area) {
+                        selectedArea = (AreaAdapter.Area) selectedItem;
+                    } else if (selectedItem != null) {
+                        String selectedName = selectedItem.toString().trim();
+                        for (AreaAdapter.Area a : allAreas) {
+                            if (a.name.trim().equalsIgnoreCase(selectedName)) {
+                                selectedArea = a;
+                                break;
                             }
-
-                            if (selectedAreaIds.size() >= 15) {
-                                Toast.makeText(
-                                        Register.this,
-                                        "You can select up to 15 areas only",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                                actvAreaDropdown.setText("", false);
-                                return;
-                            }
-
-                            if (areaAdapter != null) {
-                                areaAdapter.addArea(area);
-                            } else {
-                                selectedAreaIds.add(area.id);
-                            }
-                            break;
                         }
+                    }
+
+                    if (selectedArea == null) return;
+
+                    if (selectedAreaIds.contains(selectedArea.id)) {
+                        Toast.makeText(
+                                Register.this,
+                                "Area is already selected",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        actvAreaDropdown.post(() -> actvAreaDropdown.setText("", false));
+                        return;
+                    }
+
+                    if (selectedAreaIds.size() >= 15) {
+                        Toast.makeText(
+                                Register.this,
+                                "You can select up to 15 areas only",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        actvAreaDropdown.post(() -> actvAreaDropdown.setText("", false));
+                        return;
+                    }
+
+                    if (areaAdapter != null) {
+                        areaAdapter.addArea(selectedArea);
+                    } else {
+                        selectedAreaIds.add(selectedArea.id);
                     }
 
                     updateAreaCount();
                     validateCurrentPage();
 
                     // Clear text so dropdown doesn't stay open and user can select the next area.
-                    actvAreaDropdown.setText("", false);
+                    actvAreaDropdown.post(() -> {
+                        actvAreaDropdown.setText("", false);
+                        if (areaDropdownAdapter != null) {
+                            areaDropdownAdapter.getFilter().filter("");
+                        }
+                    });
                 }
         );
 
@@ -745,10 +764,15 @@ public class Register extends AppCompatActivity {
                                         String areaName = item.optString("name", "");
 
                                         if (!TextUtils.isEmpty(areaId) && !TextUtils.isEmpty(areaName)) {
-                                            allAreas.add(new AreaAdapter.Area(areaId, areaName));
+                                            allAreas.add(new AreaAdapter.Area(areaId.trim(), areaName.trim()));
                                         }
                                     }
                                 }
+
+                                // Sort ascending A-Z
+                                Collections.sort(allAreas, (a, b) ->
+                                        a.name.trim().compareToIgnoreCase(b.name.trim())
+                                );
 
                                 areasLoaded = true;
                                 areasLoadedCityId = selectedCityId;
@@ -826,28 +850,51 @@ public class Register extends AppCompatActivity {
     private void setupAreaDropdownAdapter() {
         if (actvAreaDropdown == null) return;
 
-        ArrayList<String> names = new ArrayList<>();
-        for (AreaAdapter.Area area : allAreas) {
-            names.add(area.name);
+        // Ensure allAreas is sorted in ascending alphabetical order
+        Collections.sort(allAreas, (a, b) ->
+                a.name.trim().compareToIgnoreCase(b.name.trim())
+        );
+
+        if (areaDropdownAdapter == null) {
+            areaDropdownAdapter = new AreaDropdownAdapter(this, allAreas);
+            actvAreaDropdown.setAdapter(areaDropdownAdapter);
+        } else {
+            areaDropdownAdapter.setAreas(allAreas);
         }
 
-        ArrayAdapter<String> dropdownAdapter =
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_dropdown_item_1line,
-                        names
-                );
-
-        // MaterialAutoCompleteTextView can behave oddly if adapter
-        // is swapped while the popup is showing.
-        actvAreaDropdown.dismissDropDown();
-        actvAreaDropdown.setAdapter(dropdownAdapter);
         actvAreaDropdown.setThreshold(1);
+    }
 
-        // Force-filter so the popup reflects the typed text immediately.
-        String current = actvAreaDropdown.getText().toString();
-        if (!TextUtils.isEmpty(current)) {
-            dropdownAdapter.getFilter().filter(current);
+    private void showAllAreasDropdown() {
+        if (actvAreaDropdown == null) return;
+
+        if (TextUtils.isEmpty(selectedCityId)) {
+            Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
+            if (actvCityDropdown != null) {
+                actvCityDropdown.requestFocus();
+                actvCityDropdown.showDropDown();
+            }
+            return;
+        }
+
+        if (allAreas.isEmpty()) {
+            if (!isLoadingAreas) {
+                loadAreasByCity();
+            }
+            return;
+        }
+
+        if (areaDropdownAdapter == null) {
+            setupAreaDropdownAdapter();
+        }
+
+        if (areaDropdownAdapter != null) {
+            areaDropdownAdapter.getFilter().filter("", count -> {
+                if (actvAreaDropdown != null && !isFinishing() && !isDestroyed()) {
+                    actvAreaDropdown.requestFocus();
+                    actvAreaDropdown.showDropDown();
+                }
+            });
         }
     }
     // ============================================================
