@@ -202,7 +202,7 @@ public class JoinerTypes extends AppCompatActivity {
 
             btnExpertApply.setOnClickListener(v -> {
 
-                startActivity(new Intent(JoinerTypes.this, Register.class ));
+                startActivity(new Intent(JoinerTypes.this, ExpertEarningActivity.class));
                 overridePendingTransition(
                         R.anim.slide_in_right,
                         R.anim.slide_out_left
