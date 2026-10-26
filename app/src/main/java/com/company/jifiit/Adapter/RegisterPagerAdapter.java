@@ -16,7 +16,7 @@ public class RegisterPagerAdapter
     private final int[] layouts = {
             R.layout.register_page_1,
             R.layout.register_page_2,
-            R.layout.register_page_3,
+            R.layout.register_page_job_city_select,
             R.layout.register_page_4
     };
 

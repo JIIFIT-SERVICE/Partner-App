@@ -43,6 +43,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -123,6 +124,7 @@ public class Register extends AppCompatActivity {
     private final ArrayList<String> cityIdsP3 = new ArrayList<>();
     private boolean cityLoadedP3 = false;
     private boolean cityLoadingP3 = false;
+    private boolean isCityPickerPendingP3 = false;
 
     private final ArrayList<String> localityNames = new ArrayList<>();
     private final ArrayList<String> localityIds = new ArrayList<>();
@@ -167,23 +169,22 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private MaterialAutoCompleteTextView actvCityDropdown;
-    private MaterialAutoCompleteTextView actvAreaDropdown;
     private RecyclerView rvAreas;
     private TextView tvTotalAreas;
     private View llNoAreasSelected;
+    private View llAreasLoading;
+    private TextView tvEmptyTitle;
+    private TextView tvEmptySubtitle;
 
     private AreaAdapter areaAdapter;
-    private AreaDropdownAdapter areaDropdownAdapter;
 
     private final ArrayList<AreaAdapter.Area> allAreas = new ArrayList<>();
     private final LinkedHashSet<String> selectedAreaIds = new LinkedHashSet<>();
 
+    private String selectedCityIdP3 = "";
     private boolean areasLoaded = false;
     private boolean isLoadingAreas = false;
     private String areasLoadedCityId = "";
-
-    // Guard flag to prevent auto-complete dropdown blink loop
-    private boolean dropdownShowing = false;
 
     // ============================================================
     // PAGE 4 - REFERRAL
@@ -388,45 +389,21 @@ public class Register extends AppCompatActivity {
             // ----------------------------------------------------
             case 2:
                 actvCityDropdown = pageView.findViewById(R.id.actvCityDropdown);
-                actvAreaDropdown = pageView.findViewById(R.id.actvAreaDropdown);
                 rvAreas = pageView.findViewById(R.id.rvAreas);
                 tvTotalAreas = pageView.findViewById(R.id.tvTotalAreas);
                 llNoAreasSelected = pageView.findViewById(R.id.llNoAreasSelected);
+                llAreasLoading = pageView.findViewById(R.id.llAreasLoading);
+                tvEmptyTitle = pageView.findViewById(R.id.tvEmptyTitle);
+                tvEmptySubtitle = pageView.findViewById(R.id.tvEmptySubtitle);
 
                 View cityContainer = pageView.findViewById(R.id.cityContainer);
                 if (cityContainer != null) {
-                    cityContainer.setOnClickListener(v -> {
-                        if (actvCityDropdown != null) {
-                            if (cityNamesP3.isEmpty()) {
-                                loadCities(1);
-                            } else {
-                                actvCityDropdown.showDropDown();
-                            }
-                        }
-                    });
+                    cityContainer.setOnClickListener(v -> openCityPickerPage3());
                 }
 
                 View ivCityDropdownArrow = pageView.findViewById(R.id.ivCityDropdownArrow);
                 if (ivCityDropdownArrow != null) {
-                    ivCityDropdownArrow.setOnClickListener(v -> {
-                        if (actvCityDropdown != null) {
-                            if (cityNamesP3.isEmpty()) {
-                                loadCities(1);
-                            } else {
-                                actvCityDropdown.showDropDown();
-                            }
-                        }
-                    });
-                }
-
-                View areaContainer = pageView.findViewById(R.id.areaContainer);
-                if (areaContainer != null) {
-                    areaContainer.setOnClickListener(v -> showAllAreasDropdown());
-                }
-
-                View ivAreaDropdownArrow = pageView.findViewById(R.id.ivAreaDropdownArrow);
-                if (ivAreaDropdownArrow != null) {
-                    ivAreaDropdownArrow.setOnClickListener(v -> showAllAreasDropdown());
+                    ivCityDropdownArrow.setOnClickListener(v -> openCityPickerPage3());
                 }
 
                 setupCityDropdownPage3();
@@ -579,6 +556,94 @@ public class Register extends AppCompatActivity {
     // PAGE 3 - CITY PREFERENCES
     // ============================================================
 
+    private void openCityPickerPage3() {
+        toggleArrowDirection(true);
+        if (cityLoadedP3 && !cityNamesP3.isEmpty()) {
+            showCityDialogPage3();
+        } else {
+            isCityPickerPendingP3 = true;
+            loadCities(1);
+        }
+    }
+
+    private void showCityDialogPage3() {
+        if (cityNamesP3.isEmpty()) {
+            openCityPickerPage3();
+            return;
+        }
+
+        String[] cities = cityNamesP3.toArray(new String[0]);
+
+        ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.select_dialog_item,
+                cities
+        ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view;
+                textView.setTextColor(Color.BLACK);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                textView.setPadding(40, 24, 40, 24);
+                textView.setBackgroundColor(Color.WHITE);
+                return view;
+            }
+        };
+
+        AlertDialog cityDialog = new AlertDialog.Builder(this, R.style.WhiteAlertDialog)
+                .setTitle("Select City")
+                .setAdapter(cityAdapter, (dialog, which) -> {
+                    if (which >= 0 && which < cityIdsP3.size()) {
+                        String newCityId = cityIdsP3.get(which);
+                        String newCityName = cityNamesP3.get(which);
+                        onCitySelectedPage3(newCityId, newCityName);
+                    }
+                    toggleArrowDirection(false);
+                })
+                .create();
+
+        cityDialog.setOnDismissListener(dialog -> toggleArrowDirection(false));
+
+        cityDialog.setOnShowListener(dialogInterface -> {
+            Window w = cityDialog.getWindow();
+            if (w != null) {
+                // Force whole dialog window white
+                w.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
+                // Title
+                int titleId = getResources().getIdentifier("alertTitle", "id", "android");
+                TextView title = cityDialog.findViewById(titleId);
+                if (title != null) {
+                    title.setTextColor(Color.BLACK);
+                    title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setPadding(40, 30, 40, 20);
+                    title.setBackgroundColor(Color.WHITE);
+                }
+
+                // List
+                ListView listView = cityDialog.getListView();
+                if (listView != null) {
+                    listView.setBackgroundColor(Color.WHITE);
+                    listView.setDivider(new ColorDrawable(Color.LTGRAY));
+                    listView.setDividerHeight(1);
+                    listView.setPadding(0, 10, 0, 10);
+                    listView.setVerticalScrollBarEnabled(true);
+                }
+            }
+        });
+
+        cityDialog.show();
+
+        if (cityDialog.getWindow() != null) {
+            cityDialog.getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.9),
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
+            );
+        }
+    }
+
     private void setupCityDropdownPage3() {
         if (actvCityDropdown == null) {
             return;
@@ -586,12 +651,14 @@ public class Register extends AppCompatActivity {
 
         refreshCityDropdownPage3();
 
-        actvCityDropdown.setOnClickListener(v -> {
-            if (cityNamesP3.isEmpty()) {
-                loadCities(1);
-            } else {
-                actvCityDropdown.showDropDown();
+        actvCityDropdown.setOnClickListener(v -> openCityPickerPage3());
+        actvCityDropdown.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                v.clearFocus();
+                openCityPickerPage3();
+                return true;
             }
+            return false;
         });
 
         actvCityDropdown.setOnItemClickListener((parent, view, position, id) -> {
@@ -613,26 +680,53 @@ public class Register extends AppCompatActivity {
     private void refreshCityDropdownPage3() {
         if (actvCityDropdown == null) return;
 
+        actvCityDropdown.setDropDownBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
         if (!cityNamesP3.isEmpty()) {
-            ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(
+            ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
                     cityNamesP3
-            );
+            ) {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    View view = super.getView(position, convertView, parent);
+                    if (view instanceof TextView) {
+                        TextView tv = (TextView) view;
+                        tv.setTextColor(Color.BLACK);
+                        tv.setBackgroundColor(Color.WHITE);
+                    }
+                    return view;
+                }
+
+                @Override
+                public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                    View view = super.getDropDownView(position, convertView, parent);
+                    if (view instanceof TextView) {
+                        TextView tv = (TextView) view;
+                        tv.setTextColor(Color.BLACK);
+                        tv.setBackgroundColor(Color.WHITE);
+                        tv.setPadding(32, 24, 32, 24);
+                    }
+                    return view;
+                }
+            };
             actvCityDropdown.setAdapter(cityAdapter);
         }
 
-        if (!TextUtils.isEmpty(selectedCityId) && !cityNamesP3.isEmpty()) {
-            int idx = cityIdsP3.indexOf(selectedCityId);
+        if (!TextUtils.isEmpty(selectedCityIdP3) && !cityNamesP3.isEmpty()) {
+            int idx = cityIdsP3.indexOf(selectedCityIdP3);
             if (idx >= 0 && idx < cityNamesP3.size()) {
                 actvCityDropdown.setText(cityNamesP3.get(idx), false);
             }
+        } else {
+            actvCityDropdown.setText("", false);
         }
     }
 
     private void onCitySelectedPage3(String newCityId, String newCityName) {
-        boolean cityChanged = !newCityId.equals(selectedCityId);
-        selectedCityId = newCityId;
+        boolean cityChanged = !newCityId.equals(selectedCityIdP3);
+        selectedCityIdP3 = newCityId;
 
         if (actvCityDropdown != null) {
             actvCityDropdown.setText(newCityName, false);
@@ -649,7 +743,6 @@ public class Register extends AppCompatActivity {
                 areaAdapter.clear();
             }
 
-            setupAreaDropdownAdapter();
             updateAreaCount();
         }
 
@@ -692,6 +785,7 @@ public class Register extends AppCompatActivity {
 
                         if (!apiStatus) {
                             Toast.makeText(this, "Failed to load cities", Toast.LENGTH_SHORT).show();
+                            isCityPickerPendingP3 = false;
                             toggleArrowDirection(false);
                             return;
                         }
@@ -699,6 +793,7 @@ public class Register extends AppCompatActivity {
                         JSONArray citiesArray = response.optJSONArray("cities");
 
                         if (citiesArray == null) {
+                            isCityPickerPendingP3 = false;
                             toggleArrowDirection(false);
                             return;
                         }
@@ -719,6 +814,7 @@ public class Register extends AppCompatActivity {
 
                         if (targetNames.isEmpty()) {
                             Toast.makeText(this, "No cities available", Toast.LENGTH_SHORT).show();
+                            isCityPickerPendingP3 = false;
                             toggleArrowDirection(false);
                             return;
                         }
@@ -731,13 +827,14 @@ public class Register extends AppCompatActivity {
                             cityLoadedP3 = true;
                             refreshCityDropdownPage3();
                             toggleArrowDirection(false);
-                            if (actvCityDropdown != null) {
-                                actvCityDropdown.requestFocus();
-                                actvCityDropdown.showDropDown();
+                            if (isCityPickerPendingP3) {
+                                isCityPickerPendingP3 = false;
+                                showCityDialogPage3();
                             }
                         }
 
                     } catch (Exception e) {
+                        isCityPickerPendingP3 = false;
                         Log.e(TAG, "City parsing failed", e);
                         Toast.makeText(this, "Error loading cities", Toast.LENGTH_SHORT).show();
                         toggleArrowDirection(false);
@@ -746,6 +843,7 @@ public class Register extends AppCompatActivity {
                 error -> {
                     if (status == 1) {
                         cityLoadingP3 = false;
+                        isCityPickerPendingP3 = false;
                     }
                     Log.e(TAG, "City API error", error);
                     Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show();
@@ -868,13 +966,18 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void setupAreaPreferences() {
-        if (rvAreas == null || actvAreaDropdown == null) {
+        if (rvAreas == null) {
             return;
         }
 
-        rvAreas.setLayoutManager(new GridLayoutManager(this, 2));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        rvAreas.setLayoutManager(layoutManager);
+        rvAreas.setNestedScrollingEnabled(true);
+        rvAreas.setHasFixedSize(true);
+        rvAreas.setItemAnimator(null);
 
         areaAdapter = new AreaAdapter(
+                allAreas,
                 selectedAreaIds,
                 () -> {
                     updateAreaCount();
@@ -883,89 +986,63 @@ public class Register extends AppCompatActivity {
         );
         rvAreas.setAdapter(areaAdapter);
 
-        setupAreaDropdownAdapter();
-
-        // Read-only display field — dropdown is opened programmatically only.
-        // This prevents the blink loop caused by focus/touch re-entrancy.
-        actvAreaDropdown.setKeyListener(null);
-        actvAreaDropdown.setCursorVisible(false);
-        actvAreaDropdown.setFocusable(false);
-        actvAreaDropdown.setFocusableInTouchMode(false);
-        actvAreaDropdown.setInputType(android.text.InputType.TYPE_NULL);
-        actvAreaDropdown.setDropDownHeight(600);
-        actvAreaDropdown.setThreshold(1);
-
-        // Single entry point to open the dropdown
-        actvAreaDropdown.setOnClickListener(v -> showAllAreasDropdown());
-
-        actvAreaDropdown.setOnItemClickListener(
-                (parent, view, position, id) -> {
-                    Object selectedItem = parent.getItemAtPosition(position);
-                    AreaAdapter.Area selectedArea = null;
-
-                    if (selectedItem instanceof AreaAdapter.Area) {
-                        selectedArea = (AreaAdapter.Area) selectedItem;
-                    } else if (selectedItem != null) {
-                        String selectedName = selectedItem.toString().trim();
-                        for (AreaAdapter.Area a : allAreas) {
-                            if (a.name.trim().equalsIgnoreCase(selectedName)) {
-                                selectedArea = a;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (selectedArea == null) return;
-
-                    if (selectedAreaIds.contains(selectedArea.id)) {
-                        Toast.makeText(Register.this, "Area is already selected", Toast.LENGTH_SHORT).show();
-                        actvAreaDropdown.post(() -> actvAreaDropdown.setText("", false));
-                        return;
-                    }
-
-                    if (areaAdapter != null) {
-                        areaAdapter.addArea(selectedArea);
-                    } else {
-                        selectedAreaIds.add(selectedArea.id);
-                    }
-
-                    updateAreaCount();
-                    validateCurrentPage();
-
-                    actvAreaDropdown.post(() -> {
-                        actvAreaDropdown.setText("", false);
-                        if (areaDropdownAdapter != null) {
-                            areaDropdownAdapter.getFilter().filter("");
-                        }
-                    });
-                }
-        );
-
         updateAreaCount();
 
-        if (!TextUtils.isEmpty(selectedCityId)) {
+        if (!TextUtils.isEmpty(selectedCityIdP3) && allAreas.isEmpty()) {
             loadAreasByCity();
         }
     }
 
+    private int getRequiredAreasCount() {
+        if (allAreas == null || allAreas.isEmpty()) {
+            return MIN_REQUIRED_AREAS;
+        }
+        return Math.min(MIN_REQUIRED_AREAS, allAreas.size());
+    }
+
     private void updateAreaCount() {
+        int count = selectedAreaIds.size();
+        int required = getRequiredAreasCount();
+
         if (tvTotalAreas != null) {
-            tvTotalAreas.setText(String.valueOf(selectedAreaIds.size()));
+            if (count < required) {
+                tvTotalAreas.setText(count + " / " + required + " selected");
+            } else {
+                tvTotalAreas.setText(count + " locations selected");
+            }
         }
 
         if (llNoAreasSelected != null && rvAreas != null) {
-            if (selectedAreaIds.isEmpty()) {
+            if (isLoadingAreas) {
+                llNoAreasSelected.setVisibility(View.GONE);
+                rvAreas.setVisibility(View.GONE);
+            } else if (allAreas.isEmpty() || TextUtils.isEmpty(selectedCityIdP3)) {
                 llNoAreasSelected.setVisibility(View.VISIBLE);
                 rvAreas.setVisibility(View.GONE);
+                if (tvEmptyTitle != null) {
+                    if (TextUtils.isEmpty(selectedCityIdP3)) {
+                        tvEmptyTitle.setText("Select a city to view hubs");
+                        if (tvEmptySubtitle != null) {
+                            tvEmptySubtitle.setText("Choose your primary city above to display all available operating locations.");
+                        }
+                    } else {
+                        tvEmptyTitle.setText("No locations available");
+                        if (tvEmptySubtitle != null) {
+                            tvEmptySubtitle.setText("No operating hubs found for the selected city.");
+                        }
+                    }
+                }
             } else {
                 llNoAreasSelected.setVisibility(View.GONE);
-                rvAreas.setVisibility(View.VISIBLE);
+                if (rvAreas.getVisibility() != View.VISIBLE) {
+                    rvAreas.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
 
     private void loadAreasByCity() {
-        if (TextUtils.isEmpty(selectedCityId)) {
+        if (TextUtils.isEmpty(selectedCityIdP3)) {
             return;
         }
 
@@ -979,11 +1056,20 @@ public class Register extends AppCompatActivity {
             areaAdapter.clear();
         }
 
-        setupAreaDropdownAdapter();
+        if (llAreasLoading != null) {
+            llAreasLoading.setVisibility(View.VISIBLE);
+        }
+        if (llNoAreasSelected != null) {
+            llNoAreasSelected.setVisibility(View.GONE);
+        }
+        if (rvAreas != null) {
+            rvAreas.setVisibility(View.GONE);
+        }
+
         updateAreaCount();
         validateCurrentPage();
 
-        String url = Constant.get_localities + "?city_id=" + Uri.encode(selectedCityId);
+        String url = Constant.get_localities + "?city_id=" + Uri.encode(selectedCityIdP3);
         Log.d(TAG, "Area API URL: " + url);
 
         StringRequest request = new StringRequest(
@@ -991,6 +1077,9 @@ public class Register extends AppCompatActivity {
                 url,
                 responseStr -> {
                     isLoadingAreas = false;
+                    if (llAreasLoading != null) {
+                        llAreasLoading.setVisibility(View.GONE);
+                    }
 
                     try {
                         allAreas.clear();
@@ -1015,9 +1104,10 @@ public class Register extends AppCompatActivity {
 
                                 String areaId = item.optString("id", "");
                                 String areaName = item.optString("name", "");
+                                String areaDesc = item.optString("description", "");
 
                                 if (!TextUtils.isEmpty(areaId) && !TextUtils.isEmpty(areaName)) {
-                                    allAreas.add(new AreaAdapter.Area(areaId.trim(), areaName.trim()));
+                                    allAreas.add(new AreaAdapter.Area(areaId.trim(), areaName.trim(), areaDesc.trim()));
                                 }
                             }
                         }
@@ -1027,13 +1117,12 @@ public class Register extends AppCompatActivity {
                         );
 
                         areasLoaded = true;
-                        areasLoadedCityId = selectedCityId;
+                        areasLoadedCityId = selectedCityIdP3;
 
                         if (areaAdapter != null) {
-                            areaAdapter.syncSelected(allAreas);
+                            areaAdapter.setAreas(allAreas);
                         }
 
-                        setupAreaDropdownAdapter();
                         updateAreaCount();
                         validateCurrentPage();
 
@@ -1046,6 +1135,7 @@ public class Register extends AppCompatActivity {
                         areasLoadedCityId = "";
                         Log.e(TAG, "Area parsing failed", e);
                         Toast.makeText(Register.this, "Unable to read area data", Toast.LENGTH_SHORT).show();
+                        updateAreaCount();
                         validateCurrentPage();
                     }
                 },
@@ -1053,6 +1143,9 @@ public class Register extends AppCompatActivity {
                     isLoadingAreas = false;
                     areasLoaded = false;
                     areasLoadedCityId = "";
+                    if (llAreasLoading != null) {
+                        llAreasLoading.setVisibility(View.GONE);
+                    }
 
                     String errorMessage = "Unknown error";
                     if (error instanceof TimeoutError) {
@@ -1065,6 +1158,7 @@ public class Register extends AppCompatActivity {
 
                     Log.e(TAG, "Area API failed: " + errorMessage, error);
                     Toast.makeText(Register.this, "Area loading failed: " + errorMessage, Toast.LENGTH_LONG).show();
+                    updateAreaCount();
                     validateCurrentPage();
                 }
         );
@@ -1081,61 +1175,11 @@ public class Register extends AppCompatActivity {
     }
 
     private void setupAreaDropdownAdapter() {
-        if (actvAreaDropdown == null) return;
-
-        Collections.sort(allAreas, (a, b) ->
-                a.name.trim().compareToIgnoreCase(b.name.trim())
-        );
-
-        if (areaDropdownAdapter == null) {
-            areaDropdownAdapter = new AreaDropdownAdapter(this, allAreas);
-            actvAreaDropdown.setAdapter(areaDropdownAdapter);
-        } else {
-            areaDropdownAdapter.setAreas(allAreas);
-        }
-
-        actvAreaDropdown.setThreshold(1);
+        // Obsolete: list is now rendered directly
     }
 
     private void showAllAreasDropdown() {
-        if (actvAreaDropdown == null || dropdownShowing) return;
-
-        if (TextUtils.isEmpty(selectedCityId)) {
-            Toast.makeText(Register.this, "Please select city first", Toast.LENGTH_SHORT).show();
-            if (actvCityDropdown != null) {
-                actvCityDropdown.requestFocus();
-                actvCityDropdown.showDropDown();
-            }
-            return;
-        }
-
-        if (allAreas.isEmpty()) {
-            if (!isLoadingAreas) {
-                loadAreasByCity();
-            }
-            return;
-        }
-
-        if (areaDropdownAdapter == null) {
-            setupAreaDropdownAdapter();
-        }
-
-        dropdownShowing = true;
-
-        actvAreaDropdown.post(() -> {
-            try {
-                if (areaDropdownAdapter != null) {
-                    // Clear any stale filter so the full list shows
-                    areaDropdownAdapter.getFilter().filter(null);
-                }
-                if (!isFinishing() && !isDestroyed()) {
-                    actvAreaDropdown.showDropDown();
-                }
-            } finally {
-                // Release the guard after the dropdown animation settles
-                actvAreaDropdown.postDelayed(() -> dropdownShowing = false, 300);
-            }
-        });
+        // Obsolete: list is now rendered directly
     }
 
     // ============================================================
@@ -1503,10 +1547,10 @@ public class Register extends AppCompatActivity {
     }
 
     private boolean validatePreferences() {
-        return !TextUtils.isEmpty(selectedCityId)
+        return !TextUtils.isEmpty(selectedCityIdP3)
                 && areasLoaded
                 && selectedAreaIds != null
-                && selectedAreaIds.size() >= MIN_REQUIRED_AREAS;
+                && selectedAreaIds.size() >= getRequiredAreasCount();
     }
 
     private boolean validateReferral() {
@@ -1567,10 +1611,13 @@ public class Register extends AppCompatActivity {
             } else {
                 String message;
 
-                if (currentPage == 2 && !areasLoaded) {
+                if (currentPage == 2 && TextUtils.isEmpty(selectedCityIdP3)) {
+                    message = "Please select your primary city";
+                } else if (currentPage == 2 && !areasLoaded) {
                     message = "Please wait for areas to load";
                 } else if (currentPage == 2) {
-                    message = "Please select at least " + MIN_REQUIRED_AREAS + " areas (Currently selected: " + selectedAreaIds.size() + ")";
+                    int req = getRequiredAreasCount();
+                    message = "Please select at least " + req + " location hubs (Currently selected: " + selectedAreaIds.size() + ")";
                 } else {
                     message = "Please fill all required fields";
                 }
@@ -1634,7 +1681,7 @@ public class Register extends AppCompatActivity {
         final String address = regAddress.getText().toString().trim();
         final String referral = etReferral != null ? etReferral.getText().toString().trim() : "";
         final String expDesc = etExpDesc != null ? etExpDesc.getText().toString().trim() : "";
-        final String cityId = selectedCityId;
+        final String cityId = !TextUtils.isEmpty(selectedCityIdP3) ? selectedCityIdP3 : selectedCityId;
         final String areaIds = TextUtils.join(",", selectedAreaIds);
 
         String gender = "";
