@@ -208,4 +208,14 @@
     <color name="BodyText">#273448</color>
 
     <color name="field_bg">#F8FAFC</color>
+
+    <!-- Influencer & Partner Program Colors -->
+    <color name="partner_gradient_start">#0961FE</color>
+    <color name="partner_gradient_end">#2733DE</color>
+    <color name="partner_badge_yellow">#FFAE00</color>
+    <color name="partner_badge_yellow_text">#261500</color>
+    <color name="partner_category_text">#C5D8FE</color>
+    <color name="partner_description_text">#EDF3FF</color>
+    <color name="partner_btn_blue_text">#0D62FE</color>
+    <color name="partner_btn_dashboard_bg">#183AA8</color>
 </resources>

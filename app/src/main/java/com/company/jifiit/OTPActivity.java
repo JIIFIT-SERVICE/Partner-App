@@ -35,6 +35,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.company.jifiit.Hotel.HotelMainActivity;
+import com.company.jifiit.Influencer.InfluencerMainActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -44,6 +45,9 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import android.provider.Settings;
+import android.os.Build;
+import android.content.pm.PackageInfo;
 
 public class OTPActivity extends AppCompatActivity {
     private static final long TIMER_DURATION = 60000; // 1 minute
@@ -332,44 +336,61 @@ public class OTPActivity extends AppCompatActivity {
                         if (status.equals("success")) {
                             JSONObject data = response.getJSONObject("data");
                             String name = "";
-                            BigInteger Id = BigInteger.valueOf(data.getInt("id"));
-                            String VerificationStatus = data.getString("verification");
-                            String Age="0000-00-00";
-                            if (userType.equals("expert")){
-                                Age = data.getString("date_of_birth");
-                                name = data.getString("name");
-                            } else if (userType.equals("hotel")) {
-                                name = data.getString("hotel_name");
+                            BigInteger Id = BigInteger.ZERO;
+                            if (data.has("id")) {
+                                Id = new BigInteger(String.valueOf(data.get("id")));
+                            } else if (data.has("user_id")) {
+                                Id = new BigInteger(String.valueOf(data.get("user_id")));
+                            }
 
+                            String VerificationStatus = data.optString("verification", "approved");
+                            String Age = "0000-00-00";
+                            if (userType.equalsIgnoreCase("expert")){
+                                Age = data.optString("date_of_birth", "0000-00-00");
+                                name = data.optString("name", "Expert");
+                            } else if (userType.equalsIgnoreCase("hotel")) {
+                                name = data.optString("hotel_name", "Hotel");
+                            } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+                                if (data.has("name")) {
+                                    name = data.getString("name");
+                                } else if (data.has("full_name")) {
+                                    name = data.getString("full_name");
+                                } else {
+                                    name = "Partner";
+                                }
                             }
 
                             String Mobile = phone;
 
                             saveUserNameToSharedPreferences(name, Id, VerificationStatus, Age, Mobile,userType);
-                            loggedIn(Id, token,userType);
-                            if (userType.equals("expert")){
+                            loggedIn(Id, token != null ? token : "", userType != null ? userType : "");
+                            if (userType.equalsIgnoreCase("expert")){
                                 startActivity(new Intent(OTPActivity.this, MainActivity.class));
                                 overridePendingTransition(
                                         R.anim.slide_in_right,
                                         R.anim.slide_out_left
                                 );
                                 finish();
-                            } else if (userType.equals("hotel")) {
+                            } else if (userType.equalsIgnoreCase("hotel")) {
                                 startActivity(new Intent(OTPActivity.this, HotelMainActivity.class));
                                 overridePendingTransition(
                                         R.anim.slide_in_right,
                                         R.anim.slide_out_left
                                 );
                                 finish();
-                            }else if (userType.equals("wellness")) {
-
-                            }else if (userType.equals("centre")) {
-
+                            } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+                                startActivity(new Intent(OTPActivity.this, InfluencerMainActivity.class));
+                                overridePendingTransition(
+                                        R.anim.slide_in_right,
+                                        R.anim.slide_out_left
+                                );
+                                finish();
                             }
 
 
                         }
                     } catch (JSONException e) {
+                        Log.e("OTPActivity", "Error parsing response", e);
                         Toast.makeText(OTPActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
                     }
                 },
@@ -392,31 +413,83 @@ public class OTPActivity extends AppCompatActivity {
         editor.apply();
     }
 
+
     private void loggedIn(BigInteger id, String token, String userType) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.Loggedin,
+
+        boolean isInfluencer =
+                "influencer".equalsIgnoreCase(userType)
+                        || "partner".equalsIgnoreCase(userType);
+
+        String loginUrl = isInfluencer
+                ? Constant.InfluencerLogin
+                : Constant.Loggedin;
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST,
+                loginUrl,
                 response -> {
+                    Log.d("LoginStatusResponse", response);
+
                     try {
                         JSONObject jsonObject = new JSONObject(response);
-                        if (!jsonObject.getString("status").equals("success")) {
-                            Log.e("LoginStatus", "Failed to update login status");
+
+                        if (!"success".equalsIgnoreCase(
+                                jsonObject.optString("status"))) {
+                            Log.e("LoginStatus",
+                                    jsonObject.optString("message"));
                         }
+
                     } catch (JSONException e) {
-                        Log.e("JSONError", "Error parsing response", e);
+                        Log.e("LoginStatus", "Invalid JSON", e);
                     }
                 },
-                error -> Log.e("VolleyError", "Error logging in", error)) {
+                error -> Log.e("LoginStatus", "Login API error", error)
+        ) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("id", String.valueOf(id));
-                params.put("token", token);
-                params.put("userType", userType);
+
+                params.put("id", id.toString());
+
+                if (isInfluencer) {
+                    params.put(
+                            "device_uuid",
+                            Settings.Secure.getString(
+                                    getContentResolver(),
+                                    Settings.Secure.ANDROID_ID
+                            )
+                    );
+
+                    params.put("device_name", Build.DEVICE);
+                    params.put("manufacturer", Build.MANUFACTURER);
+                    params.put("device_model", Build.MODEL);
+                    params.put("os_version", Build.VERSION.RELEASE);
+                    params.put("app_version", getAppVersion());
+                    params.put("device_token", token != null ? token : "");
+
+                } else {
+                    params.put("token", token != null ? token : "");
+                    params.put("userType", userType != null ? userType : "");
+                }
+
                 return params;
             }
         };
 
         Volley.newRequestQueue(this).add(stringRequest);
     }
+
+    private String getAppVersion() {
+        try {
+            PackageInfo info = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0);
+
+            return info.versionName != null ? info.versionName : "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 
     private class OTPTextWatcher implements TextWatcher {
         private final EditText currentEditText;

@@ -40,9 +40,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.company.jifiit.Hotel.HotelMainActivity;
+import com.company.jifiit.Influencer.InfluencerMainActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.hbb20.CountryCodePicker;
 
+import android.net.Uri;
 import android.os.Build;
 public class LoginActivity extends AppCompatActivity {
     private EditText phoneInput;
@@ -369,7 +371,7 @@ public class LoginActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         // Create a request to fetch user data
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constant.fetchAccount + phone, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constant.fetchAccount + Uri.encode(phone), null,
                 response -> {
                     try {
                         // Log the response for debugging
@@ -382,28 +384,60 @@ public class LoginActivity extends AppCompatActivity {
                         if (status.equals("success")) {
                             // Extract user data
                             JSONObject data = response.getJSONObject("data");
-                            String name = data.getString("name");
-                            BigInteger Id = BigInteger.valueOf(data.getInt("id"));
-                            String VerificationStatus = data.getString("verification");
-                            String Age = data.getString("date_of_birth");
-                            String Mobile = data.getString("phone");
+                            String userType = data.optString("user_type", data.optString("userType", "expert"));
 
-                            // Save the t_Name to SharedPreferences
-                            saveUserNameToSharedPreferences(name, Id,VerificationStatus , Age , Mobile);
+                            String name = "User";
+                            if (userType.equalsIgnoreCase("hotel")) {
+                                name = data.optString("hotel_name", "Hotel");
+                            } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+                                if (data.has("name")) {
+                                    name = data.getString("name");
+                                } else if (data.has("full_name")) {
+                                    name = data.getString("full_name");
+                                } else {
+                                    name = "Partner";
+                                }
+                            } else {
+                                name = data.optString("name", "User");
+                            }
 
-                            // Start MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            loggedIn(Id,token);
-                            startActivity(intent);
-                            finish(); // Optional: Close the LoginActivity to prevent going back
+                            BigInteger Id = BigInteger.ZERO;
+                            if (data.has("id")) {
+                                Id = new BigInteger(String.valueOf(data.get("id")));
+                            } else if (data.has("user_id")) {
+                                Id = new BigInteger(String.valueOf(data.get("user_id")));
+                            }
+
+                            String VerificationStatus = data.optString("verification", "approved");
+                            String Age = data.optString("date_of_birth", "0000-00-00");
+                            String Mobile = data.optString("phone", phone);
+
+                            // Save user credentials to SharedPreferences
+                            saveUserNameToSharedPreferences(name, Id, VerificationStatus, Age, Mobile, userType);
+
+                            loggedIn(Id, token != null ? token : "");
+
+                            Intent intent = null;
+                            if ("expert".equalsIgnoreCase(userType)) {
+                                intent = new Intent(LoginActivity.this, MainActivity.class);
+                            } else if ("hotel".equalsIgnoreCase(userType)) {
+                                intent = new Intent(LoginActivity.this, HotelMainActivity.class);
+                            } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
+                                intent = new Intent(LoginActivity.this, InfluencerMainActivity.class);
+                            }
+
+                            if (intent != null) {
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                finish();
+                            }
                             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                         } else {
-                            String message = response.getString("message");
+                            String message = response.optString("message", "Login failed");
                             Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
-
+                        Log.e("JSONError", "Error parsing response", e);
                         Toast.makeText(LoginActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
                     }
                 },
@@ -417,14 +451,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void saveUserNameToSharedPreferences(String name, BigInteger Id, String Verification, String age, String Mobile) {
+    private void saveUserNameToSharedPreferences(String name, BigInteger Id, String Verification, String age, String Mobile, String userType) {
         SharedPreferences sp = getSharedPreferences("credentials", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("Name", name);
-        editor.putString("Id", Id.toString()); // Convert BigInteger to String
-        editor.putString("com/company/jifiit/Verification", Verification);
+        editor.putString("Id", Id != null ? Id.toString() : "");
+        editor.putString("Verification", Verification);
         editor.putString("Age", age);
-        editor.putString("mobile",Mobile);
+        editor.putString("mobile", Mobile);
+        editor.putString("userType", userType);
         editor.apply();
     }
 
@@ -491,7 +526,7 @@ public class LoginActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("id", String.valueOf(id));
-                params.put("token",token);
+                params.put("token", token != null ? token : "");
                 return params;
             }
         };
@@ -517,18 +552,25 @@ public class LoginActivity extends AppCompatActivity {
 
             String userType = sp.getString("userType", "");
 
-            if (userType.equals("expert")) {
-
-                startActivity(
-                        new Intent(this, MainActivity.class)
-                );
-
-            } else if (userType.equals("hotel")) {
-
-                startActivity(new Intent(this, HotelMainActivity.class));
+            Intent intent = null;
+            if ("expert".equalsIgnoreCase(userType)) {
+                intent = new Intent(this, MainActivity.class);
+            } else if ("hotel".equalsIgnoreCase(userType)) {
+                intent = new Intent(this, HotelMainActivity.class);
+            } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
+                intent = new Intent(this, InfluencerMainActivity.class);
             }
 
-            finish();
+            if (intent != null) {
+                startActivity(intent);
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+                finish();
+            } else {
+                Log.w("LoginActivity", "Unrecognized or missing userType: " + userType);
+            }
         }
     }
 

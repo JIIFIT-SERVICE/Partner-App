@@ -45,6 +45,13 @@ public class JoinerTypes extends AppCompatActivity {
     private MaterialButton btnWellnessSelect;
     private MaterialButton btnCentreSelect;
     private MaterialButton btnExpertApply,btnWhatsApp,btnCall;
+    private MaterialButton btnJoinPartner;
+    private View cardPartnerProgram;
+    private TextView tvPartnerDescription;
+    private View layoutPartnerReadMore;
+    private TextView tvPartnerReadMore;
+    private ImageView ivPartnerReadMoreIcon;
+    private boolean isPartnerDescriptionExpanded = false;
 
 
     // =========================================================
@@ -132,6 +139,13 @@ public class JoinerTypes extends AppCompatActivity {
         btnCentreSelect = findViewById(R.id.tvCentreSelect);
         btnExpertApply = findViewById(R.id.btnExpertApply);
 
+        btnJoinPartner = findViewById(R.id.btnJoinPartner);
+        cardPartnerProgram = findViewById(R.id.cardPartnerProgram);
+        tvPartnerDescription = findViewById(R.id.tvPartnerDescription);
+        layoutPartnerReadMore = findViewById(R.id.layoutPartnerReadMore);
+        tvPartnerReadMore = findViewById(R.id.tvPartnerReadMore);
+        ivPartnerReadMoreIcon = findViewById(R.id.ivPartnerReadMoreIcon);
+
         btnCall = findViewById(R.id.btnCall);
         btnWhatsApp = findViewById(R.id.btnWhatsApp);
 
@@ -194,6 +208,63 @@ public class JoinerTypes extends AppCompatActivity {
                 // Open Centre Partner registration here
 
             });
+        }
+
+
+        // Influencer & Partner Program
+        if (btnJoinPartner != null) {
+            btnJoinPartner.setOnClickListener(v -> {
+                startActivity(new Intent(JoinerTypes.this, com.company.jifiit.Influencer.InfluencerRegistartion.class));
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+            });
+        }
+
+        if (cardPartnerProgram != null) {
+            cardPartnerProgram.setOnClickListener(v -> {
+                startActivity(new Intent(JoinerTypes.this, com.company.jifiit.Influencer.InfluencerRegistartion.class));
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+            });
+        }
+
+        View.OnClickListener togglePartnerReadMore = v -> {
+            isPartnerDescriptionExpanded = !isPartnerDescriptionExpanded;
+            if (tvPartnerDescription != null) {
+                if (tvPartnerDescription.getParent() instanceof android.view.ViewGroup) {
+                    android.transition.TransitionManager.beginDelayedTransition((android.view.ViewGroup) tvPartnerDescription.getParent());
+                }
+                if (isPartnerDescriptionExpanded) {
+                    tvPartnerDescription.setMaxLines(Integer.MAX_VALUE);
+                    tvPartnerDescription.setEllipsize(null);
+                    if (tvPartnerReadMore != null) {
+                        tvPartnerReadMore.setText("Read less");
+                    }
+                    if (ivPartnerReadMoreIcon != null) {
+                        ivPartnerReadMoreIcon.animate().rotation(180f).setDuration(200).start();
+                    }
+                } else {
+                    tvPartnerDescription.setMaxLines(1);
+                    tvPartnerDescription.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    if (tvPartnerReadMore != null) {
+                        tvPartnerReadMore.setText("Read more");
+                    }
+                    if (ivPartnerReadMoreIcon != null) {
+                        ivPartnerReadMoreIcon.animate().rotation(0f).setDuration(200).start();
+                    }
+                }
+            }
+        };
+
+        if (layoutPartnerReadMore != null) {
+            layoutPartnerReadMore.setOnClickListener(togglePartnerReadMore);
+        }
+        if (tvPartnerDescription != null) {
+            tvPartnerDescription.setOnClickListener(togglePartnerReadMore);
         }
 
 

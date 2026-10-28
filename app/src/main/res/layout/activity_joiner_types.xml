@@ -240,6 +240,202 @@
             </LinearLayout>
 
             <!-- ================================================= -->
+            <!-- INFLUENCER & PARTNER PROGRAM CARD -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPartnerProgram"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="@dimen/cardCcorner_radius"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_partner_card_gradient"
+                    android:orientation="vertical"
+                    android:paddingStart="18dp"
+                    android:paddingTop="18dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="18dp">
+
+                    <!-- Top Badges Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <!-- Most Popular · Open to All Badge -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_partner_popular_badge"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="12dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="5dp">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginEnd="6dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_partner_sparkle" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="@string/partner_badge_popular"
+                                android:textColor="@color/partner_badge_yellow_text"
+                                android:textSize="8sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                        <!-- Guaranteed ₹50 / Booking Badge -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_partner_guaranteed_badge"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:paddingStart="12dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="5dp"
+                            android:text="@string/partner_badge_guaranteed"
+                            android:textColor="@android:color/white"
+                            android:textSize="8sp" />
+
+                    </LinearLayout>
+
+                    <!-- Title -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/partner_program_title"
+                        android:textColor="@android:color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <!-- Subtitle / Categories -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.04"
+                        android:text="@string/partner_program_categories"
+                        android:textColor="@color/partner_category_text"
+                        android:textSize="10.5sp"
+                        android:textStyle="bold" />
+
+                    <!-- Description -->
+                    <TextView
+                        android:id="@+id/tvPartnerDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="3dp"
+                        android:maxLines="1"
+                        android:text="@string/partner_program_description"
+                        android:textColor="@color/partner_description_text"
+                        android:textSize="13sp" />
+
+                    <!-- Read More / Read Less Toggle -->
+                    <LinearLayout
+                        android:id="@+id/layoutPartnerReadMore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="4dp">
+
+                        <TextView
+                            android:id="@+id/tvPartnerReadMore"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="Read more"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/ivPartnerReadMoreIcon"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_marginStart="2dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#FFFFFF" />
+
+                    </LinearLayout>
+
+                    <!-- Action Button -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:gravity="center">
+
+                        <!-- Join as Partner Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnJoinPartner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:backgroundTint="@android:color/white"
+                            android:includeFontPadding="false"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:minHeight="40dp"
+                            android:paddingStart="20dp"
+                            android:paddingTop="9dp"
+                            android:paddingEnd="18dp"
+                            android:paddingBottom="9dp"
+                            android:text="@string/partner_btn_join"
+                            android:textAllCaps="false"
+                            android:textColor="@color/partner_btn_blue_text"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="22dp"
+                            app:icon="@drawable/ic_arrow_forward"
+                            app:iconGravity="textEnd"
+                            app:iconPadding="6dp"
+                            app:iconSize="14dp"
+                            app:iconTint="@color/partner_btn_blue_text" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ================================================= -->
             <!-- EXPERT CARD -->
             <!-- ================================================= -->
 

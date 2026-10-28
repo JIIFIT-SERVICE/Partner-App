@@ -3,10 +3,12 @@ package com.company.jifiit;
 public class Constant {
 
     public static final String RegisterUrl = "https://jiifit.com/Jifiit/Therapist/therapistRegister.php";
+    public static final String InfluencerRegisterUrl = "https://jiifit.com/Jifiit/Influencer/registration.php";
     public static final String Login = "https://jiifit.com/Jifiit/Therapist/TherapistLogin.php";
     public static final String Loggedout = "https://jiifit.com/Jifiit/Therapist/loggedOut.php";
     public static final String HotelLoggedout = "https://jiifit.com/Jifiit/Hotel/HotelloggedOut.php";
     public static final String Loggedin = "https://jiifit.com/Jifiit/Therapist/loggedIn.php";
+    public static final String InfluencerLogin = "https://jiifit.com/Jifiit/Influencer/InfluencerLogin.php";
     public static final String fetchAccount = "https://jiifit.com/Jifiit/Therapist/fetch.php?phone=";
 
 

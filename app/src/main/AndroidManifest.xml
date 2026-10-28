@@ -79,6 +79,18 @@
         tools:ignore="ForegroundServicePermission"
         tools:targetApi="31">
         <activity
+            android:name=".Influencer.InfluencerRegistartion"
+            android:exported="false" />
+        <activity
+            android:name=".Influencer.InfluencerTermsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Influencer.InfluencerPrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Influencer.InfluencerMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".Hotel.HotelBookingDetailsActivity"
             android:exported="false" />
         <activity
@@ -477,9 +489,9 @@
             android:name=".Register"
             android:exported="false"
             android:label=""
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".LoginActivity"
             android:exported="false"

@@ -17,15 +17,17 @@ public class AccountSelectionActivity extends AppCompatActivity {
 
     private String phone;
 
-    private TextView tvPhone,tvSubtitle, tvTherapistName, tvHotelName, tvWellnessName, tvCentreName;
+    private TextView tvPhone,tvSubtitle, tvTherapistName, tvHotelName, tvWellnessName, tvCentreName, tvInfluencerName;
 
     private View cardTherapist;
     private View cardHotel;
     private View cardWellness;
     private View cardCentre;
+    private View cardInfluencer;
 
     private String selectedUserType;
     private String selectedUserId;
+    private String influencerUserType = "influencer";
 
     ImageView btnBack;
 
@@ -42,10 +44,12 @@ public class AccountSelectionActivity extends AppCompatActivity {
         cardHotel     = findViewById(R.id.cardHotel);
         cardWellness  = findViewById(R.id.cardWellness);
         cardCentre    = findViewById(R.id.cardCentre);
+        cardInfluencer = findViewById(R.id.cardInfluencer);
         tvTherapistName = findViewById(R.id.th_Name);
         tvHotelName = findViewById(R.id.ht_Name);
         tvWellnessName = findViewById(R.id.wb_Name);
         tvCentreName = findViewById(R.id.ct_Name);
+        tvInfluencerName = findViewById(R.id.inf_Name);
 
         btnBack = findViewById(R.id.btnBack);
 
@@ -62,6 +66,7 @@ public class AccountSelectionActivity extends AppCompatActivity {
         cardHotel.setVisibility(View.GONE);
         cardWellness.setVisibility(View.GONE);
         cardCentre.setVisibility(View.GONE);
+        cardInfluencer.setVisibility(View.GONE);
 
         if (accountsJson != null) {
             loadAccounts(accountsJson);
@@ -84,6 +89,11 @@ public class AccountSelectionActivity extends AppCompatActivity {
 
         cardCentre.setOnClickListener(v -> {
             selectedUserType = "centre";
+            openOTP();
+        });
+
+        cardInfluencer.setOnClickListener(v -> {
+            selectedUserType = (influencerUserType != null && !influencerUserType.isEmpty()) ? influencerUserType : "influencer";
             openOTP();
         });
 
@@ -144,6 +154,13 @@ public class AccountSelectionActivity extends AppCompatActivity {
                     cardCentre.setTag(userId);
                     tvCentreName.setText(userName);
                     visibleCount++;
+                } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+
+                    cardInfluencer.setVisibility(View.VISIBLE);
+                    cardInfluencer.setTag(userId);
+                    influencerUserType = userType;
+                    tvInfluencerName.setText(userName);
+                    visibleCount++;
                 }
             }
 
@@ -193,6 +210,11 @@ public class AccountSelectionActivity extends AppCompatActivity {
 
             case "centre":
                 selectedCard = cardCentre;
+                break;
+
+            case "influencer":
+            case "partner":
+                selectedCard = cardInfluencer;
                 break;
 
             default:

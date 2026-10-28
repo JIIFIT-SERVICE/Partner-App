@@ -327,10 +327,18 @@ We look forward to providing you a relaxing and rejuvenating experience right in
 Empower your wellness journey with Jiifit</string>
 
 
-
     <string name="earning_example_text">
     <![CDATA[Example: If you get a <b>₹1,000 booking</b>, Jiifit fee is ₹215 → <font color="#047857"><b>You receive ₹785</b></font> directly into your wallet!]]>
 </string>
+
+    <!-- Influencer & Partner Program -->
+    <string name="partner_program_title">Influencer &amp; Partner Program</string>
+    <string name="partner_program_categories">YOUTUBERS  ·  INSTAGRAMMERS  ·  GYMS  ·  BRANDS  ·  NORMAL PEOPLE</string>
+    <string name="partner_program_description">Join our Influencer &amp; Partner Program and turn your network into rewards! Share our doorstep wellness services with your friends, family, followers, and community. Every successful referral helps someone discover our services while giving you an opportunity to earn real cash.</string>
+    <string name="partner_badge_popular">Most Popular · Open to All</string>
+    <string name="partner_badge_guaranteed">Guaranteed ₹50 / Booking</string>
+    <string name="partner_btn_join">Join as an influencer or partner</string>
+    <string name="partner_btn_dashboard">Open Active Partner Dashboard</string>
 </resources>
 
 
