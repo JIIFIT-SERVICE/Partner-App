@@ -82,11 +82,16 @@
             android:name=".Hotel.HotelBookingDetailsActivity"
             android:exported="false" />
         <activity
+            android:name=".MyEarningsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Hotel.HotelPayment"
             android:exported="false" />
         <activity
+
             android:name=".Hotel.PaymentActivity"
-            android:exported="false" />
+            android:exported="false"
+            tools:ignore="MissingClass" />
         <activity
             android:name=".Hotel.ManageRoomsActivity"
             android:exported="false"

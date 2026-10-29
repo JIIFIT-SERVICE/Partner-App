@@ -27,6 +27,15 @@
     <color name="orange">#FF3D00</color>
     <color name="acua">#00FFF7</color>
 
+    <color name="earn_page_bg">#FFFFFF</color>
+    <color name="earn_navy">#1E3A8A</color>
+    <color name="earn_blue">#2196F3</color>
+    <color name="earn_blue_light">#E3F0FD</color>
+    <color name="earn_text">#111827</color>
+    <color name="earn_text_secondary">#6B7280</color>
+    <color name="earn_green">#16A34A</color>
+    <color name="earn_divider">#E5E7EB</color>
+
 
 <!--        <color name="Blue">#0000FF</color>-->
         <color name="White">#FFFFFF</color>
