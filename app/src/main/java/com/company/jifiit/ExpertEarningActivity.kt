@@ -129,7 +129,7 @@ class ExpertEarningActivity : AppCompatActivity() {
         }
 
         btnViewFullSlab.setOnClickListener {
-            val intent = Intent(this@ExpertEarningActivity, Register::class.java)
+            val intent = Intent(this@ExpertEarningActivity, MyEarningsActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }

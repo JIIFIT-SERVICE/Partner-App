@@ -77,6 +77,7 @@ import java.io.FileOutputStream
 import com.company.jifiit.Hotel.Model.HotelBranch
 import com.company.jifiit.Hotel.Adapter.HotelBranchAdapter
 import com.company.jifiit.Hotel.HotelBranchManager
+import com.company.jifiit.MyEarningsActivity
 
 class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -883,6 +884,7 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_rooms -> {
                 startActivity(Intent(this, ManageRoomsActivity::class.java))
             }
+
             R.id.nav_history  -> {
                 startActivity(Intent(this, HotelBookingHistoryActivity::class.java))
             }
@@ -892,6 +894,9 @@ class HotelMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_reports -> {
                 startActivity(Intent(this, HotelReportsActivity::class.java))
             }
+
+
+
             R.id.nav_help     -> { /* Navigate to help */ }
             R.id.nav_terms    -> { /* Navigate to terms */ }
         }
