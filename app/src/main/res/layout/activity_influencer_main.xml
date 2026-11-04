@@ -6,83 +6,101 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8FAFC"
+    android:fitsSystemWindows="true"
     tools:context=".Influencer.InfluencerMainActivity">
 
-    <!-- MAIN DASHBOARD CONTENT -->
+    <!-- MAIN SCREEN CONTENT -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Top App Bar / Header -->
+        <!-- 1. DARK NAVY HERO HEADER (Matching reference image) -->
         <LinearLayout
             android:id="@+id/headerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_influencer_header"
+            android:background="@drawable/bg_influencer_navy_header"
             android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="18dp">
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp">
 
-            <!-- Top Row: Menu Button, Title, Share / QR -->
+            <!-- Top Row: Drawer Menu Toggle + Notification -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <!-- Hamburger Drawer Menu Button -->
                 <ImageView
                     android:id="@+id/btnOpenDrawer"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:contentDescription="Open Navigation Menu"
                     android:focusable="true"
-                    android:padding="7dp"
+                    android:padding="5dp"
                     android:src="@drawable/ic_menu"
                     app:tint="@android:color/white" />
 
-                <TextView
+                <!-- Spacer pushing notification icon to right -->
+                <View
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:includeFontPadding="false"
-                    android:text="Partner Dashboard"
-                    android:textColor="@android:color/white"
-                    android:textSize="18.5sp"
-                    android:textStyle="bold" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
-                <!-- Quick Share Button -->
-                <ImageView
-                    android:id="@+id/btnQuickShare"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:contentDescription="Share Referral Link"
-                    android:focusable="true"
-                    android:padding="7dp"
-                    android:src="@drawable/ic_share"
-                    app:tint="@android:color/white" />
+                <!-- Notification Action -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/btnQuickShare"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="Notifications"
+                        android:focusable="true"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_bell_outline"
+                        app:tint="@android:color/white" />
+
+                    <!-- Notification Badge (e.g., 3 unread) -->
+                    <TextView
+                        android:id="@+id/tvNotificationBadge"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginEnd="1dp"
+                        android:background="@drawable/bg_cart_badge"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="3"
+                        android:textColor="@android:color/white"
+                        android:textSize="8.5sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
 
             </LinearLayout>
 
-            <!-- Partner Greeting & Active Chip -->
+            <!-- Greeting & Quick Actions Row: Welcome on Left, Coupon Code Card & Share QR on Right (Vertically) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- Left Side: Welcome Greeting + Subtitle -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -90,10 +108,12 @@
                         android:id="@+id/tvMainGreeting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
                         android:includeFontPadding="false"
-                        android:text="Welcome back, Somnath!"
+                        android:maxLines="2"
+                        android:text="Welcome, Somnath Ray"
                         android:textColor="@android:color/white"
-                        android:textSize="19sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -101,33 +121,413 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
+                        android:ellipsize="end"
                         android:includeFontPadding="false"
-                        android:text="Doorstep Wellness Expert &amp; Partner"
-                        android:textColor="#E0E7FF"
-                        android:textSize="12.5sp" />
+                        android:lineSpacingExtra="1dp"
+                        android:maxLines="2"
+                        android:text="JIIFIT Partner Portal · Doorstep Wellness Referral Engine"
+                        android:textColor="#8A99AD"
+                        android:textSize="10sp" />
+
                 </LinearLayout>
 
-                <!-- Active Status Badge -->
-                <TextView
-                    android:id="@+id/tvStatusBadge"
-                    android:layout_width="wrap_content"
+                <!-- Right Side White Box: Active Coupon Code Card + Share QR Button (Ultra-Compact Inside White Box) -->
+                <LinearLayout
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_partner_guaranteed_badge"
-                    android:includeFontPadding="false"
-                    android:paddingStart="10dp"
-                    android:paddingTop="4dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="4dp"
-                    android:text="ACTIVE PARTNER"
-                    android:textColor="@android:color/white"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
+                    android:background="@drawable/bg_coupon_white_box"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <!-- Active Coupon Code Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_card_coupon_light"
+                        android:orientation="vertical"
+                        android:paddingStart="6dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="3dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:letterSpacing="0.02"
+                            android:text="COPY COUPON CODE"
+                            android:textColor="#64748B"
+                            android:textSize="6.5sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvReferralCodeDisplay"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:includeFontPadding="false"
+                                android:letterSpacing="0.03"
+                                android:text="SOMN0004"
+                                android:textColor="#0D62FE"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <!-- Copy Button Icon -->
+                            <FrameLayout
+                                android:id="@+id/btnCopyCode"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="3dp"
+                                android:background="@drawable/bg_btn_copy_light"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground">
+
+                                <ImageView
+                                    android:layout_width="9dp"
+                                    android:layout_height="9dp"
+                                    android:layout_gravity="center"
+                                    android:contentDescription="Copy Referral Code"
+                                    android:src="@drawable/ic_copy_outline"
+                                    app:tint="#64748B" />
+                            </FrameLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Share QR Button -->
+                    <LinearLayout
+                        android:id="@+id/btnShareCodeQr"
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/bg_btn_blue_share_compact"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_share"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="3dp"
+                            android:includeFontPadding="false"
+                            android:text="SHARE LINK OR QR"
+                            android:textColor="@android:color/white"
+                            android:textSize="8.5sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 2x2 Stats Grid -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <!-- Row 1: Total Used / Bookings & In Wallet (Ready to Withdraw) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Card 1: Total Used / Bookings -->
+                    <LinearLayout
+                        android:id="@+id/cardTotalUsedBookings"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card_stat_dark"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="Total Used / Bookings"
+                                android:textColor="#94A3B8"
+                                android:textSize="9.5sp" />
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_check_circle"
+                                app:tint="#38BDF8" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="bottom"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvTotalUsedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="4"
+                                android:textColor="@android:color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvTotalTargetCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="3dp"
+                                android:includeFontPadding="false"
+                                android:text="/ 5"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:text="80% verified completion rate"
+                            android:textColor="#64748B"
+                            android:textSize="8.5sp" />
+
+                    </LinearLayout>
+
+                    <!-- Card 2: In Wallet (Ready to Withdraw) -->
+                    <LinearLayout
+                        android:id="@+id/cardInWallet"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card_stat_dark"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="In Wallet (Ready to Withdraw)"
+                                android:textColor="#10B981"
+                                android:textSize="9.5sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_wallet_amber"
+                                app:tint="#10B981" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvInWalletAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:includeFontPadding="false"
+                            android:text="₹732"
+                            android:textColor="#10B981"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:text="Auto-credited weekly directly to UPI"
+                            android:textColor="#64748B"
+                            android:textSize="8.5sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Row 2: Pending Verification & Lifetime Earned -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <!-- Card 3: Happy Customers (Percentage of Persons Happy) -->
+                    <LinearLayout
+                        android:id="@+id/cardPendingVerification"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card_stat_dark"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="Happy Clients"
+                                android:textColor="#94A3B8"
+                                android:textSize="9.5sp" />
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_mood_happy"
+                                app:tint="#F59E0B" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvPendingAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:includeFontPadding="false"
+                            android:text="98%"
+                            android:textColor="#F59E0B"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:text="Verified 4.5+ star ratings"
+                            android:textColor="#64748B"
+                            android:textSize="8.5sp" />
+
+                    </LinearLayout>
+
+                    <!-- Card 4: Lifetime Earned -->
+                    <LinearLayout
+                        android:id="@+id/cardLifetimeEarned"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card_stat_dark"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="Lifetime Earned"
+                                android:textColor="#94A3B8"
+                                android:textSize="9.5sp" />
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_drawer_trending"
+                                app:tint="#A855F7" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvLifetimeEarnedAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:includeFontPadding="false"
+                            android:text="₹3353"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:text="Fixed ₹50 on every verified client"
+                            android:textColor="#64748B"
+                            android:textSize="8.5sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Scrollable Dashboard Content -->
+        <!-- 2. Scrollable Body Content -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -141,505 +541,278 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingStart="16dp"
-                android:paddingTop="16dp"
+                android:paddingTop="12dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="32dp">
+                android:paddingBottom="40dp">
 
-                <!-- 1. REFERRAL CODE & LINK CARD -->
+                <!-- Date Filter Strip: Yesterday, Today, Tomorrow, Calendar (Bottom of headerContainer, but outside) -->
                 <LinearLayout
+                    android:id="@+id/layoutDateSelector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_card_clean"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_date_strip_light"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="3dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_drawer_tag" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
-                            android:includeFontPadding="false"
-                            android:text="Your Unique Referral ID"
-                            android:textColor="#1E293B"
-                            android:textSize="14.5sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_chip_blue_pill"
-                            android:includeFontPadding="false"
-                            android:paddingStart="8dp"
-                            android:paddingTop="3dp"
-                            android:paddingEnd="8dp"
-                            android:paddingBottom="3dp"
-                            android:text="₹50 / Booking"
-                            android:textColor="#1D4ED8"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Code Box Row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_input_rounded"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="14dp"
-                        android:paddingTop="10dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="10dp">
-
-                        <TextView
-                            android:id="@+id/tvReferralCodeDisplay"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:includeFontPadding="false"
-                            android:letterSpacing="0.08"
-                            android:text="SOMN0004"
-                            android:textColor="#0D62FE"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <!-- Copy Code Button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnCopyCode"
-                            android:layout_width="wrap_content"
-                            android:layout_height="38dp"
-                            android:backgroundTint="#0D62FE"
-                            android:includeFontPadding="false"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:text="Copy"
-                            android:textAllCaps="false"
-                            android:textColor="@android:color/white"
-                            android:textSize="12.5sp"
-                            android:textStyle="bold"
-                            app:cornerRadius="8dp" />
-
-                    </LinearLayout>
-
-                    <!-- Share on WhatsApp & Share Link Buttons -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnShareWhatsapp"
-                            android:layout_width="0dp"
-                            android:layout_height="44dp"
-                            android:layout_marginEnd="6dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="#25D366"
-                            android:includeFontPadding="false"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:text="WhatsApp"
-                            android:textAllCaps="false"
-                            android:textColor="@android:color/white"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            app:cornerRadius="10dp"
-                            app:icon="@drawable/ic_whatsapp"
-                            app:iconGravity="textStart"
-                            app:iconPadding="6dp"
-                            app:iconSize="18dp"
-                            app:iconTint="@android:color/white" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnShareGeneral"
-                            android:layout_width="0dp"
-                            android:layout_height="44dp"
-                            android:layout_marginStart="6dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="#EFF6FF"
-                            android:includeFontPadding="false"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:text="Share Link"
-                            android:textAllCaps="false"
-                            android:textColor="#0D62FE"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            app:cornerRadius="10dp"
-                            app:icon="@drawable/ic_share"
-                            app:iconGravity="textStart"
-                            app:iconPadding="6dp"
-                            app:iconSize="16dp"
-                            app:iconTint="#0D62FE"
-                            app:strokeColor="#BFDBFE"
-                            app:strokeWidth="1dp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- 2. EARNINGS & PERFORMANCE STATS -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_drawer_earnings_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/ic_drawer_rupee" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:includeFontPadding="false"
-                            android:text="Total Cash Earnings"
-                            android:textColor="#9A3412"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvTotalEarningsAmount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:includeFontPadding="false"
-                            android:text="₹732"
-                            android:textColor="#059669"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
+                    <!-- 1st. Yesterday -->
                     <TextView
-                        android:layout_width="match_parent"
+                        android:id="@+id/tvDateYesterday"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
                         android:includeFontPadding="false"
-                        android:text="Direct cash credited for every friend who completed their first booking."
-                        android:textColor="#78350F"
-                        android:textSize="12sp" />
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:text="Yesterday"
+                        android:textColor="#64748B"
+                        android:textSize="11sp" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp"
-                        android:background="#FDE68A" />
-
-                    <!-- Mini Stats Grid (3 items) -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- 2. Today (Active by default) -->
+                    <TextView
+                        android:id="@+id/tvDateToday"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_date_pill_active"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:text="Today"
+                        android:textColor="@android:color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
 
-                        <!-- Stat 1 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
+                    <!-- 3. Tomorrow -->
+                    <TextView
+                        android:id="@+id/tvDateTomorrow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:text="Tomorrow"
+                        android:textColor="#64748B"
+                        android:textSize="11sp" />
+
+                    <!-- 4. Calendar -->
+                    <LinearLayout
+                        android:id="@+id/layoutDateCalendar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp">
+
+                        <ImageView
+                            android:id="@+id/ivDateCalendarIcon"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:contentDescription="Calendar"
+                            android:src="@drawable/calendar_month_white"
+                            app:tint="#64748B" />
+
+                        <TextView
+                            android:id="@+id/tvDateCalendarText"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:includeFontPadding="false"
-                                android:text="14"
-                                android:textColor="#1E293B"
-                                android:textSize="17sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:text="Verified Bookings"
-                                android:textColor="#64748B"
-                                android:textSize="10.5sp" />
-                        </LinearLayout>
-
-                        <!-- Stat 2 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:includeFontPadding="false"
-                                android:text="3"
-                                android:textColor="#0D62FE"
-                                android:textSize="17sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:text="Pending Verification"
-                                android:textColor="#64748B"
-                                android:textSize="10.5sp" />
-                        </LinearLayout>
-
-                        <!-- Stat 3 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:includeFontPadding="false"
-                                android:text="₹69,986"
-                                android:textColor="#059669"
-                                android:textSize="17sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:text="Friends Rewarded"
-                                android:textColor="#64748B"
-                                android:textSize="10.5sp" />
-                        </LinearLayout>
-
+                            android:layout_marginStart="4dp"
+                            android:includeFontPadding="false"
+                            android:text="Calendar"
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                 </LinearLayout>
 
-                <!-- 3. QUICK NAVIGATION / ACTION TILES -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:letterSpacing="0.04"
-                    android:text="PARTNER TOOLS"
-                    android:textColor="#334155"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
 
-                <!-- Grid Row 1 (2 cards) -->
+
+
+
+                <!-- D. CLIENT TRACKING TABLE CARD (Horizontal Scrollable Table) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/bg_table_card"
+                    android:orientation="vertical">
 
-                    <!-- Card: Referred History -->
-                    <LinearLayout
-                        android:id="@+id/cardReferredCustomers"
-                        android:layout_width="0dp"
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card_clean"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        android:fillViewport="true"
+                        android:overScrollMode="never"
+                        android:scrollbars="none">
 
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:background="@drawable/bg_chip_green_pill"
-                            android:contentDescription="@null"
-                            android:padding="5dp"
-                            android:src="@drawable/ic_drawer_group" />
-
-                        <TextView
+                        <LinearLayout
+                            android:id="@+id/llTableContainer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:includeFontPadding="false"
-                            android:text="Referred History"
-                            android:textColor="#1E293B"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            android:minWidth="872dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:includeFontPadding="false"
-                            android:text="17 Registered Users"
-                            android:textColor="#64748B"
-                            android:textSize="11.5sp" />
-                    </LinearLayout>
+                            <!-- TABLE HEADER ROW: 6 Dynamic Columns -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="#F8FAFC"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="12dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="12dp">
 
-                    <!-- Card: Report -->
-                    <LinearLayout
-                        android:id="@+id/cardReports"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card_clean"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                                <!-- 1. Customer Name (140dp) -->
+                                <TextView
+                                    android:layout_width="140dp"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.04"
+                                    android:paddingEnd="8dp"
+                                    android:text="CUSTOMER\nNAME"
+                                    android:textColor="#64748B"
+                                    android:textSize="10.5sp"
+                                    android:textStyle="bold" />
 
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:background="@drawable/bg_chip_blue_pill"
-                            android:contentDescription="@null"
-                            android:padding="5dp"
-                            android:src="@drawable/ic_drawer_trending" />
+                                <!-- 2. Phone Number (125dp) -->
+                                <TextView
+                                    android:layout_width="125dp"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.04"
+                                    android:paddingEnd="8dp"
+                                    android:text="PHONE\nNUMBER"
+                                    android:textColor="#64748B"
+                                    android:textSize="10.5sp"
+                                    android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:includeFontPadding="false"
-                            android:text="Report"
-                            android:textColor="#1E293B"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                                <!-- 3. Service Booking Date (135dp) -->
+                                <TextView
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.04"
+                                    android:paddingEnd="8dp"
+                                    android:text="SERVICE BOOKING\nDATE"
+                                    android:textColor="#64748B"
+                                    android:textSize="10.5sp"
+                                    android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:includeFontPadding="false"
-                            android:text="QR Scans &amp; Clicks"
-                            android:textColor="#64748B"
-                            android:textSize="11.5sp" />
-                    </LinearLayout>
+                                <!-- 4. Location (140dp) -->
+                                <TextView
+                                    android:layout_width="140dp"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.04"
+                                    android:paddingEnd="8dp"
+                                    android:text="LOCATION"
+                                    android:textColor="#64748B"
+                                    android:textSize="10.5sp"
+                                    android:textStyle="bold" />
 
-                </LinearLayout>
+                                <!-- 5. Feedback & Rating (165dp) -->
+                                <TextView
+                                    android:layout_width="165dp"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.04"
+                                    android:paddingEnd="8dp"
+                                    android:text="FEEDBACK &amp;\nRATING"
+                                    android:textColor="#64748B"
+                                    android:textSize="10.5sp"
+                                    android:textStyle="bold" />
 
-                <!-- Grid Row 2 (2 cards) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
+                                <!-- 6. Payment Status (135dp) -->
+                                <TextView
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="0.04"
+                                    android:text="PAYMENT\nSTATUS"
+                                    android:textColor="#64748B"
+                                    android:textSize="10.5sp"
+                                    android:textStyle="bold" />
 
-                    <!-- Card: My QR -->
-                    <LinearLayout
-                        android:id="@+id/cardMyQr"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card_clean"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                            </LinearLayout>
 
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:background="@drawable/bg_icon_container_blue"
-                            android:contentDescription="@null"
-                            android:padding="5dp"
-                            android:src="@drawable/ic_qr_code"
-                            app:tint="#0D62FE" />
+                            <!-- Header bottom separator -->
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="#E2E8F0" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:includeFontPadding="false"
-                            android:text="My QR"
-                            android:textColor="#1E293B"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            <!-- DYNAMIC RECYCLERVIEW: Client Referral Table Rows -->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:includeFontPadding="false"
-                            android:text="Scan &amp; View Code"
-                            android:textColor="#64748B"
-                            android:textSize="11.5sp" />
-                    </LinearLayout>
+                            <!-- Empty State View: Shown when no bookings match filter -->
 
-                    <!-- Card: Partner Terms & SLA -->
-                    <LinearLayout
-                        android:id="@+id/cardPartnerTerms"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card_clean"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvBookingsTable"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"
+                                tools:itemCount="5"
+                                tools:listitem="@layout/item_influencer_booking_row" />
 
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:background="@drawable/bg_input_rounded"
-                            android:contentDescription="@null"
-                            android:padding="5dp"
-                            android:src="@drawable/ic_shield"
-                            app:tint="#0D62FE" />
+                            <LinearLayout
+                                android:id="@+id/layoutEmptyBookings"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:paddingTop="36dp"
+                                android:paddingBottom="36dp"
+                                android:visibility="gone">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:includeFontPadding="false"
-                            android:text="Partner Terms &amp; SLA"
-                            android:textColor="#1E293B"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                                <ImageView
+                                    android:layout_width="38dp"
+                                    android:layout_height="38dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/baseline_schedule_24"
+                                    app:tint="#94A3B8" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:includeFontPadding="false"
-                            android:text="Rules &amp; Policies"
-                            android:textColor="#64748B"
-                            android:textSize="11.5sp" />
-                    </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tvEmptyTitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:includeFontPadding="false"
+                                    android:text="No client bookings found for this date"
+                                    android:textColor="#334155"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:includeFontPadding="false"
+                                    android:text="Bookings made using your code will appear here dynamically"
+                                    android:textColor="#94A3B8"
+                                    android:textSize="11.5sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </HorizontalScrollView>
 
                 </LinearLayout>
 
@@ -649,7 +822,7 @@
 
     </LinearLayout>
 
-    <!-- NAVIGATION DRAWER MENU (EXACTLY MATCHING SCREENSHOT) -->
+    <!-- NAVIGATION DRAWER MENU -->
     <include layout="@layout/influencer_nav_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

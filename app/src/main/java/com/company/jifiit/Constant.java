@@ -9,6 +9,7 @@ public class Constant {
     public static final String HotelLoggedout = "https://jiifit.com/Jifiit/Hotel/HotelloggedOut.php";
     public static final String Loggedin = "https://jiifit.com/Jifiit/Therapist/loggedIn.php";
     public static final String InfluencerLogin = "https://jiifit.com/Jifiit/Influencer/InfluencerLogin.php";
+    public static final String InfluencerProfile = "https://jiifit.com/Jifiit/Influencer/fetchUserData.php";
     public static final String fetchAccount = "https://jiifit.com/Jifiit/Therapist/fetch.php?phone=";
 
 
