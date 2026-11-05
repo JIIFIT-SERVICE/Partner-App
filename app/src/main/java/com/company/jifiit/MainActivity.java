@@ -167,6 +167,8 @@ public class MainActivity extends AppCompatActivity
     private static final int UPDATE_REQUEST_CODE = 100;
     private static final int PERMISSION_REQUEST_CODE = 101;
 
+    private static final String verification_status = "1";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1442,6 +1444,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
+        if (verification_status.equals("1")){
+            startActivity(new Intent(this, TrainingRegistrationKitActivity.class));
+        }
         // Restore the selected button
         SharedPreferences sp = getSharedPreferences("app_state", MODE_PRIVATE);
         currentSelectedButton = sp.getString("selected_button", "today"); // default to today
