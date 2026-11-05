@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import android.text.Html
 
@@ -35,6 +37,7 @@ class ExpertEarningActivity : AppCompatActivity() {
         setContentView(R.layout.activity_expert_earning)
 
         setupStatusBar()
+        applyWindowInsets()
         initViews()
         setupReadMoreDescription()
         setupListeners()
@@ -49,6 +52,44 @@ class ExpertEarningActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.statusBarColor = Color.parseColor("#FFFFFF")
         }
+    }
+
+    private fun applyWindowInsets() {
+        val toolbar = findViewById<View>(R.id.toolbar) ?: return
+        val initialPaddingTop = toolbar.paddingTop
+        val fallbackStatusBarHeight = getStatusBarHeight()
+
+        val main = findViewById<View>(R.id.main)
+        if (main != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(main) { _, insets ->
+                val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                val topPadding = if (statusBarInset > 0) statusBarInset else fallbackStatusBarHeight
+                toolbar.setPadding(
+                    toolbar.paddingStart,
+                    initialPaddingTop + topPadding,
+                    toolbar.paddingEnd,
+                    toolbar.paddingBottom
+                )
+                insets
+            }
+            ViewCompat.requestApplyInsets(main)
+        } else {
+            toolbar.setPadding(
+                toolbar.paddingStart,
+                initialPaddingTop + fallbackStatusBarHeight,
+                toolbar.paddingEnd,
+                toolbar.paddingBottom
+            )
+        }
+    }
+
+    private fun getStatusBarHeight(): Int {
+        var result = 0
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId)
+        }
+        return result
     }
 
     private fun initViews() {
@@ -129,15 +170,13 @@ class ExpertEarningActivity : AppCompatActivity() {
         }
 
         btnViewFullSlab.setOnClickListener {
-            val intent = Intent(this@ExpertEarningActivity, Register::class.java)
+            val intent = Intent(this@ExpertEarningActivity, ExpertEarningSlabsActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         helpBtn.setOnClickListener {
-            val intent = Intent(this@ExpertEarningActivity, Register::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            ExpertHelpBottomSheet.show(this@ExpertEarningActivity)
         }
     }
 

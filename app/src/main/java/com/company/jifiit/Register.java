@@ -29,6 +29,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -68,13 +70,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -137,9 +143,18 @@ public class Register extends AppCompatActivity {
     private RadioGroup rgCategory;
     private GridLayout glExperience;
     private EditText etExpDesc;
+    private View llServiceSection;
+    private View dividerServiceSectionBottom;
+    private TextView tvSelectedServicesCount;
+    private TextView tvServiceCategoryHeader;
+    private LinearLayout llServiceItemsContainer;
 
     private String selectedCategory = "";
     private String selectedExperience = "";
+    private String lastBuiltCategory = "";
+
+    private final Set<String> selectedServices = new LinkedHashSet<>();
+    private final Map<String, Set<String>> categorySelectedServices = new LinkedHashMap<>();
 
     private boolean categoryUiBuilt = false;
 
@@ -152,6 +167,70 @@ public class Register extends AppCompatActivity {
             {"Zumba Dance Teacher"},
             {"Chiropractor"}
     };
+
+    private static final Map<String, List<String>> CATEGORY_SERVICES = new LinkedHashMap<>();
+    static {
+        CATEGORY_SERVICES.put("Massage Therapist", Arrays.asList(
+                "Deep Tissue Massage",
+                "Swedish Relaxation Massage",
+                "Aromatherapy Massage",
+                "Balinese Body Therapy",
+                "Hot Stone Therapy",
+                "Foot Reflexology",
+                "Thai Traditional Massage",
+                "Head, Neck & Shoulder Relief"
+        ));
+        CATEGORY_SERVICES.put("Ayurveda Massage Therapist", Arrays.asList(
+                "Abhyanga Full Body Massage",
+                "Shirodhara Therapy",
+                "Potli Herbal Massage",
+                "Panchakarma Therapy",
+                "Kadi Vasti (Spine Care)",
+                "Udwarthanam (Herbal Scrub)",
+                "Nasya Therapy",
+                "Janu Vasti (Knee Care)"
+        ));
+        CATEGORY_SERVICES.put("Personal Trainer", Arrays.asList(
+                "Strength & Muscle Building",
+                "Weight Loss & Fat Burn",
+                "Functional & HIIT Training",
+                "Core & Mobility Conditioning",
+                "Endurance & Cardio Training",
+                "Posture & Flexibility Training"
+        ));
+        CATEGORY_SERVICES.put("Yoga Teacher", Arrays.asList(
+                "Hatha Yoga",
+                "Vinyasa Flow Yoga",
+                "Pranayama & Meditation",
+                "Ashtanga Yoga",
+                "Pre & Post Natal Yoga",
+                "Therapeutic & Restorative Yoga"
+        ));
+        CATEGORY_SERVICES.put("Physiotherapist", Arrays.asList(
+                "Orthopedic Rehabilitation",
+                "Sports Injury Therapy",
+                "Back & Neck Pain Relief",
+                "Neuro Rehabilitation",
+                "Post-Surgery Physical Therapy",
+                "Joint Mobilization Therapy"
+        ));
+        CATEGORY_SERVICES.put("Zumba Dance Teacher", Arrays.asList(
+                "Zumba Classic Cardio",
+                "Aqua Zumba",
+                "Zumba Toning (Light Weights)",
+                "Zumba Kids & Family",
+                "Aerobic Dance Fitness",
+                "Latin Rhythm Choreography"
+        ));
+        CATEGORY_SERVICES.put("Chiropractor", Arrays.asList(
+                "Spinal Alignment & Adjustment",
+                "Cervical & Lumbar Decompression",
+                "Posture Correction Therapy",
+                "Sciatica Nerve Relief",
+                "Joint Mobilization",
+                "Musculoskeletal Pain Therapy"
+        ));
+    }
 
     private static final String[] EXPERIENCE = {
             "Fresher",
@@ -376,11 +455,27 @@ public class Register extends AppCompatActivity {
                 rgCategory = pageView.findViewById(R.id.rgCategory);
                 glExperience = pageView.findViewById(R.id.glExperience);
                 etExpDesc = pageView.findViewById(R.id.reg_exp_desc);
+                llServiceSection = pageView.findViewById(R.id.llServiceSection);
+                dividerServiceSectionBottom = pageView.findViewById(R.id.dividerServiceSectionBottom);
+                tvSelectedServicesCount = pageView.findViewById(R.id.tvSelectedServicesCount);
+                tvServiceCategoryHeader = pageView.findViewById(R.id.tvServiceCategoryHeader);
+                llServiceItemsContainer = pageView.findViewById(R.id.llServiceItemsContainer);
 
-                if (!categoryUiBuilt) {
+                if (rgCategory != null && rgCategory.getChildCount() == 0) {
                     buildCategoryRows();
+                }
+
+                if (glExperience != null && glExperience.getChildCount() == 0) {
                     buildExperienceChips();
-                    categoryUiBuilt = true;
+                }
+
+                if (!TextUtils.isEmpty(selectedCategory)) {
+                    selectCategory(selectedCategory, false);
+                } else if (llServiceSection != null) {
+                    llServiceSection.setVisibility(View.GONE);
+                    if (dividerServiceSectionBottom != null) {
+                        dividerServiceSectionBottom.setVisibility(View.GONE);
+                    }
                 }
                 break;
 
@@ -1329,8 +1424,27 @@ public class Register extends AppCompatActivity {
     }
 
     // ============================================================
-    // PAGE 2 - CATEGORY
+    // PAGE 2 - CATEGORY & SERVICE SELECTION
     // ============================================================
+
+    private Set<String> getSelectedServicesForCategory(String categoryName) {
+        if (TextUtils.isEmpty(categoryName)) {
+            return Collections.emptySet();
+        }
+        Set<String> set = categorySelectedServices.get(categoryName);
+        if (set == null) {
+            set = new LinkedHashSet<>();
+            categorySelectedServices.put(categoryName, set);
+        }
+        return set;
+    }
+
+    private void syncSelectedServices() {
+        selectedServices.clear();
+        if (!TextUtils.isEmpty(selectedCategory)) {
+            selectedServices.addAll(getSelectedServicesForCategory(selectedCategory));
+        }
+    }
 
     private void buildCategoryRows() {
         if (rgCategory == null) {
@@ -1345,25 +1459,64 @@ public class Register extends AppCompatActivity {
             RadioButton rb = row.findViewById(R.id.rbOption);
             TextView title = row.findViewById(R.id.tvCatTitle);
 
+            if (rb != null) {
+                rb.setClickable(false);
+                rb.setFocusable(false);
+            }
+
             title.setText(category[0]);
             String categoryName = category[0];
 
-            row.setOnClickListener(view -> {
-                rb.setChecked(true);
-                selectedCategory = categoryName;
-                highlightCategoryRows();
-                validateCurrentPage();
-            });
+            boolean isCurrent = categoryName.equals(selectedCategory);
+            if (rb != null) {
+                rb.setChecked(isCurrent);
+            }
+            row.setBackgroundResource(
+                    isCurrent ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row
+            );
 
-            rb.setOnCheckedChangeListener((button, checked) -> {
-                if (checked) {
-                    selectedCategory = categoryName;
-                    highlightCategoryRows();
-                    validateCurrentPage();
-                }
-            });
+            row.setOnClickListener(view -> selectCategory(categoryName, true));
 
             rgCategory.addView(row);
+        }
+    }
+
+    private void selectCategory(String categoryName, boolean smoothScroll) {
+        selectedCategory = categoryName;
+
+        if (rgCategory != null) {
+            for (int i = 0; i < rgCategory.getChildCount(); i++) {
+                View row = rgCategory.getChildAt(i);
+                RadioButton rb = row.findViewById(R.id.rbOption);
+                TextView title = row.findViewById(R.id.tvCatTitle);
+                boolean isMatch = title != null && categoryName.equals(title.getText().toString());
+
+                if (rb != null) {
+                    rb.setChecked(isMatch);
+                }
+                row.setBackgroundResource(
+                        isMatch ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row
+                );
+            }
+        }
+
+        syncSelectedServices();
+        showServiceSectionForCategory(categoryName);
+        validateCurrentPage();
+
+        if (smoothScroll && llServiceSection != null) {
+            llServiceSection.post(() -> {
+                View pageView = getCurrentPageView();
+                ScrollView sv = null;
+                if (pageView instanceof ScrollView) {
+                    sv = (ScrollView) pageView;
+                } else if (pageView != null) {
+                    sv = pageView.findViewById(R.id.svExperienced);
+                }
+                if (sv != null) {
+                    sv.smoothScrollTo(0, Math.max(0, llServiceSection.getTop() - 30));
+                }
+            });
         }
     }
 
@@ -1375,13 +1528,124 @@ public class Register extends AppCompatActivity {
         for (int i = 0; i < rgCategory.getChildCount(); i++) {
             View row = rgCategory.getChildAt(i);
             RadioButton rb = row.findViewById(R.id.rbOption);
+            TextView title = row.findViewById(R.id.tvCatTitle);
+            boolean isMatch = title != null && !TextUtils.isEmpty(selectedCategory) && selectedCategory.equals(title.getText().toString());
 
+            if (rb != null) {
+                rb.setChecked(isMatch);
+            }
             row.setBackgroundResource(
-                    rb.isChecked()
-                            ? R.drawable.bg_category_row_selected
-                            : R.drawable.bg_category_row
+                    isMatch ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row
             );
         }
+    }
+
+    // ============================================================
+    // PAGE 2 - SERVICE NAMES SELECTION
+    // ============================================================
+
+    private void showServiceSectionForCategory(String categoryName) {
+        if (llServiceSection == null || llServiceItemsContainer == null) {
+            return;
+        }
+
+        if (TextUtils.isEmpty(categoryName)) {
+            llServiceSection.setVisibility(View.GONE);
+            if (dividerServiceSectionBottom != null) {
+                dividerServiceSectionBottom.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        llServiceSection.setVisibility(View.VISIBLE);
+        if (dividerServiceSectionBottom != null) {
+            dividerServiceSectionBottom.setVisibility(View.VISIBLE);
+        }
+
+        if (tvServiceCategoryHeader != null) {
+            tvServiceCategoryHeader.setText(getServiceHeaderForCategory(categoryName));
+        }
+
+        buildServiceRows(categoryName);
+        updateSelectedServicesCount();
+    }
+
+    private String getServiceHeaderForCategory(String category) {
+        if (category == null) return "SERVICES & SESSIONS";
+        String upper = category.trim().toUpperCase(Locale.ROOT);
+        if (upper.contains("TRAINER") || upper.contains("YOGA") || upper.contains("DANCE") || upper.contains("ZUMBA")) {
+            return upper + " SESSIONS";
+        }
+        return upper + " TREATMENTS";
+    }
+
+    private void buildServiceRows(String categoryName) {
+        if (llServiceItemsContainer == null) {
+            return;
+        }
+
+        llServiceItemsContainer.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        List<String> services = CATEGORY_SERVICES.get(categoryName);
+        if (services == null || services.isEmpty()) {
+            services = Arrays.asList(
+                    "Deep Tissue Massage",
+                    "Swedish Relaxation Massage",
+                    "Aromatherapy Massage",
+                    "Balinese Body Therapy",
+                    "Hot Stone Therapy",
+                    "Foot Reflexology"
+            );
+        }
+
+        Set<String> currentSelected = getSelectedServicesForCategory(categoryName);
+
+        for (String service : services) {
+            View row = inflater.inflate(R.layout.item_service_option, llServiceItemsContainer, false);
+            ImageView ivCheck = row.findViewById(R.id.ivServiceCheck);
+            TextView tvName = row.findViewById(R.id.tvServiceName);
+
+            tvName.setText(service);
+            updateServiceRowUi(row, ivCheck, tvName, currentSelected.contains(service));
+
+            row.setOnClickListener(v -> {
+                if (currentSelected.contains(service)) {
+                    currentSelected.remove(service);
+                    updateServiceRowUi(row, ivCheck, tvName, false);
+                } else {
+                    currentSelected.add(service);
+                    updateServiceRowUi(row, ivCheck, tvName, true);
+                }
+                syncSelectedServices();
+                updateSelectedServicesCount();
+                validateCurrentPage();
+            });
+
+            llServiceItemsContainer.addView(row);
+        }
+    }
+
+    private void updateServiceRowUi(View row, ImageView ivCheck, TextView tvName, boolean isSelected) {
+        if (isSelected) {
+            row.setBackgroundResource(R.drawable.bg_service_item_selected);
+            ivCheck.setImageResource(R.drawable.ic_service_checked);
+            tvName.setTextColor(Color.WHITE);
+            tvName.setTypeface(null, Typeface.BOLD);
+        } else {
+            row.setBackgroundResource(R.drawable.bg_service_item_unselected);
+            ivCheck.setImageResource(R.drawable.ic_service_unchecked);
+            tvName.setTextColor(Color.parseColor("#1E293B"));
+            tvName.setTypeface(null, Typeface.NORMAL);
+        }
+    }
+
+    private void updateSelectedServicesCount() {
+        if (tvSelectedServicesCount == null) {
+            return;
+        }
+        int count = getSelectedServicesForCategory(selectedCategory).size();
+        tvSelectedServicesCount.setText(count + (count == 1 ? " service selected" : " services selected"));
     }
 
     // ============================================================
@@ -1543,6 +1807,7 @@ public class Register extends AppCompatActivity {
 
     private boolean validateProfessional() {
         return !TextUtils.isEmpty(selectedCategory)
+                && !selectedServices.isEmpty()
                 && !TextUtils.isEmpty(selectedExperience);
     }
 
@@ -1664,6 +1929,7 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void submitRegistration() {
+        syncSelectedServices();
         if (!validatePersonal() || !validateProfessional() || !validatePreferences()) {
             Toast.makeText(
                     this,
@@ -1745,8 +2011,14 @@ public class Register extends AppCompatActivity {
                 params.put("bounsReferral", referral);
                 params.put("profile_photo", encodedPhoto);
                 params.put("expert_category", selectedCategory);
+                params.put("selected_services", TextUtils.join(", ", selectedServices));
                 params.put("experience", selectedExperience);
-                params.put("experience_desc", expDesc);
+                String fullExpDesc = expDesc;
+                if (!selectedServices.isEmpty()) {
+                    String servicesLine = "Services: " + TextUtils.join(", ", selectedServices);
+                    fullExpDesc = TextUtils.isEmpty(expDesc) ? servicesLine : expDesc + "\n" + servicesLine;
+                }
+                params.put("experience_desc", fullExpDesc);
                 params.put("area_ids", areaIds);
                 return params;
             }
