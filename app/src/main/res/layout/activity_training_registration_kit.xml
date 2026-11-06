@@ -13,7 +13,7 @@
         android:id="@+id/toolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="#2563EB"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
@@ -33,8 +33,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="Training, Registration &amp; Company Kit"
-            android:textColor="#0F172A"
+            android:textColor="#FFFFFF"
             android:textSize="16.5sp"
             android:textStyle="bold" />
 
@@ -60,7 +61,7 @@
             android:padding="16dp">
 
             <!-- ============================================== -->
-            <!-- CARD 1: PRICING DETAILS                        -->
+            <!-- CARD 1: PAYMENT DETAILS                        -->
             <!-- ============================================== -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -70,14 +71,11 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Header: Clickable to expand/collapse -->
+                <!-- Header: Payment Details (No Arrow icon) -->
                 <LinearLayout
                     android:id="@+id/headerPricing"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -91,7 +89,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:contentDescription="Pricing"
+                            android:contentDescription="Payment Details"
                             android:src="@drawable/ic_tag_price"
                             app:tint="#2563EB" />
                     </FrameLayout>
@@ -101,21 +99,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="Pricing Details"
+                        android:text="Payment Details"
                         android:textColor="#0F172A"
                         android:textSize="16sp"
                         android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/ivPricingChevron"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Toggle Pricing"
-                        android:src="@drawable/arrow_up"
-                        app:tint="#0F172A" />
                 </LinearLayout>
 
-                <!-- Pricing Items Content -->
+                <!-- Payment Items Content -->
                 <LinearLayout
                     android:id="@+id/layoutPricingContent"
                     android:layout_width="match_parent"
@@ -164,7 +154,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Item 2: Uniforms Set -->
+                    <!-- Item 2: Uniform 1 Set -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -183,7 +173,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="Uniforms Set"
+                            android:text="Uniform 1 Set"
                             android:textColor="#1E293B"
                             android:textSize="14.5sp"
                             android:textStyle="bold" />
@@ -206,7 +196,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Item 3: Other Kit -->
+                    <!-- Item 3: Other -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -248,99 +238,101 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
+                    <!-- STRAIGHT FORWARD LINE AFTER OTHER -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="#E2E8F0" />
 
-
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ============================================== -->
-            <!-- CARD 2: OPTIONAL MASSAGE BED                   -->
-            <!-- ============================================== -->
-            <LinearLayout
-                android:id="@+id/cardMassageBed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_card_massage_bed"
-                android:clickable="true"
-                android:elevation="1dp"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Top Row: Checkbox + Title + Price & Optional -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top"
-                    android:orientation="horizontal">
-
-                    <!-- Checkbox -->
-                    <androidx.appcompat.widget.AppCompatCheckBox
-                        android:id="@+id/cbMassageBed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:buttonTint="#2563EB"
-                        android:checked="false"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"
-                        android:padding="0dp" />
-
-                    <!-- Title -->
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:lineSpacingExtra="2dp"
-                        android:text="Portable Massage Bed"
-                        android:textColor="#0F172A"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <!-- Price & Optional Column -->
+                    <!-- PORTABLE MASSAGE BED OPTION (INSIDE SAME PAYMENT DETAILS CARD) -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:id="@+id/cardMassageBed"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:gravity="end"
-                        android:orientation="vertical">
+                        android:background="@drawable/bg_card_massage_bed"
+                        android:clickable="true"
+                        android:elevation="1dp"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                        <TextView
-                            android:id="@+id/tvPriceBed"
-                            android:layout_width="wrap_content"
+                        <!-- Top Row: Checkbox + Title + Price & Optional -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="+₹20,000"
-                            android:textColor="#4338CA"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:gravity="top"
+                            android:orientation="horizontal">
 
+                            <!-- Checkbox -->
+                            <androidx.appcompat.widget.AppCompatCheckBox
+                                android:id="@+id/cbMassageBed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:buttonTint="#2563EB"
+                                android:checked="false"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:padding="0dp" />
+
+                            <!-- Title -->
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:lineSpacingExtra="2dp"
+                                android:text="Portable Massage Bed"
+                                android:textColor="#0F172A"
+                                android:textSize="13.5sp"
+                                android:textStyle="bold" />
+
+                            <!-- Price & Optional Column -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:gravity="end"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvPriceBed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="+₹20,000"
+                                    android:textColor="#4338CA"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="Optional"
+                                    android:textColor="#64748B"
+                                    android:textSize="11.5sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Description -->
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Optional"
+                            android:layout_marginStart="26dp"
+                            android:layout_marginTop="6dp"
+                            android:lineSpacingExtra="2.5dp"
+                            android:text="Recommended for therapists offering Massage at Home. Premium aircraft-grade lightweight foldable massage bed with face cradle, armrests, and water-resistant protective carrying bag."
                             android:textColor="#64748B"
-                            android:textSize="11.5sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
-                </LinearLayout>
 
-                <!-- Description -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="28dp"
-                    android:layout_marginTop="8dp"
-                    android:lineSpacingExtra="2.5dp"
-                    android:text="Get More Booking Opportunities!Customers often prefer therapists with a professional massage bed. Selecting this option can make your profile more attractive and help you get more bookings."
-                    android:textColor="#64748B"
-                    android:textSize="12sp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ============================================== -->
-            <!-- CARD 3: PAYMENT SUMMARY                        -->
+            <!-- CARD 2: PAYMENT SUMMARY                        -->
             <!-- ============================================== -->
             <LinearLayout
                 android:id="@+id/cardPaymentSummary"
@@ -449,82 +441,6 @@
             </LinearLayout>
 
             <!-- ============================================== -->
-            <!-- CARD 2: NEXT STEP                              -->
-            <!-- ============================================== -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_card_white_rounded16"
-                android:elevation="2dp"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Header: Clickable to expand/collapse -->
-                <LinearLayout
-                    android:id="@+id/headerNextStep"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <!-- Bullet List Icon inside circle -->
-                    <FrameLayout
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:background="@drawable/bg_blue_icon_circle">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="Next Step"
-                            android:src="@drawable/ic_list_bullet"
-                            app:tint="#2563EB" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:text="Next Step"
-                        android:textColor="#0F172A"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/ivNextStepChevron"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Toggle Next Step"
-                        android:src="@drawable/arrow_down"
-                        app:tint="#0F172A" />
-                </LinearLayout>
-
-                <!-- Collapsible summary content for Next Step -->
-                <LinearLayout
-                    android:id="@+id/layoutNextStepContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:lineSpacingExtra="2dp"
-                        android:text="Complete your verification, practical massage skill evaluation, kit training, and policy review to get your profile approved and go live."
-                        android:textColor="#64748B"
-                        android:textSize="13sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ============================================== -->
             <!-- CARD 3: NEXT STEP DETAILS                      -->
             <!-- ============================================== -->
             <LinearLayout
@@ -536,18 +452,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Header: Clickable to expand/collapse -->
+                <!-- Header: Next Step Details (No Arrow icon) -->
                 <LinearLayout
                     android:id="@+id/headerNextStepDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <!-- Zigzag Steps Icon inside circle -->
+                    <!-- Three lines Icon inside circle -->
                     <FrameLayout
                         android:layout_width="38dp"
                         android:layout_height="38dp"
@@ -558,7 +471,7 @@
                             android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:contentDescription="Next Step Details"
-                            android:src="@drawable/ic_zigzag_steps"
+                            android:src="@drawable/ic_three_lines"
                             app:tint="#2563EB" />
                     </FrameLayout>
 
@@ -571,14 +484,6 @@
                         android:textColor="#0F172A"
                         android:textSize="16sp"
                         android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/ivNextStepDetailsChevron"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:contentDescription="Toggle Next Step Details"
-                        android:src="@drawable/arrow_up"
-                        app:tint="#0F172A" />
                 </LinearLayout>
 
                 <!-- Stepper Container -->
@@ -869,4 +774,3 @@
     </LinearLayout>
 
 </LinearLayout>
-

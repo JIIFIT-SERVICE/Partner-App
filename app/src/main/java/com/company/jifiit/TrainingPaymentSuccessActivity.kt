@@ -11,22 +11,22 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.company.jifiit.Referral.HelpActivity
 
 class TrainingPaymentSuccessActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageView
     private lateinit var tvRegistrationStatus: TextView
     private lateinit var tvTransactionId: TextView
-    private lateinit var btnContactManager: Button
-    private lateinit var btnHomeDashboard: Button
+    private lateinit var btnHelpSupport: Button
 
-    private var managerPhoneNumber: String = DEFAULT_BRANCH_MANAGER_PHONE
+    private var helpPhoneNumber: String = DEFAULT_HELP_PHONE
 
     companion object {
         const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
         const val EXTRA_REGISTRATION_STATUS = "EXTRA_REGISTRATION_STATUS"
         const val EXTRA_MANAGER_PHONE = "EXTRA_MANAGER_PHONE"
-        const val DEFAULT_BRANCH_MANAGER_PHONE = "+911140509900"
+        const val DEFAULT_HELP_PHONE = "+911140509900"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,8 +50,7 @@ class TrainingPaymentSuccessActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         tvRegistrationStatus = findViewById(R.id.tvRegistrationStatus)
         tvTransactionId = findViewById(R.id.tvTransactionId)
-        btnContactManager = findViewById(R.id.btnContactManager)
-        btnHomeDashboard = findViewById(R.id.btnHomeDashboard)
+        btnHelpSupport = findViewById(R.id.btnHelpSupport)
     }
 
     private fun populateData() {
@@ -73,7 +72,7 @@ class TrainingPaymentSuccessActivity : AppCompatActivity() {
 
         val customPhone = intent.getStringExtra(EXTRA_MANAGER_PHONE)
         if (!customPhone.isNullOrBlank()) {
-            managerPhoneNumber = customPhone
+            helpPhoneNumber = customPhone
         }
     }
 
@@ -82,37 +81,25 @@ class TrainingPaymentSuccessActivity : AppCompatActivity() {
             handleBackNavigation()
         }
 
-        btnContactManager.setOnClickListener {
-            contactBranchManager()
-        }
-
-        btnHomeDashboard.setOnClickListener {
-            goToDashboard()
+        btnHelpSupport.setOnClickListener {
+            openHelpAndSupport()
         }
     }
 
-    private fun contactBranchManager() {
+    private fun openHelpAndSupport() {
         try {
-            val dialIntent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$managerPhoneNumber")
-            }
-            startActivity(dialIntent)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Branch Manager contact: $managerPhoneNumber", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun goToDashboard() {
-        try {
-            val intent = Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            }
+            val intent = Intent(this, HelpActivity::class.java)
             startActivity(intent)
-            finish()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         } catch (e: Exception) {
-            finish()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            try {
+                val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:$helpPhoneNumber")
+                }
+                startActivity(dialIntent)
+            } catch (ex: Exception) {
+                Toast.makeText(this, "Help & Support contact: $helpPhoneNumber", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -126,4 +113,3 @@ class TrainingPaymentSuccessActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 }
-

@@ -97,9 +97,6 @@
             android:name=".Hotel.HotelPayment"
             android:exported="false" />
         <activity
-            android:name=".Hotel.PaymentActivity"
-            android:exported="false" />
-        <activity
             android:name=".Hotel.ManageRoomsActivity"
             android:exported="false"
             android:theme="@style/Theme.Jifiit.hotel.NoActionBar"

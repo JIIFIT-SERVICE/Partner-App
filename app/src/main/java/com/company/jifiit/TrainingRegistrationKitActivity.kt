@@ -12,10 +12,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
@@ -23,18 +21,6 @@ import java.util.Locale
 class TrainingRegistrationKitActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageView
-    private lateinit var headerPricing: LinearLayout
-    private lateinit var ivPricingChevron: ImageView
-    private lateinit var layoutPricingContent: LinearLayout
-
-    private lateinit var headerNextStep: LinearLayout
-    private lateinit var ivNextStepChevron: ImageView
-    private lateinit var layoutNextStepContent: LinearLayout
-
-    private lateinit var headerNextStepDetails: LinearLayout
-    private lateinit var ivNextStepDetailsChevron: ImageView
-    private lateinit var layoutNextStepDetailsContent: LinearLayout
-
     private lateinit var rvMassageList: RecyclerView
     private lateinit var btnProcessFees: RelativeLayout
     private lateinit var tvTotalPayableAmount: TextView
@@ -48,9 +34,10 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
     private lateinit var tvPriceUniform: TextView
     private lateinit var tvPriceOtherKit: TextView
 
-    private var isPricingExpanded = true
-    private var isNextStepExpanded = false
-    private var isNextStepDetailsExpanded = true
+    private val defaultTrainingPrice = 599
+    private val defaultUniformPrice = 1399
+    private val defaultOtherKitPrice = 799
+    private val defaultBedPrice = 20000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,25 +53,13 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.statusBarColor = Color.parseColor("#2563EB")
-            // Dark background -> white status bar icons
+            // Blue background -> white status bar icons
             window.decorView.systemUiVisibility = 0
         }
     }
 
     private fun initViews() {
         btnBack = findViewById(R.id.btnBack)
-        headerPricing = findViewById(R.id.headerPricing)
-        ivPricingChevron = findViewById(R.id.ivPricingChevron)
-        layoutPricingContent = findViewById(R.id.layoutPricingContent)
-
-        headerNextStep = findViewById(R.id.headerNextStep)
-        ivNextStepChevron = findViewById(R.id.ivNextStepChevron)
-        layoutNextStepContent = findViewById(R.id.layoutNextStepContent)
-
-        headerNextStepDetails = findViewById(R.id.headerNextStepDetails)
-        ivNextStepDetailsChevron = findViewById(R.id.ivNextStepDetailsChevron)
-        layoutNextStepDetailsContent = findViewById(R.id.layoutNextStepDetailsContent)
-
         rvMassageList = findViewById(R.id.rvMassageList)
         btnProcessFees = findViewById(R.id.btnProcessFees)
         tvTotalPayableAmount = findViewById(R.id.tvTotalPayableAmount)
@@ -98,11 +73,6 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
         tvPriceUniform = findViewById(R.id.tvPriceUniform)
         tvPriceOtherKit = findViewById(R.id.tvPriceOtherKit)
     }
-
-    private val defaultTrainingPrice = 599
-    private val defaultUniformPrice = 1399
-    private val defaultOtherKitPrice = 799
-    private val defaultBedPrice = 20000
 
     private fun parsePrice(tv: TextView, default: Int): Int {
         val digits = tv.text.toString().replace("[^0-9]".toRegex(), "")
@@ -174,27 +144,6 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
-        // Toggle Pricing card
-        headerPricing.setOnClickListener {
-            isPricingExpanded = !isPricingExpanded
-            layoutPricingContent.visibility = if (isPricingExpanded) View.VISIBLE else View.GONE
-            ivPricingChevron.animate().rotation(if (isPricingExpanded) 0f else 180f).setDuration(200).start()
-        }
-
-        // Toggle Next Step card
-        headerNextStep.setOnClickListener {
-            isNextStepExpanded = !isNextStepExpanded
-            layoutNextStepContent.visibility = if (isNextStepExpanded) View.VISIBLE else View.GONE
-            ivNextStepChevron.animate().rotation(if (isNextStepExpanded) 180f else 0f).setDuration(200).start()
-        }
-
-        // Toggle Next Step Details card
-        headerNextStepDetails.setOnClickListener {
-            isNextStepDetailsExpanded = !isNextStepDetailsExpanded
-            layoutNextStepDetailsContent.visibility = if (isNextStepDetailsExpanded) View.VISIBLE else View.GONE
-            ivNextStepDetailsChevron.animate().rotation(if (isNextStepDetailsExpanded) 0f else 180f).setDuration(200).start()
-        }
-
         // Massage bed checkbox listener
         cbMassageBed.setOnCheckedChangeListener { _, _ ->
             updateTotalAmount()
@@ -207,24 +156,14 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
 
         // Bottom Button: Process to Kit Training Fees
         btnProcessFees.setOnClickListener {
-            startActivity(Intent(this, TrainingPaymentSuccessActivity::class.java))
-        }
-    }
-
-    private fun onProcessFeesClicked() {
-        val total = calculateTotal()
-        val formattedTotal = String.format(Locale.US, "%,d", total)
-        try {
-            // Check if PaymentDialogActivity exists and can be launched
-            val intent = Intent(this, PaymentDialogActivity::class.java).apply {
-                putExtra("EXTRA_PAYMENT_AMOUNT", total.toString())
-                putExtra("EXTRA_PAYMENT_TITLE", "Kit & Training Registration Fee")
-                putExtra("EXTRA_INCLUDE_BED", cbMassageBed.isChecked)
+            val total = calculateTotal()
+            val randomTxn = "TXN" + (100000000..999999999).random()
+            val intent = Intent(this, TrainingPaymentSuccessActivity::class.java).apply {
+                putExtra(TrainingPaymentSuccessActivity.EXTRA_TRANSACTION_ID, randomTxn)
+                putExtra(TrainingPaymentSuccessActivity.EXTRA_REGISTRATION_STATUS, "Confirmed")
             }
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Proceeding to Kit & Training Fee payment: ₹$formattedTotal", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -246,22 +185,22 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
     class MassageStepAdapter(
         private val context: Context,
         private val items: List<MassageStepItem>
-    ) : RecyclerView.Adapter<MassageStepAdapter.ViewHolder>() {
+    ) : RecyclerView.Adapter<MassageStepAdapter.MassageViewHolder>() {
 
-        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val tvMassageName: TextView = view.findViewById(R.id.tvMassageName)
-            val tvMassageSubtitle: TextView = view.findViewById(R.id.tvMassageSubtitle)
-            val layoutStatusBadge: LinearLayout = view.findViewById(R.id.layoutStatusBadge)
-            val ivStatusIcon: ImageView = view.findViewById(R.id.ivStatusIcon)
-            val tvStatusText: TextView = view.findViewById(R.id.tvStatusText)
+        inner class MassageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val tvMassageName: TextView = itemView.findViewById(R.id.tvMassageName)
+            val tvMassageSubtitle: TextView = itemView.findViewById(R.id.tvMassageSubtitle)
+            val layoutStatusBadge: LinearLayout = itemView.findViewById(R.id.layoutStatusBadge)
+            val ivStatusIcon: ImageView = itemView.findViewById(R.id.ivStatusIcon)
+            val tvStatusText: TextView = itemView.findViewById(R.id.tvStatusText)
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_massage_step, parent, false)
-            return ViewHolder(view)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MassageViewHolder {
+            val view = LayoutInflater.from(context).inflate(R.layout.item_massage_step, parent, false)
+            return MassageViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: MassageViewHolder, position: Int) {
             val item = items[position]
             holder.tvMassageName.text = item.name
             holder.tvMassageSubtitle.text = item.subtitle
@@ -269,18 +208,17 @@ class TrainingRegistrationKitActivity : AppCompatActivity() {
 
             if (item.isApproved) {
                 holder.layoutStatusBadge.setBackgroundResource(R.drawable.bg_pill_approved_green)
+                holder.tvStatusText.setTextColor(Color.parseColor("#059669"))
                 holder.ivStatusIcon.setImageResource(R.drawable.baseline_check_circle_outline_24)
                 holder.ivStatusIcon.setColorFilter(Color.parseColor("#059669"))
-                holder.tvStatusText.setTextColor(Color.parseColor("#059669"))
             } else {
                 holder.layoutStatusBadge.setBackgroundResource(R.drawable.bg_pill_pending_amber)
+                holder.tvStatusText.setTextColor(Color.parseColor("#D97706"))
                 holder.ivStatusIcon.setImageResource(R.drawable.ic_clock_outline)
                 holder.ivStatusIcon.setColorFilter(Color.parseColor("#D97706"))
-                holder.tvStatusText.setTextColor(Color.parseColor("#D97706"))
             }
         }
 
         override fun getItemCount(): Int = items.size
     }
 }
-
