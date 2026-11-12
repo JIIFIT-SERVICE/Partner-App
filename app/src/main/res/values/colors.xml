@@ -218,4 +218,25 @@
     <color name="partner_description_text">#EDF3FF</color>
     <color name="partner_btn_blue_text">#0D62FE</color>
     <color name="partner_btn_dashboard_bg">#183AA8</color>
+    <!-- ApplicationSubmittedActivity page colors -->
+    <color name="sub_page_bg">#FFFFFF</color>
+    <color name="sub_text">#0F172A</color>
+    <color name="sub_text_sec">#6B7280</color>
+    <color name="sub_border">#E5E7EB</color>
+    <color name="sub_green">#059669</color>
+    <color name="sub_green_bg">#ECFDF5</color>
+    <color name="sub_green_border">#A7F3D0</color>
+    <color name="sub_blue">#1F5EFF</color>
+    <color name="sub_blue_bg">#EFF6FF</color>
+    <color name="sub_blue_border">#93C5FD</color>
+    <color name="sub_grey_bg">#F9FAFB</color>
+    <color name="sub_grey_icon">#E5E7EB</color>
+    <color name="sub_amber_bg">#FEF3C7</color>
+    <color name="sub_purple">#7E22CE</color>
+    <color name="sub_navy">#0F1B4D</color>
+    <color name="sub_navy_chip">#1E3A8A</color>
+    <color name="sub_teal">#2DD4BF</color>
+    <color name="sub_glass">#26FFFFFF</color>
+    <color name="sub_glass_btn">#33FFFFFF</color>
+    <color name="sub_light_text">#CBD5E1</color>
 </resources>
