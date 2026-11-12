@@ -39,6 +39,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.database.Cursor;
+import android.provider.OpenableColumns;
+
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -89,7 +92,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class Register extends AppCompatActivity {
 
     private static final String TAG = "Register";
-    private static final int TOTAL_PAGES = 4;
+    private static final int TOTAL_PAGES = 5;
     private static final int MIN_REQUIRED_AREAS = 50;
 
     private ViewPager2 viewPager;
@@ -160,13 +163,13 @@ public class Register extends AppCompatActivity {
     private boolean categoryUiBuilt = false;
 
     private static final String[][] CATEGORIES = {
-            {"Massage Therapist"},
-            {"Ayurveda Massage Therapist"},
-            {"Personal Trainer"},
-            {"Yoga Teacher"},
-            {"Physiotherapist"},
-            {"Zumba Dance Teacher"},
-            {"Chiropractor"}
+            { "Massage Therapist" },
+            { "Ayurveda Massage Therapist" },
+            { "Personal Trainer" },
+            { "Yoga Teacher" },
+            { "Physiotherapist" },
+            { "Zumba Dance Teacher" },
+            { "Chiropractor" }
     };
 
     private static final Map<String, List<String>> CATEGORY_SERVICES = new LinkedHashMap<>();
@@ -179,8 +182,7 @@ public class Register extends AppCompatActivity {
                 "Hot Stone Therapy",
                 "Foot Reflexology",
                 "Thai Traditional Massage",
-                "Head, Neck & Shoulder Relief"
-        ));
+                "Head, Neck & Shoulder Relief"));
         CATEGORY_SERVICES.put("Ayurveda Massage Therapist", Arrays.asList(
                 "Abhyanga Full Body Massage",
                 "Shirodhara Therapy",
@@ -189,48 +191,42 @@ public class Register extends AppCompatActivity {
                 "Kadi Vasti (Spine Care)",
                 "Udwarthanam (Herbal Scrub)",
                 "Nasya Therapy",
-                "Janu Vasti (Knee Care)"
-        ));
+                "Janu Vasti (Knee Care)"));
         CATEGORY_SERVICES.put("Personal Trainer", Arrays.asList(
                 "Strength & Muscle Building",
                 "Weight Loss & Fat Burn",
                 "Functional & HIIT Training",
                 "Core & Mobility Conditioning",
                 "Endurance & Cardio Training",
-                "Posture & Flexibility Training"
-        ));
+                "Posture & Flexibility Training"));
         CATEGORY_SERVICES.put("Yoga Teacher", Arrays.asList(
                 "Hatha Yoga",
                 "Vinyasa Flow Yoga",
                 "Pranayama & Meditation",
                 "Ashtanga Yoga",
                 "Pre & Post Natal Yoga",
-                "Therapeutic & Restorative Yoga"
-        ));
+                "Therapeutic & Restorative Yoga"));
         CATEGORY_SERVICES.put("Physiotherapist", Arrays.asList(
                 "Orthopedic Rehabilitation",
                 "Sports Injury Therapy",
                 "Back & Neck Pain Relief",
                 "Neuro Rehabilitation",
                 "Post-Surgery Physical Therapy",
-                "Joint Mobilization Therapy"
-        ));
+                "Joint Mobilization Therapy"));
         CATEGORY_SERVICES.put("Zumba Dance Teacher", Arrays.asList(
                 "Zumba Classic Cardio",
                 "Aqua Zumba",
                 "Zumba Toning (Light Weights)",
                 "Zumba Kids & Family",
                 "Aerobic Dance Fitness",
-                "Latin Rhythm Choreography"
-        ));
+                "Latin Rhythm Choreography"));
         CATEGORY_SERVICES.put("Chiropractor", Arrays.asList(
                 "Spinal Alignment & Adjustment",
                 "Cervical & Lumbar Decompression",
                 "Posture Correction Therapy",
                 "Sciatica Nerve Relief",
                 "Joint Mobilization",
-                "Musculoskeletal Pain Therapy"
-        ));
+                "Musculoskeletal Pain Therapy"));
     }
 
     private static final String[] EXPERIENCE = {
@@ -267,51 +263,166 @@ public class Register extends AppCompatActivity {
     private String areasLoadedCityId = "";
 
     // ============================================================
-    // PAGE 4 - REFERRAL
+    // PAGE 4 - DOCUMENTS / VERIFICATION & COMPLIANCE
+    // ============================================================
+
+    private TextView tvResumeFileName, tvBtnUploadResume;
+    private View btnUploadResume;
+
+    private View chipSchool10th, chipSchool12th, chipSchoolGrad;
+    private TextView tvChipSchool10th, tvChipSchool12th, tvChipSchoolGrad;
+    private TextView tvSchoolFileName, tvSchoolSubtitle, tvBtnUploadSchool;
+    private View btnUploadSchool;
+    private String selectedSchoolLevel = "10th Class / Matric";
+
+    private View btnAddVocationalCert, layoutVocationalItem;
+    private TextView tvVocationalTitle, tvVocationalSubtitle;
+    private ImageView ivDeleteVocational;
+
+    private TextView tvAadhaarFrontName, tvBtnUploadAadhaarFront;
+    private View btnUploadAadhaarFront;
+    private TextView tvAadhaarBackName, tvBtnUploadAadhaarBack;
+    private View btnUploadAadhaarBack;
+
+    private int activeDocUploadType = 0;
+    private String resumeFileName = "candidate_resume_curriculum_vitae.pdf";
+    private String schoolFileName = "10th_standard_marksheet_certificate.pdf";
+    private String aadhaarFrontFileName = "aadhaar_card_front.jpg";
+    private String aadhaarBackFileName = "aadhaar_card_back.jpg";
+
+    // ============================================================
+    // PAGE 5 - REFERRAL
     // ============================================================
 
     private EditText etReferral;
 
     // ============================================================
-    // IMAGE PICKER
+    // IMAGE & DOCUMENT PICKERS
     // ============================================================
 
-    private final ActivityResultLauncher<Intent> galleryLauncher =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Uri uri = result.getData().getData();
-
-                            if (uri == null) {
-                                return;
-                            }
-
-                            if (imgPhoto != null) {
-                                imgPhoto.setImageURI(uri);
-                            }
-
-                            try {
-                                InputStream is = getContentResolver().openInputStream(uri);
-                                if (is == null) {
-                                    Toast.makeText(this, "Unable to open selected image", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-
-                                Bitmap bmp = BitmapFactory.decodeStream(is);
-                                is.close();
-
-                                if (bmp != null) {
-                                    encodedPhoto = encodeImage(bmp);
-                                    validateCurrentPage();
-                                }
-                            } catch (Exception e) {
-                                Log.e(TAG, "Image loading failed", e);
-                                Toast.makeText(this, "Unable to load image", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+    private final ActivityResultLauncher<Intent> docPickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri uri = result.getData().getData();
+                    if (uri == null)
+                        return;
+                    String fileName = getFileNameFromUri(uri);
+                    if (TextUtils.isEmpty(fileName)) {
+                        fileName = "document_" + System.currentTimeMillis();
                     }
-            );
+                    handleDocPicked(activeDocUploadType, fileName);
+                }
+            });
+
+    private void openDocumentPicker(int type) {
+        activeDocUploadType = type;
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        String[] mimeTypes = {
+                "application/pdf",
+                "image/*",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        };
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        docPickerLauncher.launch(intent);
+    }
+
+    private String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if ("content".equals(uri.getScheme())) {
+            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex != -1) {
+                        result = cursor.getString(nameIndex);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        if (result == null) {
+            result = uri.getLastPathSegment();
+        }
+        return result;
+    }
+
+    private void handleDocPicked(int type, String name) {
+        switch (type) {
+            case 1:
+                resumeFileName = name;
+                if (tvResumeFileName != null)
+                    tvResumeFileName.setText(name);
+                if (tvBtnUploadResume != null)
+                    tvBtnUploadResume.setText("Change Resume");
+                break;
+            case 2:
+                schoolFileName = name;
+                if (tvSchoolFileName != null)
+                    tvSchoolFileName.setText(name);
+                if (tvBtnUploadSchool != null)
+                    tvBtnUploadSchool.setText("Replace Marksheet");
+                break;
+            case 3:
+                aadhaarFrontFileName = name;
+                if (tvAadhaarFrontName != null)
+                    tvAadhaarFrontName.setText(name);
+                if (tvBtnUploadAadhaarFront != null)
+                    tvBtnUploadAadhaarFront.setText("Replace Front");
+                break;
+            case 4:
+                aadhaarBackFileName = name;
+                if (tvAadhaarBackName != null)
+                    tvAadhaarBackName.setText(name);
+                if (tvBtnUploadAadhaarBack != null)
+                    tvBtnUploadAadhaarBack.setText("Replace Back");
+                break;
+            case 5:
+                if (layoutVocationalItem != null)
+                    layoutVocationalItem.setVisibility(View.VISIBLE);
+                if (tvVocationalSubtitle != null)
+                    tvVocationalSubtitle.setText("Uploaded · " + name);
+                break;
+        }
+        validateCurrentPage();
+    }
+
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri uri = result.getData().getData();
+
+                    if (uri == null) {
+                        return;
+                    }
+
+                    if (imgPhoto != null) {
+                        imgPhoto.setImageURI(uri);
+                    }
+
+                    try {
+                        InputStream is = getContentResolver().openInputStream(uri);
+                        if (is == null) {
+                            Toast.makeText(this, "Unable to open selected image", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Bitmap bmp = BitmapFactory.decodeStream(is);
+                        is.close();
+
+                        if (bmp != null) {
+                            encodedPhoto = encodeImage(bmp);
+                            validateCurrentPage();
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Image loading failed", e);
+                        Toast.makeText(this, "Unable to load image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
     // ============================================================
     // ACTIVITY LIFECYCLE
@@ -323,8 +434,8 @@ public class Register extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
 
-        WindowInsetsControllerCompat controller =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(),
+                getWindow().getDecorView());
 
         controller.setAppearanceLightStatusBars(true);
         controller.setAppearanceLightNavigationBars(true);
@@ -382,8 +493,7 @@ public class Register extends AppCompatActivity {
                             validateCurrentPage();
                         });
                     }
-                }
-        );
+                });
 
         viewPager.post(() -> {
             initPageViews(0);
@@ -507,18 +617,148 @@ public class Register extends AppCompatActivity {
                 break;
 
             // ----------------------------------------------------
-            // PAGE 4 - REFERRAL
+            // PAGE 4 - DOCUMENTS / VERIFICATION
             // ----------------------------------------------------
             case 3:
+                initDocumentViews(pageView);
+                break;
+
+            // ----------------------------------------------------
+            // PAGE 5 - REFERRAL
+            // ----------------------------------------------------
+            case 4:
                 etReferral = pageView.findViewById(R.id.reg_referral);
                 TextView signIn = pageView.findViewById(R.id.do_you);
 
                 if (signIn != null) {
-                    signIn.setOnClickListener(v ->
-                            startActivity(new Intent(Register.this, LoginActivity.class))
-                    );
+                    signIn.setOnClickListener(v -> startActivity(new Intent(Register.this, LoginActivity.class)));
                 }
                 break;
+        }
+    }
+
+    // ============================================================
+    // PAGE 4 - DOCUMENTS / VERIFICATION METHODS
+    // ============================================================
+
+    private void initDocumentViews(View pageView) {
+        if (pageView == null)
+            return;
+
+        tvResumeFileName = pageView.findViewById(R.id.tvResumeFileName);
+        btnUploadResume = pageView.findViewById(R.id.btnUploadResume);
+        tvBtnUploadResume = pageView.findViewById(R.id.tvBtnUploadResume);
+
+        chipSchool10th = pageView.findViewById(R.id.chipSchool10th);
+        chipSchool12th = pageView.findViewById(R.id.chipSchool12th);
+        chipSchoolGrad = pageView.findViewById(R.id.chipSchoolGrad);
+        tvChipSchool10th = pageView.findViewById(R.id.tvChipSchool10th);
+        tvChipSchool12th = pageView.findViewById(R.id.tvChipSchool12th);
+        tvChipSchoolGrad = pageView.findViewById(R.id.tvChipSchoolGrad);
+        tvSchoolFileName = pageView.findViewById(R.id.tvSchoolFileName);
+        tvSchoolSubtitle = pageView.findViewById(R.id.tvSchoolSubtitle);
+        btnUploadSchool = pageView.findViewById(R.id.btnUploadSchool);
+        tvBtnUploadSchool = pageView.findViewById(R.id.tvBtnUploadSchool);
+
+        btnAddVocationalCert = pageView.findViewById(R.id.btnAddVocationalCert);
+        layoutVocationalItem = pageView.findViewById(R.id.layoutVocationalItem);
+        tvVocationalTitle = pageView.findViewById(R.id.tvVocationalTitle);
+        tvVocationalSubtitle = pageView.findViewById(R.id.tvVocationalSubtitle);
+        ivDeleteVocational = pageView.findViewById(R.id.ivDeleteVocational);
+
+        tvAadhaarFrontName = pageView.findViewById(R.id.tvAadhaarFrontName);
+        btnUploadAadhaarFront = pageView.findViewById(R.id.btnUploadAadhaarFront);
+        tvBtnUploadAadhaarFront = pageView.findViewById(R.id.tvBtnUploadAadhaarFront);
+        tvAadhaarBackName = pageView.findViewById(R.id.tvAadhaarBackName);
+        btnUploadAadhaarBack = pageView.findViewById(R.id.btnUploadAadhaarBack);
+        tvBtnUploadAadhaarBack = pageView.findViewById(R.id.tvBtnUploadAadhaarBack);
+
+        if (btnUploadResume != null) {
+            btnUploadResume.setOnClickListener(v -> openDocumentPicker(1));
+        }
+        if (btnUploadSchool != null) {
+            btnUploadSchool.setOnClickListener(v -> openDocumentPicker(2));
+        }
+        if (btnUploadAadhaarFront != null) {
+            btnUploadAadhaarFront.setOnClickListener(v -> openDocumentPicker(3));
+        }
+        if (btnUploadAadhaarBack != null) {
+            btnUploadAadhaarBack.setOnClickListener(v -> openDocumentPicker(4));
+        }
+
+        if (chipSchool10th != null) {
+            chipSchool10th.setOnClickListener(v -> selectSchoolLevel("10th Class / Matric"));
+        }
+        if (chipSchool12th != null) {
+            chipSchool12th.setOnClickListener(v -> selectSchoolLevel("12th Class / HSC"));
+        }
+        if (chipSchoolGrad != null) {
+            chipSchoolGrad.setOnClickListener(v -> selectSchoolLevel("Graduate / Degree"));
+        }
+
+        if (btnAddVocationalCert != null) {
+            btnAddVocationalCert.setOnClickListener(v -> {
+                if (layoutVocationalItem != null) {
+                    layoutVocationalItem.setVisibility(View.VISIBLE);
+                }
+                openDocumentPicker(5);
+            });
+        }
+        if (ivDeleteVocational != null) {
+            ivDeleteVocational.setOnClickListener(v -> {
+                if (layoutVocationalItem != null) {
+                    layoutVocationalItem.setVisibility(View.GONE);
+                }
+                Toast.makeText(Register.this, "Certificate removed", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        updateSchoolChipUi();
+    }
+
+    private void selectSchoolLevel(String level) {
+        selectedSchoolLevel = level;
+        updateSchoolChipUi();
+        if (tvSchoolFileName != null && tvSchoolSubtitle != null) {
+            if ("10th Class / Matric".equals(level)) {
+                tvSchoolFileName.setText("10th_standard_marksheet_certificate.pdf");
+                tvSchoolSubtitle.setText("10TH Board Marksheet / Passing Certificate");
+                schoolFileName = "10th_standard_marksheet_certificate.pdf";
+            } else if ("12th Class / HSC".equals(level)) {
+                tvSchoolFileName.setText("12th_standard_marksheet_certificate.pdf");
+                tvSchoolSubtitle.setText("12TH Board Marksheet / Passing Certificate");
+                schoolFileName = "12th_standard_marksheet_certificate.pdf";
+            } else {
+                tvSchoolFileName.setText("graduate_degree_certificate.pdf");
+                tvSchoolSubtitle.setText("Graduation Degree / Final Marksheet");
+                schoolFileName = "graduate_degree_certificate.pdf";
+            }
+        }
+        validateCurrentPage();
+    }
+
+    private void updateSchoolChipUi() {
+        boolean is10th = "10th Class / Matric".equals(selectedSchoolLevel);
+        boolean is12th = "12th Class / HSC".equals(selectedSchoolLevel);
+        boolean isGrad = "Graduate / Degree".equals(selectedSchoolLevel);
+
+        if (chipSchool10th != null && tvChipSchool10th != null) {
+            chipSchool10th.setBackgroundResource(
+                    is10th ? R.drawable.bg_chip_school_selected : R.drawable.bg_chip_school_unselected);
+            tvChipSchool10th.setTextColor(Color.parseColor(is10th ? "#2563EB" : "#475569"));
+            tvChipSchool10th.setTypeface(null, is10th ? Typeface.BOLD : Typeface.NORMAL);
+        }
+        if (chipSchool12th != null && tvChipSchool12th != null) {
+            chipSchool12th.setBackgroundResource(
+                    is12th ? R.drawable.bg_chip_school_selected : R.drawable.bg_chip_school_unselected);
+            tvChipSchool12th.setTextColor(Color.parseColor(is12th ? "#2563EB" : "#475569"));
+            tvChipSchool12th.setTypeface(null, is12th ? Typeface.BOLD : Typeface.NORMAL);
+        }
+        if (chipSchoolGrad != null && tvChipSchoolGrad != null) {
+            chipSchoolGrad.setBackgroundResource(
+                    isGrad ? R.drawable.bg_chip_school_selected : R.drawable.bg_chip_school_unselected);
+            tvChipSchoolGrad.setTextColor(Color.parseColor(isGrad ? "#2563EB" : "#475569"));
+            tvChipSchoolGrad.setTypeface(null, isGrad ? Typeface.BOLD : Typeface.NORMAL);
         }
     }
 
@@ -570,8 +810,7 @@ public class Register extends AppCompatActivity {
         ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.select_dialog_item,
-                cities
-        ) {
+                cities) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
@@ -643,8 +882,7 @@ public class Register extends AppCompatActivity {
         if (cityDialog.getWindow() != null) {
             cityDialog.getWindow().setLayout(
                     (int) (getResources().getDisplayMetrics().widthPixels * 0.9),
-                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
-            );
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -673,8 +911,7 @@ public class Register extends AppCompatActivity {
         ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.select_dialog_item,
-                cities
-        ) {
+                cities) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
@@ -735,8 +972,7 @@ public class Register extends AppCompatActivity {
         if (cityDialog.getWindow() != null) {
             cityDialog.getWindow().setLayout(
                     (int) (getResources().getDisplayMetrics().widthPixels * 0.9),
-                    android.view.WindowManager.LayoutParams.WRAP_CONTENT
-            );
+                    android.view.WindowManager.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -759,7 +995,8 @@ public class Register extends AppCompatActivity {
 
         actvCityDropdown.setOnItemClickListener((parent, view, position, id) -> {
             Object selectedItem = parent.getItemAtPosition(position);
-            if (selectedItem == null) return;
+            if (selectedItem == null)
+                return;
 
             String selectedCityName = selectedItem.toString();
             int which = cityNamesP3.indexOf(selectedCityName);
@@ -774,7 +1011,8 @@ public class Register extends AppCompatActivity {
     }
 
     private void refreshCityDropdownPage3() {
-        if (actvCityDropdown == null) return;
+        if (actvCityDropdown == null)
+            return;
 
         actvCityDropdown.setDropDownBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
@@ -782,8 +1020,7 @@ public class Register extends AppCompatActivity {
             ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    cityNamesP3
-            ) {
+                    cityNamesP3) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
@@ -902,7 +1139,8 @@ public class Register extends AppCompatActivity {
 
                         for (int i = 0; i < citiesArray.length(); i++) {
                             JSONObject cityObject = citiesArray.optJSONObject(i);
-                            if (cityObject == null) continue;
+                            if (cityObject == null)
+                                continue;
 
                             targetIds.add(cityObject.optString("id", ""));
                             targetNames.add(cityObject.optString("name", ""));
@@ -944,16 +1182,13 @@ public class Register extends AppCompatActivity {
                     Log.e(TAG, "City API error", error);
                     Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show();
                     toggleArrowDirection(false);
-                }
-        );
+                });
 
         request.setRetryPolicy(
                 new DefaultRetryPolicy(
                         8000,
                         DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
-        );
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         requestQueue.add(request);
     }
@@ -961,7 +1196,8 @@ public class Register extends AppCompatActivity {
     private void toggleArrowDirection(boolean loading) {
         runOnUiThread(() -> {
             View pageView = getCurrentPageView();
-            if (pageView == null) return;
+            if (pageView == null)
+                return;
 
             View ivCityArrowP1 = pageView.findViewById(R.id.ivCityDropdownArrow);
             View ivCityArrowP3 = pageView.findViewById(R.id.ivCityDropdownArrow);
@@ -1016,7 +1252,8 @@ public class Register extends AppCompatActivity {
                         if (localityArray != null && localityArray.length() > 0) {
                             for (int i = 0; i < localityArray.length(); i++) {
                                 JSONObject obj = localityArray.optJSONObject(i);
-                                if (obj == null) continue;
+                                if (obj == null)
+                                    continue;
 
                                 String id = obj.optString("id", "");
                                 String name = obj.optString("name", "");
@@ -1043,16 +1280,13 @@ public class Register extends AppCompatActivity {
                         errorMsg = "HTTP Error " + error.networkResponse.statusCode;
                     }
                     Log.e(TAG, "Locality API error: " + errorMsg, error);
-                }
-        );
+                });
 
         request.setRetryPolicy(
                 new DefaultRetryPolicy(
                         10000,
                         DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
-        );
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         Volley.newRequestQueue(getApplicationContext()).add(request);
     }
@@ -1078,8 +1312,7 @@ public class Register extends AppCompatActivity {
                 () -> {
                     updateAreaCount();
                     validateCurrentPage();
-                }
-        );
+                });
         rvAreas.setAdapter(areaAdapter);
 
         updateAreaCount();
@@ -1119,7 +1352,8 @@ public class Register extends AppCompatActivity {
                     if (TextUtils.isEmpty(selectedCityIdP3)) {
                         tvEmptyTitle.setText("Select a city to view hubs");
                         if (tvEmptySubtitle != null) {
-                            tvEmptySubtitle.setText("Choose your primary city above to display all available operating locations.");
+                            tvEmptySubtitle.setText(
+                                    "Choose your primary city above to display all available operating locations.");
                         }
                     } else {
                         tvEmptyTitle.setText("No locations available");
@@ -1196,7 +1430,8 @@ public class Register extends AppCompatActivity {
                         if (dataArray != null) {
                             for (int i = 0; i < dataArray.length(); i++) {
                                 JSONObject item = dataArray.optJSONObject(i);
-                                if (item == null) continue;
+                                if (item == null)
+                                    continue;
 
                                 String areaId = item.optString("id", "");
                                 String areaName = item.optString("name", "");
@@ -1208,9 +1443,7 @@ public class Register extends AppCompatActivity {
                             }
                         }
 
-                        Collections.sort(allAreas, (a, b) ->
-                                a.name.trim().compareToIgnoreCase(b.name.trim())
-                        );
+                        Collections.sort(allAreas, (a, b) -> a.name.trim().compareToIgnoreCase(b.name.trim()));
 
                         areasLoaded = true;
                         areasLoadedCityId = selectedCityIdP3;
@@ -1223,7 +1456,8 @@ public class Register extends AppCompatActivity {
                         validateCurrentPage();
 
                         if (allAreas.isEmpty()) {
-                            Toast.makeText(Register.this, "No areas available for this city", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Register.this, "No areas available for this city", Toast.LENGTH_SHORT)
+                                    .show();
                         }
 
                     } catch (Exception e) {
@@ -1256,16 +1490,13 @@ public class Register extends AppCompatActivity {
                     Toast.makeText(Register.this, "Area loading failed: " + errorMessage, Toast.LENGTH_LONG).show();
                     updateAreaCount();
                     validateCurrentPage();
-                }
-        );
+                });
 
         request.setRetryPolicy(
                 new DefaultRetryPolicy(
                         15000,
                         1,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
-        );
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         Volley.newRequestQueue(getApplicationContext()).add(request);
     }
@@ -1291,14 +1522,17 @@ public class Register extends AppCompatActivity {
             private boolean isFormatting;
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (isFormatting) return;
+                if (isFormatting)
+                    return;
 
                 isFormatting = true;
                 String input = s.toString().replaceAll("\\s+", "");
@@ -1334,20 +1568,18 @@ public class Register extends AppCompatActivity {
         rgGender.setOnCheckedChangeListener((group, checkedId) -> {
             for (int i = 0; i < group.getChildCount(); i++) {
                 View child = group.getChildAt(i);
-                if (!(child instanceof RadioButton)) continue;
+                if (!(child instanceof RadioButton))
+                    continue;
 
                 RadioButton rb = (RadioButton) child;
                 boolean selected = rb.getId() == checkedId;
 
                 rb.setBackgroundResource(
-                        selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected
-                );
+                        selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected);
 
                 rb.setTextColor(
                         getResources().getColor(
-                                selected ? R.color.white : R.color.Text_Blue
-                        )
-                );
+                                selected ? R.color.white : R.color.Text_Blue));
             }
             validateCurrentPage();
         });
@@ -1372,7 +1604,8 @@ public class Register extends AppCompatActivity {
                         dob.set(year, month, day);
 
                         selectedDob = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dob.getTime());
-                        regDob.setText(new SimpleDateFormat("MM / dd / yyyy", Locale.getDefault()).format(dob.getTime()));
+                        regDob.setText(
+                                new SimpleDateFormat("MM / dd / yyyy", Locale.getDefault()).format(dob.getTime()));
 
                         Calendar today = Calendar.getInstance();
                         int years = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
@@ -1399,8 +1632,7 @@ public class Register extends AppCompatActivity {
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-            );
+                    calendar.get(Calendar.DAY_OF_MONTH));
 
             dialog.getDatePicker().setMaxDate(new Date().getTime());
             dialog.show();
@@ -1473,8 +1705,7 @@ public class Register extends AppCompatActivity {
                 rb.setChecked(isCurrent);
             }
             row.setBackgroundResource(
-                    isCurrent ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row
-            );
+                    isCurrent ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row);
 
             row.setOnClickListener(view -> selectCategory(categoryName, true));
 
@@ -1496,8 +1727,7 @@ public class Register extends AppCompatActivity {
                     rb.setChecked(isMatch);
                 }
                 row.setBackgroundResource(
-                        isMatch ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row
-                );
+                        isMatch ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row);
             }
         }
 
@@ -1530,14 +1760,14 @@ public class Register extends AppCompatActivity {
             View row = rgCategory.getChildAt(i);
             RadioButton rb = row.findViewById(R.id.rbOption);
             TextView title = row.findViewById(R.id.tvCatTitle);
-            boolean isMatch = title != null && !TextUtils.isEmpty(selectedCategory) && selectedCategory.equals(title.getText().toString());
+            boolean isMatch = title != null && !TextUtils.isEmpty(selectedCategory)
+                    && selectedCategory.equals(title.getText().toString());
 
             if (rb != null) {
                 rb.setChecked(isMatch);
             }
             row.setBackgroundResource(
-                    isMatch ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row
-            );
+                    isMatch ? R.drawable.bg_category_row_selected : R.drawable.bg_category_row);
         }
     }
 
@@ -1572,7 +1802,8 @@ public class Register extends AppCompatActivity {
     }
 
     private String getServiceHeaderForCategory(String category) {
-        if (category == null) return "SERVICES & SESSIONS";
+        if (category == null)
+            return "SERVICES & SESSIONS";
         String upper = category.trim().toUpperCase(Locale.ROOT);
         if (upper.contains("TRAINER") || upper.contains("YOGA") || upper.contains("DANCE") || upper.contains("ZUMBA")) {
             return upper + " SESSIONS";
@@ -1596,8 +1827,7 @@ public class Register extends AppCompatActivity {
                     "Aromatherapy Massage",
                     "Balinese Body Therapy",
                     "Hot Stone Therapy",
-                    "Foot Reflexology"
-            );
+                    "Foot Reflexology");
         }
 
         Set<String> currentSelected = getSelectedServicesForCategory(categoryName);
@@ -1696,14 +1926,11 @@ public class Register extends AppCompatActivity {
             boolean selected = rb.getText().toString().equals(selectedExperience);
 
             rb.setBackgroundResource(
-                    selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected
-            );
+                    selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected);
 
             rb.setTextColor(
                     getResources().getColor(
-                            selected ? R.color.white : R.color.Text_Blue
-                    )
-            );
+                            selected ? R.color.white : R.color.Text_Blue));
 
             rb.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
         }
@@ -1716,7 +1943,8 @@ public class Register extends AppCompatActivity {
     private void setupTextWatchers(int position) {
         TextWatcher watcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -1724,20 +1952,27 @@ public class Register extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         };
 
         switch (position) {
             case 0:
-                if (regName != null) regName.addTextChangedListener(watcher);
-                if (regEmail != null) regEmail.addTextChangedListener(watcher);
-                if (regAddress != null) regAddress.addTextChangedListener(watcher);
-                if (regCity != null) regCity.addTextChangedListener(watcher);
-                if (regMobile != null) regMobile.addTextChangedListener(watcher);
+                if (regName != null)
+                    regName.addTextChangedListener(watcher);
+                if (regEmail != null)
+                    regEmail.addTextChangedListener(watcher);
+                if (regAddress != null)
+                    regAddress.addTextChangedListener(watcher);
+                if (regCity != null)
+                    regCity.addTextChangedListener(watcher);
+                if (regMobile != null)
+                    regMobile.addTextChangedListener(watcher);
                 break;
 
             case 1:
-                if (etExpDesc != null) etExpDesc.addTextChangedListener(watcher);
+                if (etExpDesc != null)
+                    etExpDesc.addTextChangedListener(watcher);
                 break;
 
             case 2:
@@ -1745,7 +1980,12 @@ public class Register extends AppCompatActivity {
                 break;
 
             case 3:
-                if (etReferral != null) etReferral.addTextChangedListener(watcher);
+                // Documents page
+                break;
+
+            case 4:
+                if (etReferral != null)
+                    etReferral.addTextChangedListener(watcher);
                 break;
         }
     }
@@ -1768,6 +2008,9 @@ public class Register extends AppCompatActivity {
                 valid = validatePreferences();
                 break;
             case 3:
+                valid = validateDocuments();
+                break;
+            case 4:
                 valid = validateReferral();
                 break;
         }
@@ -1777,31 +2020,42 @@ public class Register extends AppCompatActivity {
     }
 
     private boolean validatePersonal() {
-        if (regName == null || regAadhaar == null) return false;
-        if (TextUtils.isEmpty(regName.getText())) return false;
+        if (regName == null || regAadhaar == null)
+            return false;
+        if (TextUtils.isEmpty(regName.getText()))
+            return false;
 
         String aadhaar = regAadhaar.getText().toString().trim();
-        if (aadhaar.length() != 14) return false;
+        if (aadhaar.length() != 14)
+            return false;
 
-        if (ccp == null || !ccp.isValidFullNumber()) return false;
+        if (ccp == null || !ccp.isValidFullNumber())
+            return false;
 
         String email = regEmail != null && regEmail.getText() != null
                 ? regEmail.getText().toString().trim()
                 : "";
 
-        if (!isValidEmail(email)) return false;
+        if (!isValidEmail(email))
+            return false;
 
-        if (rgGender == null || rgGender.getCheckedRadioButtonId() == -1) return false;
-        if (selectedDob == null) return false;
+        if (rgGender == null || rgGender.getCheckedRadioButtonId() == -1)
+            return false;
+        if (selectedDob == null)
+            return false;
 
         if (tvAge != null && tvAge.getText().toString().equals(getString(R.string.age_warning))) {
             return false;
         }
 
-        if (regCity == null || TextUtils.isEmpty(regCity.getText())) return false;
-        if (TextUtils.isEmpty(selectedCityId)) return false;
-        if (regAddress == null || TextUtils.isEmpty(regAddress.getText())) return false;
-        if (encodedPhoto == null) return false;
+        if (regCity == null || TextUtils.isEmpty(regCity.getText()))
+            return false;
+        if (TextUtils.isEmpty(selectedCityId))
+            return false;
+        if (regAddress == null || TextUtils.isEmpty(regAddress.getText()))
+            return false;
+        if (encodedPhoto == null)
+            return false;
 
         return true;
     }
@@ -1823,8 +2077,29 @@ public class Register extends AppCompatActivity {
         return true;
     }
 
+    private boolean validateDocuments() {
+        return !TextUtils.isEmpty(resumeFileName)
+                && !TextUtils.isEmpty(schoolFileName)
+                && !TextUtils.isEmpty(aadhaarFrontFileName)
+                && !TextUtils.isEmpty(aadhaarBackFileName);
+    }
+
+    private String getDocumentValidationErrorMessage() {
+        if (TextUtils.isEmpty(resumeFileName)) {
+            return "Please upload your resume";
+        }
+        if (TextUtils.isEmpty(schoolFileName)) {
+            return "Please upload School Education Certificate";
+        }
+        if (TextUtils.isEmpty(aadhaarFrontFileName) || TextUtils.isEmpty(aadhaarBackFileName)) {
+            return "Please upload Aadhaar Front and Back";
+        }
+        return "Please upload all required documents";
+    }
+
     private boolean isValidEmail(String email) {
-        if (TextUtils.isEmpty(email)) return false;
+        if (TextUtils.isEmpty(email))
+            return false;
         Pattern pattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
         return pattern.matcher(email).matches();
     }
@@ -1834,7 +2109,8 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private void updateNextButtonState(boolean valid) {
-        if (btnNext == null) return;
+        if (btnNext == null)
+            return;
 
         if (valid) {
             btnNext.setEnabled(true);
@@ -1883,7 +2159,10 @@ public class Register extends AppCompatActivity {
                     message = "Please wait for areas to load";
                 } else if (currentPage == 2) {
                     int req = getRequiredAreasCount();
-                    message = "Please select at least " + req + " location hubs (Currently selected: " + selectedAreaIds.size() + ")";
+                    message = "Please select at least " + req + " location hubs (Currently selected: "
+                            + selectedAreaIds.size() + ")";
+                } else if (currentPage == 3) {
+                    message = getDocumentValidationErrorMessage();
                 } else {
                     message = "Please fill all required fields";
                 }
@@ -1931,12 +2210,11 @@ public class Register extends AppCompatActivity {
 
     private void submitRegistration() {
         syncSelectedServices();
-        if (!validatePersonal() || !validateProfessional() || !validatePreferences()) {
+        if (!validatePersonal() || !validateProfessional() || !validatePreferences() || !validateDocuments()) {
             Toast.makeText(
                     this,
                     "Please complete all required registration steps",
-                    Toast.LENGTH_SHORT
-            ).show();
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1950,6 +2228,12 @@ public class Register extends AppCompatActivity {
         final String expDesc = etExpDesc != null ? etExpDesc.getText().toString().trim() : "";
         final String cityId = !TextUtils.isEmpty(selectedCityIdP3) ? selectedCityIdP3 : selectedCityId;
         final String areaIds = TextUtils.join(",", selectedAreaIds);
+
+        final String schoolLvl = selectedSchoolLevel != null ? selectedSchoolLevel : "";
+        final String resumeDoc = resumeFileName != null ? resumeFileName : "";
+        final String schoolDoc = schoolFileName != null ? schoolFileName : "";
+        final String aadhaarFrontDoc = aadhaarFrontFileName != null ? aadhaarFrontFileName : "";
+        final String aadhaarBackDoc = aadhaarBackFileName != null ? aadhaarBackFileName : "";
 
         String gender = "";
         RadioButton selectedGender = findViewById(rgGender.getCheckedRadioButtonId());
@@ -1996,8 +2280,7 @@ public class Register extends AppCompatActivity {
                         Log.e(TAG, "Registration request failed", error);
                         Toast.makeText(this, "Unable to submit registration", Toast.LENGTH_SHORT).show();
                     }
-                }
-        ) {
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -2021,6 +2304,11 @@ public class Register extends AppCompatActivity {
                 }
                 params.put("experience_desc", fullExpDesc);
                 params.put("area_ids", areaIds);
+                params.put("resume_file", resumeDoc);
+                params.put("school_level", schoolLvl);
+                params.put("school_certificate", schoolDoc);
+                params.put("aadhaar_front", aadhaarFrontDoc);
+                params.put("aadhaar_back", aadhaarBackDoc);
                 return params;
             }
         };
@@ -2029,9 +2317,7 @@ public class Register extends AppCompatActivity {
                 new DefaultRetryPolicy(
                         30000,
                         DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
-        );
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
@@ -2047,8 +2333,7 @@ public class Register extends AppCompatActivity {
                 Request.Method.POST,
                 Constant.email,
                 response -> Log.d(TAG, "Email response: " + response),
-                error -> Log.e(TAG, "Email request failed", error)
-        ) {
+                error -> Log.e(TAG, "Email request failed", error)) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();

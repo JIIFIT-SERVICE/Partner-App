@@ -17,6 +17,7 @@ public class RegisterPagerAdapter
             R.layout.register_page_1,
             R.layout.register_page_experienced,
             R.layout.register_page_job_city_select,
+            R.layout.register_page_documents,
             R.layout.register_page_4
     };
 

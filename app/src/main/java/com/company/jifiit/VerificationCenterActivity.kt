@@ -29,7 +29,7 @@ class VerificationCenterActivity : AppCompatActivity() {
     private lateinit var tvAssignedTimeSlot: TextView
     private lateinit var btnHelpSupport: MaterialButton
 
-    private val deskPhoneNumber = "+911140509900"
+    private val deskPhoneNumber = "+919717550414"
     private val officeAddressText = "Plot 14, Ring Road, Near Moolchand Metro Station, Lajpat Nagar 3, New Delhi - 110024"
 
     override fun onCreate(savedInstanceState: Bundle?) {
