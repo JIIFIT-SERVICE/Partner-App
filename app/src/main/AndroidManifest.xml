@@ -79,6 +79,9 @@
         tools:ignore="ForegroundServicePermission"
         tools:targetApi="31">
         <activity
+            android:name=".ApplicationSubmittedActivity"
+            android:exported="false" />
+        <activity
             android:name=".Influencer.InfluencerRegistartion"
             android:exported="false" />
         <activity
