@@ -66,7 +66,7 @@ class VerificationCenterActivity : AppCompatActivity() {
 
     private fun loadPartnerData() {
         val sp = getSharedPreferences("credentials", MODE_PRIVATE)
-        val id = sp.getString("Id", "")
+        val id = intent.getStringExtra("EXTRA_EXPERT_ID") ?: sp.getString("Id", "")
         val city = sp.getString("City", "")
 
         if (!id.isNullOrBlank()) {

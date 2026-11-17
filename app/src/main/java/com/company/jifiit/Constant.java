@@ -2,7 +2,18 @@ package com.company.jifiit;
 
 public class Constant {
 
-    public static final String RegisterUrl = "https://jiifit.com/Jifiit/Therapist/therapistRegister.php";
+    public static final String RegisterUrl = "https://jiifit.com/Jifiit/Therapist/expert_register.php";
+    // Multi-step Registration Endpoints
+    public static final String RegisterStep1Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step1.php";
+    public static final String RegisterStep2Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step2.php";
+    public static final String RegisterStep3Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step3.php";
+    public static final String RegisterStep4Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step4.php";
+    public static final String RegisterStep5Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step5.php";
+    public static final String TrackRegistrationStatusUrl = "https://jiifit.com/Jifiit/Therapist/track_registration_status.php";
+    public static final String getTherapistCategories = "https://jiifit.com/Jifiit/Therapist/get_therapist_categories.php";
+    public static final String getCategoryServices = "https://jiifit.com/Jifiit/Therapist/get_category_services.php";
+    public static final String getHomeMassage = "https://jiifit.com/Jifiit/Therapist/get_home_massage.php";
+    public static final String getAyurvedaServices = "https://jiifit.com/Jifiit/Therapist/get_ayurved_massages.php";
     public static final String InfluencerRegisterUrl = "https://jiifit.com/Jifiit/Influencer/registration.php";
     public static final String Login = "https://jiifit.com/Jifiit/Therapist/TherapistLogin.php";
     public static final String Loggedout = "https://jiifit.com/Jifiit/Therapist/loggedOut.php";

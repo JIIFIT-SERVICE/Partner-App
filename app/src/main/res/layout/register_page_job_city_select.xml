@@ -157,9 +157,19 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tvMinAreasHint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="3dp"
+                android:text="Minimum select 50 areas (Required)"
+                android:textColor="#DC2626"
+                android:textSize="11.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
                 android:layout_marginBottom="8dp"
                 android:text="Bookings will be routed within your selected hubs. Select as many as you wish to expand your order volume!"
                 android:textColor="#64748B"

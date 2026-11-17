@@ -26,19 +26,21 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/tvWelcomeName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Welcome to Jiifit, Som !"
+            android:text="Welcome to Jiifit!"
             android:textColor="@color/sub_text"
             android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvAppIdAndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Application ID: JIIFIT-156728 · Submitted on 23 Oct 2026, 05:20 pm"
+            android:text="Application ID: JIIFIT-Pending"
             android:textColor="@color/sub_text_sec"
             android:textSize="14sp" />
 
@@ -49,6 +51,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/btnEditDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/sub_btn_outline"
@@ -61,6 +64,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/btnDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -248,68 +252,15 @@
             android:textColor="@color/sub_text_sec"
             android:textSize="14sp" />
 
-        <!-- 10th certificate -->
+        <!-- resume -->
         <LinearLayout
+            android:id="@+id/cardDocResume"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:background="@drawable/sub_card_green"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/sub_round"
-                android:backgroundTint="#CCFBF1"
-                android:gravity="center"
-                android:text="📄"
-                android:textSize="20sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="10TH Standard School Certificate"
-                    android:textColor="@color/sub_text"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="File: 10th_standard_marksheet_certificate.pdf"
-                    android:textColor="@color/sub_text_sec"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/sub_chip"
-                    android:paddingStart="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="6dp"
-                    android:text="Education Verified"
-                    android:textColor="@color/sub_green"
-                    android:textSize="13sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- resume -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
             android:orientation="horizontal"
             android:padding="16dp">
 
@@ -338,14 +289,16 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvDocResumeFile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="File: candidate_resume_curriculum_vitae.pdf"
+                    android:text="File: resume.pdf"
                     android:textColor="@color/sub_text_sec"
                     android:textSize="13sp" />
 
                 <TextView
+                    android:id="@+id/tvDocResumeStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -354,18 +307,265 @@
                     android:paddingTop="6dp"
                     android:paddingEnd="12dp"
                     android:paddingBottom="6dp"
-                    android:text="Uploaded"
+                    android:text="View Document"
                     android:textColor="@color/sub_green"
                     android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- diploma -->
+        <!-- aadhaar front -->
         <LinearLayout
+            android:id="@+id/cardDocAadhaarFront"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="#DBEAFE"
+                android:gravity="center"
+                android:text="🪪"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aadhaar Card (Front)"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarFrontFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: aadhaar_front.jpg"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarFrontStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- aadhaar back -->
+        <LinearLayout
+            android:id="@+id/cardDocAadhaarBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="#DBEAFE"
+                android:gravity="center"
+                android:text="🪪"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aadhaar Card (Back)"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarBackFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: aadhaar_back.jpg"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarBackStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 10th certificate -->
+        <LinearLayout
+            android:id="@+id/cardDoc10th"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_green"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="#CCFBF1"
+                android:gravity="center"
+                android:text="📄"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10TH Standard School Certificate"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDoc10thFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: 10th_certificate.pdf"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDoc10thStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 12th certificate -->
+        <LinearLayout
+            android:id="@+id/cardDoc12th"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_amber_bg"
+                android:gravity="center"
+                android:text="📜"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12TH / Higher Secondary Certificate"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDoc12thFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: hs_certificate.pdf"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDoc12thStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- graduation / diploma -->
+        <LinearLayout
+            android:id="@+id/cardDocGrad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
             android:orientation="horizontal"
             android:padding="16dp">
 
@@ -388,20 +588,22 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Diploma in Swedish &amp; Deep Tissue Bodywork"
+                    android:text="Graduation / Diploma Certificate"
                     android:textColor="@color/sub_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvDocGradFile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Indian Institute of Spa &amp; Wellness Sciences (2023)"
+                    android:text="File: graduation_certificate.pdf"
                     android:textColor="@color/sub_text_sec"
                     android:textSize="13sp" />
 
                 <TextView
+                    android:id="@+id/tvDocGradStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -410,7 +612,7 @@
                     android:paddingTop="6dp"
                     android:paddingEnd="12dp"
                     android:paddingBottom="6dp"
-                    android:text="Specialization Accredited"
+                    android:text="View Document"
                     android:textColor="@color/sub_purple"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -760,6 +962,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/btnContactSupport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"

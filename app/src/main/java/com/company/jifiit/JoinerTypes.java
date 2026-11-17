@@ -358,6 +358,10 @@ public class JoinerTypes extends AppCompatActivity {
     // =========================================================
 
     private void parseFaqResponse(String response) {
+        if (response == null || !response.trim().startsWith("{")) {
+            android.util.Log.w("JoinerTypes", "Non-JSON response for FAQ: " + response);
+            return;
+        }
 
         try {
 
