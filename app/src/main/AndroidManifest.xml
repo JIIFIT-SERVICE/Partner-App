@@ -82,6 +82,9 @@
             android:name=".ApplicationSubmittedActivity"
             android:exported="false" />
         <activity
+            android:name=".ExpertEarningSlabsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Influencer.InfluencerRegistartion"
             android:exported="false" />
         <activity
