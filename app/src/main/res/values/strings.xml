@@ -283,6 +283,62 @@
     <string name="title_activity_add_booking">AddBookingActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+
+    <string name="whatsapp_msg_template">Hello %1$s, Good %2$s!
+
+We\'re excited to let you know that *your massage booking with JIIFIT has been successfully confirmed!*
+*Jiifit – India\'s 1st specialised massage company for client’s place* 🧖
+
+📌*Booking Summary:*
+• Booking ID: %3$s
+• Booking Date: %4$s
+• Booking Time: %5$s
+
+*Selected Massage:*
+%6$s
+
+• Service Charges: ₹%7$s
+• GST (5%%): ₹%8$s
+• Hotel Commission: ₹%9$s
+• *Total Amount Payable: ₹%10$s*
+
+AFTER MASSAGE YOU CAN PAY BY UPI / CASH
+
+*Therapist Details:*
+• Name: %11$s
+
+*OTP: %12$s*
+Share this OTP with the Therapist before start your session
+
+*Want to know more?*
+
+• view Therapist full profile
+• cancel, and reschedule
+• get Booking history
+• get contact number of the Therapist
+*Get all the details one step away visit jiifit.com*
+
+*Thank you for choosing Jiifit!*
+We look forward to providing you a relaxing and rejuvenating experience right in the comfort of your place.
+
+*Warm regards*,
+*Team Jiifit*
+Empower your wellness journey with Jiifit</string>
+
+
+    <string name="earning_example_text">
+    <![CDATA[Example: If you get a <b>₹1,000 booking</b>, Jiifit fee is ₹215 → <font color="#047857"><b>You receive ₹785</b></font> directly into your wallet!]]>
+</string>
+
+    <!-- Influencer & Partner Program -->
+    <string name="partner_program_title">Influencer &amp; Partner Program</string>
+    <string name="partner_program_categories">YOUTUBERS  ·  INSTAGRAMMERS  ·  GYMS  ·  BRANDS  ·  NORMAL PEOPLE</string>
+    <string name="partner_program_description">Join our Influencer &amp; Partner Program and turn your network into rewards! Share our doorstep wellness services with your friends, family, followers, and community. Every successful referral helps someone discover our services while giving you an opportunity to earn real cash.</string>
+    <string name="partner_badge_popular">Most Popular · Open to All</string>
+    <string name="partner_badge_guaranteed">Guaranteed ₹50 / Booking</string>
+    <string name="partner_btn_join">Join as an influencer or partner</string>
+    <string name="partner_btn_dashboard">Open Active Partner Dashboard</string>
 </resources>
 
 

@@ -15,9 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -42,6 +45,13 @@ public class JoinerTypes extends AppCompatActivity {
     private MaterialButton btnWellnessSelect;
     private MaterialButton btnCentreSelect;
     private MaterialButton btnExpertApply,btnWhatsApp,btnCall;
+    private MaterialButton btnJoinPartner;
+    private View cardPartnerProgram;
+    private TextView tvPartnerDescription;
+    private View layoutPartnerReadMore;
+    private TextView tvPartnerReadMore;
+    private ImageView ivPartnerReadMoreIcon;
+    private boolean isPartnerDescriptionExpanded = false;
 
 
     // =========================================================
@@ -86,6 +96,23 @@ public class JoinerTypes extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+// EDGE TO EDGE
+// =========================
+
+        EdgeToEdge.enable(this);
+
+// =========================
+// SYSTEM BAR
+// =========================
+
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
 
         setContentView(R.layout.activity_joiner_types);
 
@@ -111,6 +138,13 @@ public class JoinerTypes extends AppCompatActivity {
         btnWellnessSelect = findViewById(R.id.tvWellnessSelect);
         btnCentreSelect = findViewById(R.id.tvCentreSelect);
         btnExpertApply = findViewById(R.id.btnExpertApply);
+
+        btnJoinPartner = findViewById(R.id.btnJoinPartner);
+        cardPartnerProgram = findViewById(R.id.cardPartnerProgram);
+        tvPartnerDescription = findViewById(R.id.tvPartnerDescription);
+        layoutPartnerReadMore = findViewById(R.id.layoutPartnerReadMore);
+        tvPartnerReadMore = findViewById(R.id.tvPartnerReadMore);
+        ivPartnerReadMoreIcon = findViewById(R.id.ivPartnerReadMoreIcon);
 
         btnCall = findViewById(R.id.btnCall);
         btnWhatsApp = findViewById(R.id.btnWhatsApp);
@@ -177,12 +211,73 @@ public class JoinerTypes extends AppCompatActivity {
         }
 
 
+        // Influencer & Partner Program
+        if (btnJoinPartner != null) {
+            btnJoinPartner.setOnClickListener(v -> {
+                startActivity(new Intent(JoinerTypes.this, com.company.jifiit.Influencer.InfluencerRegistartion.class));
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+            });
+        }
+
+        if (cardPartnerProgram != null) {
+            cardPartnerProgram.setOnClickListener(v -> {
+                startActivity(new Intent(JoinerTypes.this, com.company.jifiit.Influencer.InfluencerRegistartion.class));
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+            });
+        }
+
+        View.OnClickListener togglePartnerReadMore = v -> {
+            isPartnerDescriptionExpanded = !isPartnerDescriptionExpanded;
+            if (tvPartnerDescription != null) {
+                if (tvPartnerDescription.getParent() instanceof android.view.ViewGroup) {
+                    android.transition.TransitionManager.beginDelayedTransition((android.view.ViewGroup) tvPartnerDescription.getParent());
+                }
+                if (isPartnerDescriptionExpanded) {
+                    tvPartnerDescription.setMaxLines(Integer.MAX_VALUE);
+                    tvPartnerDescription.setEllipsize(null);
+                    if (tvPartnerReadMore != null) {
+                        tvPartnerReadMore.setText("Read less");
+                    }
+                    if (ivPartnerReadMoreIcon != null) {
+                        ivPartnerReadMoreIcon.animate().rotation(180f).setDuration(200).start();
+                    }
+                } else {
+                    tvPartnerDescription.setMaxLines(1);
+                    tvPartnerDescription.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    if (tvPartnerReadMore != null) {
+                        tvPartnerReadMore.setText("Read more");
+                    }
+                    if (ivPartnerReadMoreIcon != null) {
+                        ivPartnerReadMoreIcon.animate().rotation(0f).setDuration(200).start();
+                    }
+                }
+            }
+        };
+
+        if (layoutPartnerReadMore != null) {
+            layoutPartnerReadMore.setOnClickListener(togglePartnerReadMore);
+        }
+        if (tvPartnerDescription != null) {
+            tvPartnerDescription.setOnClickListener(togglePartnerReadMore);
+        }
+
+
         // Expert
         if (btnExpertApply != null) {
 
             btnExpertApply.setOnClickListener(v -> {
 
-                // Open Expert application here
+                startActivity(new Intent(JoinerTypes.this, ExpertEarningActivity.class));
+                overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
 
             });
         }
@@ -263,6 +358,10 @@ public class JoinerTypes extends AppCompatActivity {
     // =========================================================
 
     private void parseFaqResponse(String response) {
+        if (response == null || !response.trim().startsWith("{")) {
+            android.util.Log.w("JoinerTypes", "Non-JSON response for FAQ: " + response);
+            return;
+        }
 
         try {
 

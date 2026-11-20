@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Rounded white background with stroke -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18,3H6C4.34,3 3,4.34 3,6V18C3,19.66 4.34,21 6,21H18C19.66,21 21,19.66 21,18V6C21,4.34 19.66,3 18,3Z" />
+
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M18,4.5C18.83,4.5 19.5,5.17 19.5,6V18C19.5,18.83 18.83,19.5 18,19.5H6C5.17,19.5 4.5,18.83 4.5,18V6C4.5,5.17 5.17,4.5 6,4.5H18M18,3H6C4.34,3 3,4.34 3,6V18C3,19.66 4.34,21 6,21H18C19.66,21 21,19.66 21,18V6C21,4.34 19.66,3 18,3Z" />
+</vector>

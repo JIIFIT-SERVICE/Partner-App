@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,9 +41,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.company.jifiit.Hotel.HotelMainActivity;
+import com.company.jifiit.Influencer.InfluencerMainActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.hbb20.CountryCodePicker;
 
+import android.net.Uri;
 import android.os.Build;
 public class LoginActivity extends AppCompatActivity {
     private EditText phoneInput;
@@ -98,8 +101,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-        verifyuserexistance();
         viewPager = findViewById(R.id.viewPager);
         adapter = new ImageSliderAdapter(images);
         viewPager.setAdapter(adapter);
@@ -139,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
         sendOtpBtn = findViewById(R.id.send_Otp_btn);
         RegisterButton = findViewById(R.id.registerButton);
         progressBar = findViewById(R.id.login_progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         countryCodePicker.registerCarrierNumberEditText(phoneInput);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -210,6 +211,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         progressBar.setVisibility(View.GONE);
+        verifyuserexistance();
 
     }
 
@@ -369,7 +371,7 @@ public class LoginActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         // Create a request to fetch user data
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constant.fetchAccount + phone, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constant.fetchAccount + Uri.encode(phone), null,
                 response -> {
                     try {
                         // Log the response for debugging
@@ -382,28 +384,61 @@ public class LoginActivity extends AppCompatActivity {
                         if (status.equals("success")) {
                             // Extract user data
                             JSONObject data = response.getJSONObject("data");
-                            String name = data.getString("name");
-                            BigInteger Id = BigInteger.valueOf(data.getInt("id"));
-                            String VerificationStatus = data.getString("verification");
-                            String Age = data.getString("date_of_birth");
-                            String Mobile = data.getString("phone");
+                            String userType = data.optString("user_type", data.optString("userType", "expert"));
 
-                            // Save the t_Name to SharedPreferences
-                            saveUserNameToSharedPreferences(name, Id,VerificationStatus , Age , Mobile);
+                            String name = "User";
+                            if (userType.equalsIgnoreCase("hotel")) {
+                                name = data.optString("hotel_name", "Hotel");
+                            } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+                                if (data.has("name")) {
+                                    name = data.getString("name");
+                                } else if (data.has("full_name")) {
+                                    name = data.getString("full_name");
+                                } else {
+                                    name = "Partner";
+                                }
+                            } else {
+                                name = data.optString("name", "User");
+                            }
 
-                            // Start MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            loggedIn(Id,token);
-                            startActivity(intent);
-                            finish(); // Optional: Close the LoginActivity to prevent going back
+                            BigInteger Id = BigInteger.ZERO;
+                            if (data.has("id")) {
+                                Id = new BigInteger(String.valueOf(data.get("id")));
+                            } else if (data.has("user_id")) {
+                                Id = new BigInteger(String.valueOf(data.get("user_id")));
+                            }
+
+                            String VerificationStatus = data.optString("verification", "approved");
+                            String Age = data.optString("date_of_birth", "0000-00-00");
+                            String Mobile = data.optString("phone", phone);
+
+                            // Save user credentials to SharedPreferences
+                            saveUserNameToSharedPreferences(name, Id, VerificationStatus, Age, Mobile, userType);
+
+                            loggedIn(Id, token != null ? token : "");
+
+                            Intent intent = null;
+                            if ("expert".equalsIgnoreCase(userType)) {
+                                checkExpertRegistrationStatusAndNavigate(Id != null ? Id.toString() : "", Mobile);
+                                return;
+                            } else if ("hotel".equalsIgnoreCase(userType)) {
+                                intent = new Intent(LoginActivity.this, HotelMainActivity.class);
+                            } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
+                                intent = new Intent(LoginActivity.this, InfluencerMainActivity.class);
+                            }
+
+                            if (intent != null) {
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                finish();
+                            }
                             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                         } else {
-                            String message = response.getString("message");
+                            String message = response.optString("message", "Login failed");
                             Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
-
+                        Log.e("JSONError", "Error parsing response", e);
                         Toast.makeText(LoginActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
                     }
                 },
@@ -417,14 +452,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void saveUserNameToSharedPreferences(String name, BigInteger Id, String Verification, String age, String Mobile) {
+    private void saveUserNameToSharedPreferences(String name, BigInteger Id, String Verification, String age, String Mobile, String userType) {
         SharedPreferences sp = getSharedPreferences("credentials", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("Name", name);
-        editor.putString("Id", Id.toString()); // Convert BigInteger to String
-        editor.putString("com/company/jifiit/Verification", Verification);
+        editor.putString("Id", Id != null ? Id.toString() : "");
+        editor.putString("Verification", Verification);
         editor.putString("Age", age);
-        editor.putString("mobile",Mobile);
+        editor.putString("mobile", Mobile);
+        editor.putString("userType", userType);
         editor.apply();
     }
 
@@ -491,7 +527,7 @@ public class LoginActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("id", String.valueOf(id));
-                params.put("token",token);
+                params.put("token", token != null ? token : "");
                 return params;
             }
         };
@@ -508,6 +544,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void verifyuserexistance() {
+        if (getIntent().getBooleanExtra("FROM_APP_SUBMITTED", false)) {
+            return;
+        }
+
+        String intentExpertId = getIntent().getStringExtra("EXTRA_EXPERT_ID");
+        if (intentExpertId != null && !intentExpertId.trim().isEmpty()) {
+            checkExpertRegistrationStatusAndNavigate(intentExpertId.trim(), "");
+            return;
+        }
 
         SharedPreferences sp =
                 getSharedPreferences("credentials", MODE_PRIVATE);
@@ -517,19 +562,152 @@ public class LoginActivity extends AppCompatActivity {
 
             String userType = sp.getString("userType", "");
 
-            if (userType.equals("expert")) {
-
-                startActivity(
-                        new Intent(this, MainActivity.class)
-                );
-
-            } else if (userType.equals("hotel")) {
-
-                startActivity(new Intent(this, HotelMainActivity.class));
+            if ("expert".equalsIgnoreCase(userType)) {
+                String expertId = sp.getString("Id", "");
+                String phone = sp.getString("mobile", "");
+                checkExpertRegistrationStatusAndNavigate(expertId, phone);
+                return;
+            } else if ("hotel".equalsIgnoreCase(userType)) {
+                Intent intent = new Intent(this, HotelMainActivity.class);
+                startActivity(intent);
+                finish();
+            } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
+                Intent intent = new Intent(this, InfluencerMainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                String expertId = sp.getString("Id", "");
+                if (expertId != null && !expertId.trim().isEmpty()) {
+                    checkExpertRegistrationStatusAndNavigate(expertId, "");
+                }
             }
-
-            finish();
         }
+    }
+
+    public void checkExpertRegistrationStatusAndNavigate(String expertId, String phone) {
+        if ((expertId == null || expertId.trim().isEmpty()) && (phone == null || phone.trim().isEmpty())) {
+            return;
+        }
+
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST,
+                Constant.TrackRegistrationStatusUrl,
+                response -> {
+                    if (progressBar != null) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                    try {
+                        String cleanResponse = response != null ? response.trim() : "";
+                        int jsonStartIndex = cleanResponse.indexOf('{');
+                        int jsonEndIndex = cleanResponse.lastIndexOf('}');
+                        if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+                            cleanResponse = cleanResponse.substring(jsonStartIndex, jsonEndIndex + 1);
+                        }
+                        JSONObject json = new JSONObject(cleanResponse);
+                        if (json.optBoolean("status", false)) {
+                            int l1 = json.optInt("1st_layout", 0);
+                            int l2 = json.optInt("2nd_layout", 0);
+                            int l3 = json.optInt("3rd_layout", 0);
+                            int l4 = json.optInt("4th_layout", 0);
+                            int l5 = json.optInt("5th_layout", 0);
+                            String verification = json.optString("verification", "UNVERIFIED").trim();
+                            String kitPayment = json.optString("kit_payment", "").trim();
+                            String returnedId = json.optString("id", expertId);
+
+                            SharedPreferences sp = getSharedPreferences("credentials", MODE_PRIVATE);
+                            sp.edit()
+                                    .putString("Id", returnedId)
+                                    .putString("userType", "expert")
+                                    .putString("Verification", verification)
+                                    .apply();
+
+                            boolean allLayoutsComplete = (l1 == 1 && l2 == 1 && l3 == 1 && l4 == 1 && l5 == 1);
+
+                            if (allLayoutsComplete) {
+                                if ("VERIFIED".equalsIgnoreCase(verification)) {
+                                    if ("pending".equalsIgnoreCase(kitPayment)) {
+                                        Intent intent = new Intent(LoginActivity.this, TrainingRegistrationKitActivity.class);
+                                        intent.putExtra("EXTRA_EXPERT_ID", returnedId);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        // VERIFIED & kit_payment = 'completed' (or not pending): stay on login page
+                                        Log.d("LoginActivity", "Expert verified & kit completed. Remaining on login page.");
+                                        if (progressBar != null) {
+                                            progressBar.setVisibility(View.GONE);
+                                        }
+                                    }
+                                } else {
+                                    // UNVERIFIED
+                                    Intent intent = new Intent(LoginActivity.this, ApplicationSubmittedActivity.class);
+                                    intent.putExtra("EXTRA_EXPERT_ID", returnedId);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            } else {
+                                int targetPage = 0;
+                                if (l4 == 1 && l5 == 0) {
+                                    targetPage = 4;
+                                } else if (l3 == 1 && l4 == 0) {
+                                    targetPage = 3;
+                                } else if (l2 == 1 && l3 == 0) {
+                                    targetPage = 2;
+                                } else if (l1 == 1 && l2 == 0) {
+                                    targetPage = 1;
+                                } else {
+                                    targetPage = 0;
+                                }
+                                Intent intent = new Intent(LoginActivity.this, Register.class);
+                                intent.putExtra("EXTRA_EXPERT_ID", returnedId);
+                                intent.putExtra("EXTRA_PAGE_INDEX", targetPage);
+                                startActivity(intent);
+                                finish();
+                            }
+                        } else {
+                            if (progressBar != null) {
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("LoginActivity", "Error parsing tracking status", e);
+                        if (progressBar != null) {
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                },
+                error -> {
+                    if (progressBar != null) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                    String errorDetail = error.getMessage();
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, java.nio.charset.StandardCharsets.UTF_8);
+                            errorDetail = "Status " + error.networkResponse.statusCode + ": " + responseBody;
+                        } catch (Exception ignored) {}
+                    }
+                    Log.e("LoginActivity", "Failed to track registration status: " + errorDetail);
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                if (expertId != null && !expertId.trim().isEmpty()) {
+                    params.put("id", expertId.trim());
+                }
+                if (phone != null && !phone.trim().isEmpty()) {
+                    params.put("phone", phone.trim());
+                }
+                return params;
+            }
+        };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(12000, 1, 1.0f));
+        Volley.newRequestQueue(this).add(stringRequest);
     }
 
     public void OpenReg(View view) {

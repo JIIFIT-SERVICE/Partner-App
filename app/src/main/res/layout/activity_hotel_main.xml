@@ -9,7 +9,7 @@
     android:fitsSystemWindows="false"
     tools:context=".Hotel.HotelMainActivity">
 
-    <!-- MAIN CONTENT (Image 1) -->
+    <!-- MAIN CONTENT -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,88 +20,82 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:background="@android:color/transparent"
+            android:layout_marginHorizontal="0dp"
+            android:background="@color/hotel_primary"
             android:fitsSystemWindows="false"
             app:elevation="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:background="@drawable/bg_appbar_rounded"
+                android:background="@color/hotel_primary"
                 android:paddingHorizontal="12dp">
 
-                <!-- 1. Menu Button -->
                 <ImageView
                     android:id="@+id/btnMenu"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Menu"
+                    android:padding="2dp"
                     android:src="@drawable/ic_menu"
-                    app:tint="#1E1E1E"
+                    app:tint="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- 2. Small Hotel Logo (Circle) -->
-                <ImageView
-                    android:id="@+id/ivHotelLogo"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/bg_circle_white"
-                    android:padding="2dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/hotel_logo_placeholder"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/btnMenu"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <!-- 3. Hotel Name -->
-                <TextView
-                    android:id="@+id/hotelName"
+                <!-- 2. Hotel Name & Subtitle -->
+                <LinearLayout
+                    android:id="@+id/layoutHotelTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="14dp"
                     android:layout_marginEnd="8dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="Grand Orchid Hotel"
-                    android:textColor="#1E1E1E"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btnNotification"
-                    app:layout_constraintStart_toEndOf="@id/ivHotelLogo"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintHorizontal_bias="0" />
+                    app:layout_constraintStart_toEndOf="@id/btnMenu"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <!-- 4. Profile Icon -->
-                <ImageView
-                    android:id="@+id/ivProfile"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@drawable/bg_circle_dark_teal"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_person_white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/hotelName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Grand Orchid - Sector 14"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                <!-- 5. Notification Bell with Red Dot -->
+                    <TextView
+                        android:id="@+id/hotelSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Sector 14 • Main Branch"
+                        android:textColor="#E1F5FE"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
                 <FrameLayout
                     android:id="@+id/btnNotification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Notifications"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/ivProfile"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="26dp"
                         android:layout_height="26dp"
                         android:src="@drawable/ic_notification"
-                        app:tint="#1E1E1E" />
+                        app:tint="@color/white" />
 
                     <View
                         android:layout_width="8dp"
@@ -112,12 +106,12 @@
                         android:background="@drawable/bg_notification_dot" />
                 </FrameLayout>
 
-                <!-- ⭐ 6. Straight Divider Line at Bottom ⭐ -->
+                <!-- 6. Straight Divider Line at Bottom -->
                 <View
                     android:id="@+id/bottomDivider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
+                    android:background="@color/hotel_primary_dark"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -138,7 +132,6 @@
                 android:padding="10dp">
 
                 <!-- Date Selector -->
-                <!-- Date Selector -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -147,7 +140,6 @@
                     android:orientation="horizontal"
                     android:padding="6dp">
 
-                    <!-- YESTERDAY -->
                     <TextView
                         android:id="@+id/tvYesterday"
                         android:layout_width="0dp"
@@ -156,13 +148,12 @@
                         android:gravity="center"
                         android:paddingVertical="10dp"
                         android:text="YESTERDAY\nMon • 25 Aug"
-                        android:textColor="#0B4F4F"
+                        android:textColor="@color/hotel_primary"
                         android:textSize="11sp"
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground" />
 
-                    <!-- TODAY (Active) -->
                     <TextView
                         android:id="@+id/tvToday"
                         android:layout_width="0dp"
@@ -177,7 +168,6 @@
                         android:clickable="true"
                         android:focusable="true" />
 
-                    <!-- TOMORROW -->
                     <TextView
                         android:id="@+id/tvTomorrow"
                         android:layout_width="0dp"
@@ -186,13 +176,12 @@
                         android:gravity="center"
                         android:paddingVertical="10dp"
                         android:text="TOMORROW\nWed • 27 Aug"
-                        android:textColor="#0B4F4F"
+                        android:textColor="@color/hotel_primary"
                         android:textSize="11sp"
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground" />
 
-                    <!-- Calendar Icon -->
                     <ImageView
                         android:id="@+id/ivCalendar"
                         android:layout_width="40dp"
@@ -203,8 +192,9 @@
 
                 </LinearLayout>
 
-                <!-- Filter Chips -->
-                <!-- Filter Chips Container -->
+                <!-- ============================================= -->
+                <!-- Filter Chips (checkable, single-select)       -->
+                <!-- ============================================= -->
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -221,74 +211,99 @@
 
                         <!-- Chip 1: All -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_all"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="All 2"
-                            android:textColor="@color/white"
-                            app:chipBackgroundColor="@color/blue_action"
+                            android:text="All"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
                         <!-- Chip 2: Yoga -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_yoga"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Yoga"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_meditation"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
-                        <!-- Chip 3: In Room Massage -->
+                        <!-- Chip 3: In-Room Massage -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_inroom"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="In-Room Massage"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_room"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
-                        <!-- Chip 4: Ayurveda (Modified) -->
+                        <!-- Chip 4: Ayurveda -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_ayurveda"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Ayurveda"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_ayurveda"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
+                        <!-- Chip 5: Personal Trainer -->
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_personal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Personal Trainer"
+                            android:checkable="true"
+                            android:clickable="true"
+                            android:focusable="true"
                             app:chipIcon="@mipmap/hotel_gym"
-                            app:chipIconTint="@color/Text_Blue"
-                            android:textColor="@color/Text_Blue"
-                            app:chipBackgroundColor="@color/BackgroundBlue"
+                            app:chipIconTint="@color/chip_text_selector"
+                            app:chipBackgroundColor="@color/chip_bg_selector"
                             app:chipMinHeight="36dp"
                             app:chipCornerRadius="18dp"
-                            app:ensureMinTouchTargetSize="false" />
+                            app:checkedIconVisible="false"
+                            app:ensureMinTouchTargetSize="false"
+                            android:textColor="@color/chip_text_selector" />
 
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <!-- Booking Card 1 -->
                 <!-- RecyclerView for Bookings -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/todolist"
@@ -301,10 +316,6 @@
                     android:visibility="gone"
                     tools:listitem="@layout/hote_item_booking_card" />
 
-                <!-- Progress Bar -->
-
-
-                <!-- Empty State -->
                 <!-- Empty State -->
                 <include
                     android:id="@+id/Bookings_notFound"
@@ -314,10 +325,9 @@
                     android:layout_marginTop="16dp"
                     android:visibility="gone" />
 
-                <!-- Add second card similarly here -->
-
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="48dp"
@@ -325,7 +335,7 @@
             android:layout_gravity="center"
             android:indeterminate="true"
             android:visibility="gone" />
-        <!-- Floating Bottom Bar -->
+
         <!-- Floating Bottom Bar -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -339,7 +349,6 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="6dp">
 
-            <!-- QR Section -->
             <LinearLayout
                 android:id="@+id/btnQr"
                 android:layout_width="0dp"
@@ -366,13 +375,11 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Divider Line -->
             <View
                 android:layout_width="1dp"
                 android:layout_height="24dp"
                 android:background="#E0E0E0" />
 
-            <!-- Share Section -->
             <LinearLayout
                 android:id="@+id/btnShare"
                 android:layout_width="0dp"
@@ -399,7 +406,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Add Booking Button -->
             <LinearLayout
                 android:id="@+id/btnAddBooking"
                 android:layout_width="0dp"
@@ -432,7 +438,7 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- NAVIGATION DRAWER CONTAINER -->
+    <!-- NAVIGATION DRAWER -->
     <LinearLayout
         android:layout_width="320dp"
         android:layout_height="match_parent"
@@ -441,20 +447,20 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
-        <!-- NAVIGATION DRAWER (Takes all remaining space above the footer) -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/white"
             app:headerLayout="@layout/hotel_nav_header_drawer"
             app:menu="@menu/hotel_menu_drawer"
-            app:itemTextColor="@color/black"
-            app:itemIconTint="@color/Text_Blue"
+            app:itemTextColor="@color/nav_menu_item_text_color"
+            app:itemIconTint="@color/nav_menu_item_icon_tint"
+            app:itemShapeFillColor="@color/nav_menu_item_shape_color"
             app:itemHorizontalPadding="16dp"
-            app:itemVerticalPadding="4dp"
-            android:background="@color/white"/>
-        <!-- FOOTER (Fixed at the bottom) -->
+            app:itemVerticalPadding="4dp"/>
+
         <include layout="@layout/nav_footer_drawer" />
 
     </LinearLayout>

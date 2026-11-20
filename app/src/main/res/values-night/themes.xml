@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Jifiit" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <item name="colorPrimary">@color/ShapGreen</item>
+        <item name="colorPrimary">@color/hotel_primary</item>
     </style>
     <style name="ThemeOverlay.Jifiit.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_900</item>

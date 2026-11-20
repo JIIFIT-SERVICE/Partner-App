@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId = "com.company.jifiit"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
-        versionCode = 61
-        versionName = "3.32"
+        versionCode = 62
+        versionName = "3.33"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -128,7 +128,7 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
-
+    implementation("com.google.android.material:material:1.14.0")
 
 
 }

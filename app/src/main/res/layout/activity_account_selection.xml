@@ -647,6 +647,124 @@
             </com.google.android.material.card.MaterialCardView>
 
 
+            <!-- Influencer and Partner -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInfluencer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#E2E5E9"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="96dp"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingTop="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="14dp">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_expert_icon">
+
+                        <ImageView
+                            android:layout_width="29dp"
+                            android:layout_height="29dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_partner_sparkle"
+                            android:contentDescription="Influencer and Partner"
+                            app:tint="@color/joiner_green" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="14dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Influencer &amp; Partner"
+                                android:textColor="#17191C"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:includeFontPadding="false" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_account_type_badge"
+                                android:paddingStart="8dp"
+                                android:paddingTop="4dp"
+                                android:paddingEnd="8dp"
+                                android:paddingBottom="4dp"
+                                android:text="PARTNER"
+                                android:textColor="#5F6368"
+                                android:textSize="8sp"
+                                android:textStyle="bold"
+                                android:includeFontPadding="false" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/inf_Name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text=""
+                            android:textColor="#6B7078"
+                            android:textSize="13sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:includeFontPadding="false" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Manage your referrals &amp; partner earnings"
+                            android:textColor="#9AA0A8"
+                            android:textSize="11sp"
+                            android:includeFontPadding="false" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_account_arrow">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="Continue"
+                            app:tint="#555B63" />
+                    </FrameLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
             <!-- Security Message -->
             <LinearLayout
                 android:layout_width="match_parent"

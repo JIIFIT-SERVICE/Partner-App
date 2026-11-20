@@ -1,0 +1,963 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sub_page_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- header of the file -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/sub_round"
+            android:backgroundTint="@color/sub_green_bg"
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="8dp"
+            android:text="● Application Submitted Successfully"
+            android:textColor="@color/sub_green"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvWelcomeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Welcome to Jiifit!"
+            android:textColor="@color/sub_text"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAppIdAndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Application ID: JIIFIT-Pending"
+            android:textColor="@color/sub_text_sec"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnEditDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/sub_btn_outline"
+                android:paddingStart="22dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="22dp"
+                android:paddingBottom="12dp"
+                android:text="Edit Details"
+                android:visibility="gone"
+                android:textColor="@color/sub_text"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btnDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_blue"
+                android:paddingStart="26dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="26dp"
+                android:paddingBottom="12dp"
+                android:text="Done"
+                android:visibility="gone"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- verification part -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/sub_card_grey"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.05"
+                android:text="APPLICATION VERIFICATION STAGES"
+                android:textColor="@color/sub_text_sec"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <!-- stage 1 -->
+            <LinearLayout
+                android:id="@+id/orderCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/sub_card_green"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/sub_circle"
+                    android:backgroundTint="@color/sub_green"
+                    android:gravity="center"
+                    android:text="✓"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1. Profile &amp; KYC"
+                        android:textColor="@color/sub_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Completed &amp; Received"
+                        android:textColor="@color/sub_green"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- stage 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/sub_card_blue"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/sub_circle"
+                    android:backgroundTint="@color/sub_blue"
+                    android:gravity="center"
+                    android:text="⏱"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2. Docs Check"
+                        android:textColor="@color/sub_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="In Review by Jiifit Team"
+                        android:textColor="@color/sub_blue"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- stage 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/sub_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/sub_circle"
+                    android:backgroundTint="@color/sub_grey_icon"
+                    android:gravity="center"
+                    android:text="3"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3. Kit Allotment &amp; Orders"
+                        android:textColor="@color/sub_text_sec"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Pending Stage 2"
+                        android:textColor="@color/sub_text_sec"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- submitted documents part -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="📄 Submitted Documents &amp; Certifications"
+            android:textColor="@color/sub_text"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Our verification officers authenticate these with issuing bodies within 24 to 48 hours."
+            android:textColor="@color/sub_text_sec"
+            android:textSize="14sp" />
+
+        <!-- resume -->
+        <LinearLayout
+            android:id="@+id/cardDocResume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_grey_icon"
+                android:gravity="center"
+                android:text="📄"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Candidate Resume / Bio-Data"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDocResumeFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: resume.pdf"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDocResumeStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- aadhaar front -->
+        <LinearLayout
+            android:id="@+id/cardDocAadhaarFront"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="#DBEAFE"
+                android:gravity="center"
+                android:text="🪪"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aadhaar Card (Front)"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarFrontFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: aadhaar_front.jpg"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarFrontStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- aadhaar back -->
+        <LinearLayout
+            android:id="@+id/cardDocAadhaarBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="#DBEAFE"
+                android:gravity="center"
+                android:text="🪪"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aadhaar Card (Back)"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarBackFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: aadhaar_back.jpg"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDocAadhaarBackStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 10th certificate -->
+        <LinearLayout
+            android:id="@+id/cardDoc10th"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_green"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="#CCFBF1"
+                android:gravity="center"
+                android:text="📄"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10TH Standard School Certificate"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDoc10thFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: 10th_certificate.pdf"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDoc10thStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 12th certificate -->
+        <LinearLayout
+            android:id="@+id/cardDoc12th"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_amber_bg"
+                android:gravity="center"
+                android:text="📜"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12TH / Higher Secondary Certificate"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDoc12thFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: hs_certificate.pdf"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDoc12thStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_green"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- graduation / diploma -->
+        <LinearLayout
+            android:id="@+id/cardDocGrad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/sub_card_grey"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_amber_bg"
+                android:gravity="center"
+                android:text="✨"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Graduation / Diploma Certificate"
+                    android:textColor="@color/sub_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDocGradFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="File: graduation_certificate.pdf"
+                    android:textColor="@color/sub_text_sec"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDocGradStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/sub_chip"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="View Document"
+                    android:textColor="@color/sub_purple"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- active operating hubs -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/sub_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 YOUR WORKING LOCATION"
+                android:textColor="@color/sub_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/workingCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="City: Delhi NCR"
+                android:textColor="@color/sub_text_sec"
+                android:textSize="14sp" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvWorkingAreas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fadeScrollbars="false"
+                android:fillViewport="true"
+                android:scrollbars="vertical">
+
+                <LinearLayout
+                    android:id="@+id/llWorkingAreasContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
+        <!-- approved services -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/sub_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:id="@+id/tvApprovedServicesHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✨ APPROVED SERVICES"
+                android:textColor="@color/sub_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvExperienceLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Experience Level: Not specified"
+                android:textColor="@color/sub_text_sec"
+                android:textSize="14sp" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvApprovedServices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fadeScrollbars="false"
+                android:fillViewport="true"
+                android:scrollbars="vertical">
+
+                <LinearLayout
+                    android:id="@+id/llApprovedServicesContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
+        <!-- demo dispatch tester -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/sub_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_blue_bg"
+                android:paddingStart="12dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="7dp"
+                android:text="🔔 Demo Dispatch Tester"
+                android:textColor="@color/sub_blue"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Experience how customer booking orders arrive"
+                android:textColor="@color/sub_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Once certified, notifications appear on your phone with instant distance, payout, and client hotel/home coordinates."
+                android:textColor="@color/sub_text_sec"
+                android:textSize="14sp"
+                android:lineSpacingExtra="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/sub_round"
+                android:backgroundTint="@color/sub_blue"
+                android:paddingStart="22dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="22dp"
+                android:paddingBottom="12dp"
+                android:text="Simulate Client Order"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- booking request card (designed like list_item_layout) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/demoCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                android:backgroundTint="@color/white">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:background="@color/creamy_white">
+
+                    <!-- Top Row: Booking ID and Status -->
+                    <LinearLayout
+                        android:id="@+id/topRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/CusId"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Booking #1000 (Demo Order)"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/bookingStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Demo Booking"
+                            android:textSize="@dimen/_9ssp"
+                            android:textColor="@color/white"
+                            android:background="@drawable/bg_status_completed"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"/>
+                    </LinearLayout>
+
+                    <!-- Customer Info Row -->
+                    <LinearLayout
+                        android:id="@+id/customerRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toBottomOf="@id/topRow">
+
+                        <ImageView
+                            android:id="@+id/accountIcon"
+                            android:layout_width="@dimen/_20sdp"
+                            android:layout_height="@dimen/_20sdp"
+                            android:src="@drawable/account_box_24"
+                            app:tint="@color/ShapGreen"/>
+
+                        <TextView
+                            android:id="@+id/CusName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            android:text="Debasish Mandal"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_12ssp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <!-- Service Info Row -->
+                    <LinearLayout
+                        android:id="@+id/serviceRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toBottomOf="@id/customerRow">
+
+                        <TextView
+                            android:id="@+id/MassageName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Full Body Massage"
+                            android:textSize="@dimen/_10ssp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/timeDuration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/timer_24"
+                            android:drawablePadding="4dp"
+                            android:drawableTint="@color/ShapGreen"
+                            android:text="120 min"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp"/>
+                    </LinearLayout>
+
+                    <!-- Address Row -->
+                    <TextView
+                        android:id="@+id/CusAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/_10ssp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:text="123 Main Street, Apartment 4B, New York, NY 10001"
+                        android:layout_marginTop="8dp"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/location_on_24"
+                        android:drawableTint="@color/Red"
+                        app:layout_constraintTop_toBottomOf="@id/serviceRow"/>
+
+                    <!-- Bottom Row: Time and Button -->
+                    <LinearLayout
+                        android:id="@+id/bottomRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toBottomOf="@id/CusAddress">
+
+                        <TextView
+                            android:id="@+id/BookingTime"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawableLeft="@drawable/time_filled_24"
+                            android:drawablePadding="4dp"
+                            android:drawableTint="@color/ShapGreen"
+                            android:text="10:30 AM"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/viewMoreButton"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="View More"
+                            android:textSize="@dimen/_10ssp"
+                            android:textColor="@color/ShapGreen"
+                            app:strokeColor="@color/ShapGreen"
+                            app:strokeWidth="1dp"
+                            app:cornerRadius="12dp"/>
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <!--  -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/sub_card_blue"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📞 Need assistance with your documents or verification status?"
+                android:textColor="@color/sub_navy_chip"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btnContactSupport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Contact Partner Onboarding Team →"
+                android:textColor="@color/sub_blue"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

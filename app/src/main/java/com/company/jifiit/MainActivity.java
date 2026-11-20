@@ -167,6 +167,8 @@ public class MainActivity extends AppCompatActivity
     private static final int UPDATE_REQUEST_CODE = 100;
     private static final int PERMISSION_REQUEST_CODE = 101;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

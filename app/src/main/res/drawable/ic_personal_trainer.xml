@@ -17,7 +17,7 @@
 
     <!-- Bar -->
     <path
-        android:fillColor="#0B4F4F"
+        android:fillColor="#1E3A8A"
         android:pathData="M16,22 L32,22 L32,26 L16,26 Z" />
 
     <!-- Right weight plate (inner) -->

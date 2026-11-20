@@ -66,7 +66,8 @@ public class UnverifiedActivity extends AppCompatActivity {
         VisitOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(UnverifiedActivity.this, com.company.jifiit.VerificationCenterActivity.class);
+                startActivity(intent);
             }
         });
 

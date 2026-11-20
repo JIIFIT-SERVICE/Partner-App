@@ -2,11 +2,26 @@ package com.company.jifiit;
 
 public class Constant {
 
-    public static final String RegisterUrl = "https://jiifit.com/Jifiit/Therapist/therapistRegister.php";
+    public static final String RegisterUrl = "https://jiifit.com/Jifiit/Therapist/expert_register.php";
+    // Multi-step Registration Endpoints
+    public static final String RegisterStep1Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step1.php";
+    public static final String SearchCityUrl = "https://jiifit.com/Jifiit/Therapist/search_cities.php";
+    public static final String RegisterStep2Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step2.php";
+    public static final String RegisterStep3Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step3.php";
+    public static final String RegisterStep4Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step4.php";
+    public static final String RegisterStep5Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step5.php";
+    public static final String TrackRegistrationStatusUrl = "https://jiifit.com/Jifiit/Therapist/track_registration_status.php";
+    public static final String getTherapistCategories = "https://jiifit.com/Jifiit/Therapist/get_therapist_categories.php";
+    public static final String getCategoryServices = "https://jiifit.com/Jifiit/Therapist/get_category_services.php";
+    public static final String getHomeMassage = "https://jiifit.com/Jifiit/Therapist/get_home_massage.php";
+    public static final String getAyurvedaServices = "https://jiifit.com/Jifiit/Therapist/get_ayurved_massages.php";
+    public static final String InfluencerRegisterUrl = "https://jiifit.com/Jifiit/Influencer/registration.php";
     public static final String Login = "https://jiifit.com/Jifiit/Therapist/TherapistLogin.php";
     public static final String Loggedout = "https://jiifit.com/Jifiit/Therapist/loggedOut.php";
     public static final String HotelLoggedout = "https://jiifit.com/Jifiit/Hotel/HotelloggedOut.php";
     public static final String Loggedin = "https://jiifit.com/Jifiit/Therapist/loggedIn.php";
+    public static final String InfluencerLogin = "https://jiifit.com/Jifiit/Influencer/InfluencerLogin.php";
+    public static final String InfluencerProfile = "https://jiifit.com/Jifiit/Influencer/fetchUserData.php";
     public static final String fetchAccount = "https://jiifit.com/Jifiit/Therapist/fetch.php?phone=";
 
 
@@ -166,6 +181,9 @@ public class Constant {
     public static String fetchDuePayment = "https://jiifit.com/Jifiit/commission/fetchDuePayment.php?therapist_id=";
     public static String CallBackUrl = "https://jiifit.com/Jifiit/commission/callback.php";
     public static String CallBackUrl2 = "https://jiifit.com/Jifiit/commission/callback2.php";
+    public static String KitPaymentCallbackUrl = "https://jiifit.com/Jifiit/Therapist/kit_payment_callback.php";
+    public static String KitPaymentRedirectUrl = "https://jiifit.com/Jifiit/Therapist/kit_payment_redirect.php";
+    public static String UpdateKitPaymentUrl = "https://jiifit.com/Jifiit/Therapist/update_kit_payment.php";
     public static String wthidrawlRqst = "https://jiifit.com/Jifiit/commission/payment_request.php";
     public static String fetchLastRequest = "https://jiifit.com/Jifiit/commission/get_payment_request_date.php?th_id=";
     public static String fetchPaymentRequestStatus = "https://jiifit.com/Jifiit/commission/fetchPaymentRequestStatus.php?th_id=";
@@ -180,7 +198,14 @@ public class Constant {
     public static String SERVICE_DETAILS_API = "https://jiifit.com/Jifiit/Hotel/get_service_details.php";
     public static String ADD_ON_API = "https://jiifit.com/Jifiit/Hotel/add-on-service.php";
     public static String GET_HOTEL_ROOMS_API  = "https://jiifit.com/Jifiit/Hotel/get_hotel_rooms.php?hotel_registration_id=";
+    public static String GET_COMMISSION_CHARGE  = "https://jiifit.com/Jifiit/Hotel/fetch_commission.php?hotel_registration_id=";
     public static String EXPERT_API  = "https://jiifit.com/Jifiit/Hotel/fetch_experts.php";
+    public static String HOTEL_BOOKING_API  = "https://jiifit.com/Jifiit/Hotel/submit_hotel_order.php";
+    public static String HOTEL_BOOKING_Details = "https://jiifit.com/Jifiit/Hotel/hotel_order_details.php?id=";
+    public static String HOTEL_FETCH_TIME_SLOT = "https://jiifit.com/Jifiit/Hotel/get_available_slots.php";
+    public static String CANCEL_HOTEL_BOOKING = "https://jiifit.com/Jifiit/Hotel/hotel_cancel_booking.php";
+    public static String RESCHEDULE_HOTEL_BOOKING = "https://jiifit.com/Jifiit/Hotel/hotel_reshedule_booking.php";
+    public static String get_areas_by_city = "https://jiifit.com/Jifiit/Hotel/get_areas.php";
 }
 
 

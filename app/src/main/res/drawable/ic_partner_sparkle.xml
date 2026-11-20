@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="14dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Main 4-pointed sparkle -->
+    <path
+        android:fillColor="#261500"
+        android:pathData="M10,2 C10,6.42 6.42,10 2,10 C6.42,10 10,13.58 10,18 C10,13.58 13.58,10 18,10 C13.58,10 10,6.42 10,2 Z" />
+    <!-- Secondary small sparkle -->
+    <path
+        android:fillColor="#261500"
+        android:pathData="M18,15 C18,16.66 16.66,18 15,18 C16.66,18 18,19.34 18,21 C18,19.34 19.34,18 21,18 C19.34,18 18,16.66 18,15 Z" />
+</vector>

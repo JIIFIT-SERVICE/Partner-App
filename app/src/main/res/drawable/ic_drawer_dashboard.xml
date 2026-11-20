@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Building / Office outline icon from drawer screenshot -->
+    <path
+        android:fillColor="#475569"
+        android:pathData="M19,2H5C3.9,2 3,2.9 3,4v16c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V4C21,2.9 20.1,2 19,2zM19,20H5V4h14V20z M7,6h2v2H7V6z M7,10h2v2H7V10z M7,14h2v2H7V14z M11,6h2v2h-2V6z M11,10h2v2h-2V10z M11,14h2v2h-2V14z M15,6h2v2h-2V6z M15,10h2v2h-2V10z M15,14h2v2h-2V14z"/>
+</vector>

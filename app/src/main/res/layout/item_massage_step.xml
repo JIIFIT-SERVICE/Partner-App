@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingVertical="10dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvMassageName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deep Tissue Massage"
+            android:textColor="#0F172A"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMassageSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="(Live will check)"
+            android:textColor="#64748B"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Status Badge -->
+    <LinearLayout
+        android:id="@+id/layoutStatusBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_pill_approved_green"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp">
+
+        <ImageView
+            android:id="@+id/ivStatusIcon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/baseline_check_circle_outline_24"
+            app:tint="#059669" />
+
+        <TextView
+            android:id="@+id/tvStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="Approved"
+            android:textColor="#059669"
+            android:textSize="11.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
+

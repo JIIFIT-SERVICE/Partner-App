@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -41,6 +42,8 @@ class Preference_Bed : AppCompatActivity() {
     // Guest data
     private lateinit var guestName: String
     private lateinit var guestMobile: String
+    private lateinit var country_Code: String
+    private lateinit var Mobile: String
 
     // Room data
     private lateinit var roomId: String
@@ -274,7 +277,9 @@ class Preference_Bed : AppCompatActivity() {
         // =====================================================
 
         guestName = intent.getStringExtra("guest_name").orEmpty()
-        guestMobile = intent.getStringExtra("guest_mobile").orEmpty()
+        guestMobile = intent.getStringExtra("guest_mobile_full").orEmpty()
+        country_Code  = intent.getStringExtra("country_code").orEmpty()
+        Mobile = intent.getStringExtra("guest_mobile").orEmpty()
 
         roomId = intent.getStringExtra("room_id").orEmpty()
         roomNumber = intent.getStringExtra("room_number").orEmpty()
@@ -461,11 +466,13 @@ class Preference_Bed : AppCompatActivity() {
         val specialNote = etSpecialNote.text.toString().trim()
         val voiceNotePath = voiceNoteFile?.absolutePath ?: ""
 
-
         val intent = Intent(this, Slot_activity::class.java)
 
         intent.putExtra("guest_name", guestName)
-        intent.putExtra("guest_mobile", guestMobile)
+        intent.putExtra("guest_mobile_full", guestMobile)
+        intent.putExtra("country_code", country_Code)
+        intent.putExtra("guest_mobile", Mobile)
+
 
         intent.putExtra("room_id", roomId)
         intent.putExtra("room_number", roomNumber)

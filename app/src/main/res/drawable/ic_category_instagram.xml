@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Instagram Outer Frame -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17,2H7C4.24,2 2,4.24 2,7v10c0,2.76 2.24,5 5,5h10c2.76,0 5,-2.24 5,-5V7c0,-2.76 -2.24,-5 -5,-5zm3,15c0,1.65 -1.35,3 -3,3H7c-1.65,0 -3,-1.35 -3,-3V7c0,-1.65 1.35,-3 3,-3h10c1.65,0 3,1.35 3,3v10z" />
+
+    <!-- Instagram Center Lens Circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,7c-2.76,0 -5,2.24 -5,5s2.24,5 5,5 5,-2.24 5,-5 -2.24,-5 -5,-5zm0,8c-1.65,0 -3,-1.35 -3,-3s1.35,-3 3,-3 3,1.35 3,3 -1.35,3 -3,3z" />
+
+    <!-- Instagram Camera Flash Dot -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17.5,6.5m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0" />
+
+</vector>

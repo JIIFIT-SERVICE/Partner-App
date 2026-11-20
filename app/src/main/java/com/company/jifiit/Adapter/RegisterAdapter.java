@@ -41,7 +41,7 @@ public class RegisterAdapter extends PagerAdapter {
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
         TextView textView = view.findViewById(R.id.slideTextView);
         textView.setText(slideTexts[position]);
-        textView.setTextColor(context.getResources().getColor(R.color.black)); // Set text color to black
+        textView.setTextColor(context.getResources().getColor(R.color.black));
 
         container.addView(view);
         return view;
