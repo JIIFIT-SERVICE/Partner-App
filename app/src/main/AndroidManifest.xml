@@ -508,11 +508,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Register"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="false"
             android:label=""
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".LoginActivity"
             android:exported="false"

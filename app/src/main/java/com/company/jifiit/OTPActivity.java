@@ -57,7 +57,7 @@ public class OTPActivity extends AppCompatActivity {
     private TextInputEditText otp1, otp2, otp3, otp4;
     private boolean resend_timer = false;
     private TextView userMobile, resendBtn;
-    private String phone, code, token,userType,userId;
+    private String phone, code, token, userType, userId;
     private MaterialButton VerifyOtpBtn;
 
     // OTP sending control variables
@@ -214,7 +214,7 @@ public class OTPActivity extends AppCompatActivity {
                         String message = jsonObject.getString("message");
                         if (status.equals("success")) {
                             code = jsonObject.getString("otp");
-//                            Log.d("OTP",  code);
+                            // Log.d("OTP", code);
                             isInitialOTPSent = true;
                             if (!isResend) {
                                 startCountDownTimer();
@@ -283,7 +283,7 @@ public class OTPActivity extends AppCompatActivity {
         } else if (code == null) {
             Toast.makeText(this, "OTP not received yet", Toast.LENGTH_SHORT).show();
         } else if (userEnteredOTP.equals(code)) {
-            login(userId,userType);
+            login(userId, userType);
         } else {
             Toast.makeText(this, "Invalid OTP", Toast.LENGTH_SHORT).show();
         }
@@ -297,10 +297,12 @@ public class OTPActivity extends AppCompatActivity {
                         JSONObject jsonObject = new JSONObject(response);
                         String status = jsonObject.getString("status");
                         if (status.equals("success")) {
-//                            Toast.makeText(this, "Mobile:"+ phone +"And User Type: "+ userType , Toast.LENGTH_SHORT).show();
-                            fetchUserData(phone,userType);
+                            // Toast.makeText(this, "Mobile:"+ phone +"And User Type: "+ userType ,
+                            // Toast.LENGTH_SHORT).show();
+                            fetchUserData(phone, userType);
                         } else {
-                            Toast.makeText(OTPActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OTPActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     } catch (JSONException e) {
                         Toast.makeText(OTPActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
@@ -327,8 +329,8 @@ public class OTPActivity extends AppCompatActivity {
         String encodedUserType = Uri.encode(userType);
 
         String url = Constant.fetchAccount
-                 + encodedPhone
-                +"&userType=" + encodedUserType;
+                + encodedPhone
+                + "&userType=" + encodedUserType;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {
@@ -345,12 +347,13 @@ public class OTPActivity extends AppCompatActivity {
 
                             String VerificationStatus = data.optString("verification", "approved");
                             String Age = "0000-00-00";
-                            if (userType.equalsIgnoreCase("expert")){
+                            if (userType.equalsIgnoreCase("expert")) {
                                 Age = data.optString("date_of_birth", "0000-00-00");
                                 name = data.optString("name", "Expert");
                             } else if (userType.equalsIgnoreCase("hotel")) {
                                 name = data.optString("hotel_name", "Hotel");
-                            } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+                            } else if (userType.equalsIgnoreCase("influencer")
+                                    || userType.equalsIgnoreCase("partner")) {
                                 if (data.has("name")) {
                                     name = data.getString("name");
                                 } else if (data.has("full_name")) {
@@ -362,31 +365,28 @@ public class OTPActivity extends AppCompatActivity {
 
                             String Mobile = phone;
 
-                            saveUserNameToSharedPreferences(name, Id, VerificationStatus, Age, Mobile,userType);
+                            saveUserNameToSharedPreferences(name, Id, VerificationStatus, Age, Mobile, userType);
                             loggedIn(Id, token != null ? token : "", userType != null ? userType : "");
-                            if (userType.equalsIgnoreCase("expert")){
+                            if (userType.equalsIgnoreCase("expert")) {
                                 startActivity(new Intent(OTPActivity.this, MainActivity.class));
                                 overridePendingTransition(
                                         R.anim.slide_in_right,
-                                        R.anim.slide_out_left
-                                );
+                                        R.anim.slide_out_left);
                                 finish();
                             } else if (userType.equalsIgnoreCase("hotel")) {
                                 startActivity(new Intent(OTPActivity.this, HotelMainActivity.class));
                                 overridePendingTransition(
                                         R.anim.slide_in_right,
-                                        R.anim.slide_out_left
-                                );
+                                        R.anim.slide_out_left);
                                 finish();
-                            } else if (userType.equalsIgnoreCase("influencer") || userType.equalsIgnoreCase("partner")) {
+                            } else if (userType.equalsIgnoreCase("influencer")
+                                    || userType.equalsIgnoreCase("partner")) {
                                 startActivity(new Intent(OTPActivity.this, InfluencerMainActivity.class));
                                 overridePendingTransition(
                                         R.anim.slide_in_right,
-                                        R.anim.slide_out_left
-                                );
+                                        R.anim.slide_out_left);
                                 finish();
                             }
-
 
                         }
                     } catch (JSONException e) {
@@ -401,7 +401,8 @@ public class OTPActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 
-    private void saveUserNameToSharedPreferences(String name, BigInteger Id, String Verification, String age, String Mobile, String userType) {
+    private void saveUserNameToSharedPreferences(String name, BigInteger Id, String Verification, String age,
+            String Mobile, String userType) {
         SharedPreferences sp = getSharedPreferences("credentials", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("Name", name);
@@ -413,12 +414,10 @@ public class OTPActivity extends AppCompatActivity {
         editor.apply();
     }
 
-
     private void loggedIn(BigInteger id, String token, String userType) {
 
-        boolean isInfluencer =
-                "influencer".equalsIgnoreCase(userType)
-                        || "partner".equalsIgnoreCase(userType);
+        boolean isInfluencer = "influencer".equalsIgnoreCase(userType)
+                || "partner".equalsIgnoreCase(userType);
 
         String loginUrl = isInfluencer
                 ? Constant.InfluencerLogin
@@ -443,8 +442,7 @@ public class OTPActivity extends AppCompatActivity {
                         Log.e("LoginStatus", "Invalid JSON", e);
                     }
                 },
-                error -> Log.e("LoginStatus", "Login API error", error)
-        ) {
+                error -> Log.e("LoginStatus", "Login API error", error)) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -456,9 +454,7 @@ public class OTPActivity extends AppCompatActivity {
                             "device_uuid",
                             Settings.Secure.getString(
                                     getContentResolver(),
-                                    Settings.Secure.ANDROID_ID
-                            )
-                    );
+                                    Settings.Secure.ANDROID_ID));
 
                     params.put("device_name", Build.DEVICE);
                     params.put("manufacturer", Build.MANUFACTURER);
@@ -490,7 +486,6 @@ public class OTPActivity extends AppCompatActivity {
         }
     }
 
-
     private class OTPTextWatcher implements TextWatcher {
         private final EditText currentEditText;
         private final EditText nextEditText;
@@ -500,8 +495,13 @@ public class OTPActivity extends AppCompatActivity {
             this.nextEditText = nextEditText;
         }
 
-        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
         @Override
         public void afterTextChanged(Editable s) {
@@ -551,7 +551,6 @@ public class OTPActivity extends AppCompatActivity {
 
         overridePendingTransition(
                 R.anim.slide_in_left,
-                R.anim.slide_out_right
-        );
+                R.anim.slide_out_right);
     }
 }

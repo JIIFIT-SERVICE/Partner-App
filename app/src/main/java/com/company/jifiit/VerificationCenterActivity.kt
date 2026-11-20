@@ -5,14 +5,22 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.company.jifiit.Referral.HelpActivity
 import com.google.android.material.button.MaterialButton
+import org.json.JSONObject
 
 class VerificationCenterActivity : AppCompatActivity() {
 
@@ -32,6 +40,20 @@ class VerificationCenterActivity : AppCompatActivity() {
     private val deskPhoneNumber = "+919717550414"
     private val officeAddressText = "Plot 14, Ring Road, Near Moolchand Metro Station, Lajpat Nagar 3, New Delhi - 110024"
 
+    // Polling every 1 second
+    private val pollHandler = Handler(Looper.getMainLooper())
+    private var isPollRequestInProgress = false
+    private val pollIntervalMs: Long = 1000L
+
+    private val statusPollingRunnable = object : Runnable {
+        override fun run() {
+            if (!isFinishing && !isDestroyed) {
+                checkRegistrationStatusAndKitPayment()
+                pollHandler.postDelayed(this, pollIntervalMs)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_verification_center)
@@ -40,6 +62,23 @@ class VerificationCenterActivity : AppCompatActivity() {
         initViews()
         loadPartnerData()
         setupListeners()
+        checkRegistrationStatusAndKitPayment()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        pollHandler.removeCallbacks(statusPollingRunnable)
+        pollHandler.post(statusPollingRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pollHandler.removeCallbacks(statusPollingRunnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pollHandler.removeCallbacks(statusPollingRunnable)
     }
 
     private fun setupStatusBar() {
@@ -89,6 +128,82 @@ class VerificationCenterActivity : AppCompatActivity() {
         if (!customSlot.isNullOrBlank()) {
             tvAssignedTimeSlot.text = customSlot
         }
+    }
+
+    private fun checkRegistrationStatusAndKitPayment() {
+        val sp = getSharedPreferences("credentials", MODE_PRIVATE)
+        val therapistId = intent.getStringExtra("EXTRA_EXPERT_ID")
+            ?: sp.getString("Id", "")
+            ?: ""
+
+        if (therapistId.isBlank()) {
+            return
+        }
+
+        if (isPollRequestInProgress) {
+            return
+        }
+        isPollRequestInProgress = true
+
+        val request = object : StringRequest(
+            Request.Method.POST,
+            Constant.TrackRegistrationStatusUrl,
+            { response ->
+                isPollRequestInProgress = false
+                if (!isFinishing && !isDestroyed) {
+                    try {
+                        val cleanResponse = response?.trim() ?: ""
+                        val jsonStart = cleanResponse.indexOf('{')
+                        val jsonEnd = cleanResponse.lastIndexOf('}')
+                        val sanitized = if (jsonStart >= 0 && jsonEnd > jsonStart) {
+                            cleanResponse.substring(jsonStart, jsonEnd + 1)
+                        } else {
+                            cleanResponse
+                        }
+                        val json = JSONObject(sanitized)
+                        if (json.optBoolean("status", false)) {
+                            val l1 = json.optInt("1st_layout", 0)
+                            val l2 = json.optInt("2nd_layout", 0)
+                            val l3 = json.optInt("3rd_layout", 0)
+                            val l4 = json.optInt("4th_layout", 0)
+                            val l5 = json.optInt("5th_layout", 0)
+                            val kitPayment = json.optString("kit_payment", "").trim()
+
+                            if (l1 == 1 && l2 == 1 && l3 == 1 && l4 == 1 && l5 == 1 && kitPayment.equals("pending", ignoreCase = true)) {
+                                pollHandler.removeCallbacks(statusPollingRunnable)
+                                val intent = Intent(this@VerificationCenterActivity, TrainingRegistrationKitActivity::class.java).apply {
+                                    putExtra("EXTRA_EXPERT_ID", therapistId)
+                                }
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                val cityName = json.optString("city_name", "").ifBlank {
+                                    json.optString("living_city_name", "")
+                                }
+                                if (cityName.isNotBlank()) {
+                                    tvCityBadge.text = "City: $cityName"
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("VerificationCenter", "Error parsing tracking response", e)
+                    }
+                }
+            },
+            { error ->
+                isPollRequestInProgress = false
+                Log.e("VerificationCenter", "Error fetching tracking status: " + error.message)
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["id"] = therapistId
+                return params
+            }
+        }
+
+        request.retryPolicy = DefaultRetryPolicy(12000, 1, 1.0f)
+        Volley.newRequestQueue(this).add(request)
     }
 
     private fun setupListeners() {

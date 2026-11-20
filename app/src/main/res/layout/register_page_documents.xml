@@ -7,6 +7,7 @@
     android:background="#F4F7FB"
     android:fillViewport="true"
     android:clipToPadding="false"
+    android:isScrollContainer="true"
     android:overScrollMode="never">
 
     <LinearLayout
@@ -16,7 +17,7 @@
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="28dp">
+        android:paddingBottom="90dp">
 
         <!-- Top Header -->
         <TextView
@@ -66,7 +67,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Candidate Resume / Curriculum Vitae *"
+                    android:text="Candidate Resume / Curriculum Vitae"
                     android:textColor="#0F172A"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -75,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_pill_required_blue"
-                    android:text="Required"
+                    android:text="Optional"
                     android:textColor="#2563EB"
                     android:textSize="11sp"
                     android:textStyle="bold"
@@ -135,10 +136,10 @@
                             android:id="@+id/tvResumeFileName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="candidate_resume_curriculum_vitae.pdf"
-                            android:textColor="#0F172A"
+                            android:text="No document selected"
+                            android:textColor="#64748B"
                             android:textSize="13sp"
-                            android:textStyle="bold"
+                            android:textStyle="normal"
                             android:singleLine="true"
                             android:ellipsize="middle" />
 
@@ -178,7 +179,7 @@
                         android:id="@+id/tvBtnUploadResume"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Change Resume"
+                        android:text="Upload Resume"
                         android:textColor="#1E293B"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -494,6 +495,20 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_pill_required_blue"
+                    android:text="Optional"
+                    android:textColor="#2563EB"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp" />
+
                 <LinearLayout
                     android:id="@+id/btnAddVocationalCert"
                     android:layout_width="wrap_content"
@@ -528,7 +543,7 @@
                 android:textSize="12.5sp"
                 android:lineSpacingExtra="2dp" />
 
-            <!-- Certificate Item -->
+            <!-- Certificate Item (hidden by default, shown when user uploads a certificate) -->
             <LinearLayout
                 android:id="@+id/layoutVocationalItem"
                 android:layout_width="match_parent"
@@ -537,7 +552,8 @@
                 android:background="@drawable/bg_card_upload_box"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="12dp">
+                android:padding="12dp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="38dp"
@@ -565,7 +581,7 @@
                         android:id="@+id/tvVocationalTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Diploma in Swedish &amp; Deep Tissue Bodywork"
+                        android:text="Vocational Certificate"
                         android:textColor="#0F172A"
                         android:textSize="13.5sp"
                         android:textStyle="bold" />
@@ -575,7 +591,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="Indian Institute of Spa &amp; Wellness Sciences · Completed 2023 · spa_diploma_certification.pdf"
+                        android:text="Uploaded certificate"
                         android:textColor="#64748B"
                         android:textSize="11.5sp" />
 
@@ -604,13 +620,35 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Government ID (Aadhaar Card) *"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Government ID (Aadhaar Card) *"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_required_blue"
+                    android:text="Required"
+                    android:textColor="#2563EB"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp" />
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -650,7 +688,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="aadhaar_card_front.jpg"
+                        android:text="No document selected"
                         android:textColor="#64748B"
                         android:textSize="11.5sp" />
 
@@ -709,7 +747,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="aadhaar_card_back.jpg"
+                        android:text="No document selected"
                         android:textColor="#64748B"
                         android:textSize="11.5sp" />
 

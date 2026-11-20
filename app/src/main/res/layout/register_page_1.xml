@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/svRegisterPage1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F7FB"
     android:clipToPadding="false"
     android:fillViewport="true"
+    android:isScrollContainer="true"
     android:overScrollMode="never">
 
     <LinearLayout
@@ -15,7 +17,7 @@
         android:paddingStart="16dp"
         android:paddingTop="20dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="28dp">
+        android:paddingBottom="90dp">
 
         <!-- Progress header -->
         <LinearLayout
@@ -287,45 +289,62 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
-                android:text="City"
+                android:text="Where do you live"
                 android:textColor="#24324B"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxStrokeColor="@color/Electric_Blue"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="2dp"
-                app:hintEnabled="false">
+                android:layout_marginBottom="18dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCity"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Select city"
-                    android:focusable="false"
-                    android:clickable="true"
-                    android:cursorVisible="false"
-                    android:inputType="none"
-                    android:paddingStart="14dp"
-                    android:paddingTop="15dp"
-                    android:paddingEnd="14dp"
-                    android:paddingBottom="15dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="#9AA5A1"
-                    android:drawableEnd="@drawable/arrow_down"
-                    android:drawableTint="#9AA5A1"
-                    android:textSize="15sp" />
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/Electric_Blue"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintEnabled="false">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/etCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Type city name (e.g. Kolkata, London)"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:clickable="true"
+                        android:cursorVisible="true"
+                        android:inputType="textCapWords|textNoSuggestions"
+                        android:completionThreshold="2"
+                        android:paddingStart="14dp"
+                        android:paddingTop="15dp"
+                        android:paddingEnd="44dp"
+                        android:paddingBottom="15dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="#9AA5A1"
+                        android:textSize="15sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pbCityLoading"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
+                    android:indeterminate="true"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
 
             <!-- Address -->
             <TextView

@@ -5,6 +5,7 @@ public class Constant {
     public static final String RegisterUrl = "https://jiifit.com/Jifiit/Therapist/expert_register.php";
     // Multi-step Registration Endpoints
     public static final String RegisterStep1Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step1.php";
+    public static final String SearchCityUrl = "https://jiifit.com/Jifiit/Therapist/search_cities.php";
     public static final String RegisterStep2Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step2.php";
     public static final String RegisterStep3Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step3.php";
     public static final String RegisterStep4Url = "https://jiifit.com/Jifiit/Therapist/expert_register_step4.php";
@@ -180,6 +181,9 @@ public class Constant {
     public static String fetchDuePayment = "https://jiifit.com/Jifiit/commission/fetchDuePayment.php?therapist_id=";
     public static String CallBackUrl = "https://jiifit.com/Jifiit/commission/callback.php";
     public static String CallBackUrl2 = "https://jiifit.com/Jifiit/commission/callback2.php";
+    public static String KitPaymentCallbackUrl = "https://jiifit.com/Jifiit/Therapist/kit_payment_callback.php";
+    public static String KitPaymentRedirectUrl = "https://jiifit.com/Jifiit/Therapist/kit_payment_redirect.php";
+    public static String UpdateKitPaymentUrl = "https://jiifit.com/Jifiit/Therapist/update_kit_payment.php";
     public static String wthidrawlRqst = "https://jiifit.com/Jifiit/commission/payment_request.php";
     public static String fetchLastRequest = "https://jiifit.com/Jifiit/commission/get_payment_request_date.php?th_id=";
     public static String fetchPaymentRequestStatus = "https://jiifit.com/Jifiit/commission/fetchPaymentRequestStatus.php?th_id=";

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/registerRootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginTop="0dp"
         android:gravity="center_vertical">
 
         <ImageView
@@ -51,7 +52,7 @@
 
     <View
         android:id="@+id/toolbarDivider"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#E0E4E8" />
 
@@ -72,6 +73,7 @@
 
     <!-- Bottom nav -->
     <LinearLayout
+        android:id="@+id/bottomNavContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

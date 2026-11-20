@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,8 +45,13 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AutoCompleteTextView;
+import android.widget.Filter;
+import android.net.Uri;
+import android.text.InputType;
 
 import android.database.Cursor;
 import android.provider.OpenableColumns;
@@ -49,6 +60,12 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.view.inputmethod.InputMethodManager;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -97,6 +114,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,7 +140,13 @@ public class Register extends AppCompatActivity {
     private EditText regName, regAadhaar, regMobile, regEmail,
             regDob, regAddress;
 
-    private TextInputEditText regCity;
+    private AutoCompleteTextView regCity;
+    private ProgressBar pbCityLoading;
+    private String selectedLivingCityName = "";
+    private final Handler citySearchHandler = new Handler(Looper.getMainLooper());
+    private Runnable citySearchRunnable = null;
+    private static final String TAG_CITY_SEARCH = "tag_city_search";
+
     private TextView tvAge;
     private RadioGroup rgGender;
     private CountryCodePicker ccp;
@@ -150,6 +174,141 @@ public class Register extends AppCompatActivity {
     private String formMobile = "";
     private String formEmail = "";
     private String formAddress = "";
+    private String formCityName = "";
+    private String existingProfilePhotoUrl = null;
+
+    private void capturePage1FormState() {
+        if (regName != null && regName.getText() != null && regName.getText().length() > 0) {
+            formName = regName.getText().toString().trim();
+        }
+        if (regAadhaar != null && regAadhaar.getText() != null && regAadhaar.getText().length() > 0) {
+            formAadhaar = regAadhaar.getText().toString().replaceAll("\\s+", "").trim();
+        }
+        if (regMobile != null && regMobile.getText() != null && regMobile.getText().length() > 0) {
+            formMobile = (ccp != null) ? ccp.getFullNumberWithPlus() : regMobile.getText().toString().trim();
+        }
+        if (regEmail != null && regEmail.getText() != null && regEmail.getText().length() > 0) {
+            formEmail = regEmail.getText().toString().trim();
+        }
+        if (regAddress != null && regAddress.getText() != null && regAddress.getText().length() > 0) {
+            formAddress = regAddress.getText().toString().trim();
+        }
+        if (regCity != null && regCity.getText() != null && regCity.getText().length() > 0) {
+            formCityName = regCity.getText().toString().trim();
+        }
+        if (rgGender != null && rgGender.getCheckedRadioButtonId() != -1) {
+            RadioButton selectedRb = rgGender.findViewById(rgGender.getCheckedRadioButtonId());
+            if (selectedRb != null) {
+                selectedGenderString = selectedRb.getText().toString().trim();
+            }
+        }
+    }
+
+    private void restorePage1Views() {
+        if (regName != null && !TextUtils.isEmpty(formName)) {
+            if (!formName.equals(regName.getText().toString().trim())) {
+                regName.setText(formName);
+            }
+        }
+        if (regEmail != null && !TextUtils.isEmpty(formEmail)) {
+            if (!formEmail.equals(regEmail.getText().toString().trim())) {
+                regEmail.setText(formEmail);
+            }
+        }
+        if (regAddress != null && !TextUtils.isEmpty(formAddress)) {
+            if (!formAddress.equals(regAddress.getText().toString().trim())) {
+                regAddress.setText(formAddress);
+            }
+        }
+        if (regCity != null && !TextUtils.isEmpty(selectedLivingCityName)) {
+            regCity.setText(selectedLivingCityName, false);
+            formCityName = selectedLivingCityName;
+        } else if (regCity != null && !TextUtils.isEmpty(formCityName)) {
+            regCity.setText(formCityName, false);
+            selectedLivingCityName = formCityName;
+        }
+        if (regMobile != null && !TextUtils.isEmpty(formMobile)) {
+            if (ccp != null) {
+                try {
+                    ccp.setFullNumber(formMobile);
+                } catch (Exception e) {
+                    regMobile.setText(formMobile);
+                }
+            } else {
+                regMobile.setText(formMobile);
+            }
+        }
+        if (regAadhaar != null && !TextUtils.isEmpty(formAadhaar)) {
+            String clean = formAadhaar.replaceAll("\\s+", "");
+            StringBuilder formatted = new StringBuilder();
+            for (int i = 0; i < clean.length(); i++) {
+                formatted.append(clean.charAt(i));
+                if (i == 3 || i == 7) formatted.append(" ");
+            }
+            if (!formatted.toString().equals(regAadhaar.getText().toString().trim())) {
+                regAadhaar.setText(formatted.toString());
+            }
+        }
+        if (!TextUtils.isEmpty(selectedDob) && regDob != null) {
+            try {
+                SimpleDateFormat dbFmt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                Date d = dbFmt.parse(selectedDob);
+                if (d != null) {
+                    SimpleDateFormat dispFmt = new SimpleDateFormat("MM / dd / yyyy", Locale.getDefault());
+                    regDob.setText(dispFmt.format(d));
+                    Calendar dobCal = Calendar.getInstance();
+                    dobCal.setTime(d);
+                    Calendar today = Calendar.getInstance();
+                    int years = today.get(Calendar.YEAR) - dobCal.get(Calendar.YEAR);
+                    int months = today.get(Calendar.MONTH) - dobCal.get(Calendar.MONTH);
+                    if (today.get(Calendar.DAY_OF_MONTH) < dobCal.get(Calendar.DAY_OF_MONTH)) {
+                        months--;
+                    }
+                    if (months < 0) {
+                        years--;
+                        months += 12;
+                    }
+                    if (tvAge != null) {
+                        if (years < 18) {
+                            tvAge.setText(R.string.age_warning);
+                            tvAge.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                        } else {
+                            tvAge.setText("Your current age is : " + years + " years and " + months + " months");
+                            tvAge.setTextColor(getResources().getColor(R.color.green_success));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                regDob.setText(selectedDob);
+            }
+        }
+        if (rgGender != null && !TextUtils.isEmpty(selectedGenderString)) {
+            for (int i = 0; i < rgGender.getChildCount(); i++) {
+                View child = rgGender.getChildAt(i);
+                if (child instanceof RadioButton) {
+                    RadioButton rb = (RadioButton) child;
+                    if (selectedGenderString.equalsIgnoreCase(rb.getText().toString().trim())) {
+                        rgGender.check(rb.getId());
+                        rb.setBackgroundResource(R.drawable.bg_chip_selected);
+                        rb.setTextColor(getResources().getColor(R.color.white));
+                    } else {
+                        rb.setBackgroundResource(R.drawable.bg_chip_unselected);
+                        rb.setTextColor(getResources().getColor(R.color.Text_Blue));
+                    }
+                }
+            }
+        }
+        if (imgPhoto != null && !TextUtils.isEmpty(existingProfilePhotoUrl)) {
+            try {
+                com.bumptech.glide.Glide.with(this)
+                        .load(existingProfilePhotoUrl)
+                        .placeholder(R.drawable.ic_avatar_placeholder)
+                        .into(imgPhoto);
+            } catch (Exception e) {
+                Log.w(TAG, "Could not load existing profile photo with Glide", e);
+            }
+        }
+    }
 
     // TextWatchers to prevent duplicate listeners
     private TextWatcher aadhaarFormatterWatcher = null;
@@ -160,6 +319,7 @@ public class Register extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            capturePage1FormState();
             validateCurrentPage();
         }
 
@@ -187,15 +347,9 @@ public class Register extends AppCompatActivity {
         return mRequestQueue;
     }
 
-    // City state
-    private String selectedCityId = "";
+    // City state (Page 3 working city preferences)
     private String selectedLocalityId = "";
     private String selectedHubId = "";
-
-    // Page 1 (status = 0)
-    private final ArrayList<String> cityNamesP1 = new ArrayList<>();
-    private final ArrayList<String> cityIdsP1 = new ArrayList<>();
-    private boolean cityLoadedP1 = false;
 
     // Page 3 (status = 1)
     private final ArrayList<String> cityNamesP3 = new ArrayList<>();
@@ -213,13 +367,40 @@ public class Register extends AppCompatActivity {
     // ============================================================
 
     private RadioGroup rgCategory;
-    private GridLayout glExperience;
+    private Spinner spExperience;
+    private View flExperienceDropdown;
     private EditText etExpDesc;
     private View llServiceSection;
     private View dividerServiceSectionBottom;
     private TextView tvSelectedServicesCount;
     private TextView tvServiceCategoryHeader;
     private LinearLayout llServiceItemsContainer;
+
+    public static class ExperienceOption {
+        private final String label;
+        private final String value;
+
+        public ExperienceOption(String label, String value) {
+            this.label = label;
+            this.value = value;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
+    private final List<ExperienceOption> experienceOptions = new ArrayList<>();
 
     public static class CategoryItem {
         public final String id;
@@ -270,31 +451,14 @@ public class Register extends AppCompatActivity {
     private final Set<String> selectedServices = new LinkedHashSet<>();
     private final Map<String, Set<String>> categorySelectedServices = new LinkedHashMap<>();
 
+    private final Set<String> loadingCategories = Collections.synchronizedSet(new HashSet<>());
+    private final Set<String> failedCategories = Collections.synchronizedSet(new HashSet<>());
+
     private boolean categoryUiBuilt = false;
 
     private static final Map<String, List<String>> CATEGORY_SERVICES = new LinkedHashMap<>();
     static {
-        // Primary UI Categories
-        CATEGORY_SERVICES.put("Massage Therapist", Arrays.asList(
-                "Deep Tissue Massage",
-                "Swedish Relaxation Massage",
-                "Aromatherapy Massage",
-                "Balinese Body Therapy",
-                "Hot Stone Therapy",
-                "Foot Reflexology",
-                "Thai Traditional Massage",
-                "Head, Neck & Shoulder Relief"));
-
-        CATEGORY_SERVICES.put("Ayurveda Therapist", Arrays.asList(
-                "Abhyanga Full Body Massage",
-                "Shirodhara Therapy",
-                "Potli Herbal Massage",
-                "Panchakarma Therapy",
-                "Kadi Vasti (Spine Care)",
-                "Udwarthanam (Herbal Scrub)",
-                "Nasya Therapy",
-                "Janu Vasti (Knee Care)"));
-
+        // Other Categories (Massage and Ayurveda MUST be fetched dynamically from database APIs)
         CATEGORY_SERVICES.put("Personal Trainer", Arrays.asList(
                 "Strength & Muscle Building",
                 "Weight Loss & Fat Burn",
@@ -343,11 +507,7 @@ public class Register extends AppCompatActivity {
                 "PCOS / Hormonal Diet Plan",
                 "Detox & Gut Health Plan"));
 
-        // Database Table / Backend Name Aliases
-        CATEGORY_SERVICES.put("Massage at home", CATEGORY_SERVICES.get("Massage Therapist"));
-        CATEGORY_SERVICES.put("Massage at hotel", CATEGORY_SERVICES.get("Massage Therapist"));
-        CATEGORY_SERVICES.put("Ayurveda at home", CATEGORY_SERVICES.get("Ayurveda Therapist"));
-        CATEGORY_SERVICES.put("Ayurveda Massage Therapist", CATEGORY_SERVICES.get("Ayurveda Therapist"));
+        // Database Table / Backend Name Aliases (strictly no static entries for Massage or Ayurveda)
         CATEGORY_SERVICES.put("Personal trainer at home", CATEGORY_SERVICES.get("Personal Trainer"));
         CATEGORY_SERVICES.put("Yoga at home", CATEGORY_SERVICES.get("Yoga Instructor"));
         CATEGORY_SERVICES.put("Yoga Teacher", CATEGORY_SERVICES.get("Yoga Instructor"));
@@ -358,16 +518,7 @@ public class Register extends AppCompatActivity {
         CATEGORY_SERVICES.put("Nutrionist at home", CATEGORY_SERVICES.get("Nutritionist"));
     }
 
-    private static final String[] EXPERIENCE = {
-            "Fresher",
-            "Less than 1 year",
-            "1–3 Years",
-            "3–5 Years",
-            "5-8 Years",
-            "8-10 Years",
-            "10-15 Years",
-            "15+ Years"
-    };
+
 
     // ============================================================
     // PAGE 3 - PREFERENCES / SERVICE AREAS
@@ -428,6 +579,8 @@ public class Register extends AppCompatActivity {
     private String aadhaarFrontDocBase64 = "";
     private String aadhaarBackFileName = "";
     private String aadhaarBackDocBase64 = "";
+    private String vocationalCertFileName = "";
+    private String vocationalCertDocBase64 = "";
 
     // ============================================================
     // PAGE 5 - REFERRAL
@@ -737,10 +890,17 @@ public class Register extends AppCompatActivity {
                     tvBtnUploadAadhaarBack.setText("Replace Back");
                 break;
             case 7:
-                if (layoutVocationalItem != null)
+                vocationalCertFileName = name;
+                vocationalCertDocBase64 = base64Payload;
+                if (layoutVocationalItem != null) {
                     layoutVocationalItem.setVisibility(View.VISIBLE);
-                if (tvVocationalSubtitle != null)
+                }
+                if (tvVocationalTitle != null) {
+                    tvVocationalTitle.setText("Vocational Certificate");
+                }
+                if (tvVocationalSubtitle != null) {
                     tvVocationalSubtitle.setText("Uploaded · " + name);
+                }
                 break;
         }
         validateCurrentPage();
@@ -803,6 +963,36 @@ public class Register extends AppCompatActivity {
 
         setContentView(R.layout.activity_register);
 
+        View root = findViewById(R.id.registerRootLayout);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+                Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                Insets ime = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+
+                int bottomPadding = Math.max(systemBars.bottom, ime.bottom);
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, bottomPadding);
+
+                if (ime.bottom > systemBars.bottom) {
+                    v.postDelayed(() -> {
+                        View focused = getCurrentFocus();
+                        if (focused instanceof EditText) {
+                            ScrollView sv = findScrollView(getCurrentPageView());
+                            if (sv != null) {
+                                View target = focused;
+                                if (focused.getParent() != null && focused.getParent().getParent() instanceof com.google.android.material.textfield.TextInputLayout) {
+                                    target = (View) focused.getParent().getParent();
+                                }
+                                scrollToTarget(sv, target);
+                            }
+                        }
+                    }, 120);
+                }
+
+                return windowInsets;
+            });
+            ViewCompat.requestApplyInsets(root);
+        }
+
         initDefaultCategories();
         initViews();
         setupViewPager();
@@ -813,15 +1003,49 @@ public class Register extends AppCompatActivity {
         checkSavedRegistrationProgress();
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        View root = findViewById(R.id.registerRootLayout);
+        if (root != null) {
+            ViewCompat.requestApplyInsets(root);
+            root.postDelayed(() -> {
+                View focused = getCurrentFocus();
+                if (focused instanceof EditText) {
+                    ScrollView sv = findScrollView(getCurrentPageView());
+                    if (sv != null) {
+                        View target = focused;
+                        if (focused.getParent() != null && focused.getParent().getParent() instanceof com.google.android.material.textfield.TextInputLayout) {
+                            target = (View) focused.getParent().getParent();
+                        }
+                        scrollToTarget(sv, target);
+                    }
+                }
+            }, 150);
+        }
+    }
+
     private void checkSavedRegistrationProgress() {
+        Intent intent = getIntent();
+        String intentExpertId = intent != null ? intent.getStringExtra("EXTRA_EXPERT_ID") : null;
         android.content.SharedPreferences sp = getSharedPreferences("credentials", MODE_PRIVATE);
-        String storedId = sp.getString("Id", "");
+        String storedId = !TextUtils.isEmpty(intentExpertId) ? intentExpertId : sp.getString("Id", "");
+
+        if (!TextUtils.isEmpty(storedId)) {
+            registeredExpertId = storedId;
+        }
+
+        if (intent != null && intent.hasExtra("EXTRA_PAGE_INDEX")) {
+            int targetPage = intent.getIntExtra("EXTRA_PAGE_INDEX", 0);
+            viewPager.setCurrentItem(targetPage, false);
+            return;
+        }
+
         if (TextUtils.isEmpty(storedId)) {
             Log.d(TAG, "No stored expert ID in credentials. Starting registration at Page 1.");
             return;
         }
 
-        registeredExpertId = storedId;
         trackRegistrationStatus(storedId);
     }
 
@@ -858,15 +1082,64 @@ public class Register extends AppCompatActivity {
                 response -> {
                     safeDismiss.run();
                     Log.d(TAG, "Track status response: " + response);
-                    if (response == null || !response.trim().startsWith("{")) {
+                    String cleanResponse = response != null ? response.trim() : "";
+                    int jsonStart = cleanResponse.indexOf('{');
+                    int jsonEnd = cleanResponse.lastIndexOf('}');
+                    if (jsonStart >= 0 && jsonEnd > jsonStart) {
+                        cleanResponse = cleanResponse.substring(jsonStart, jsonEnd + 1);
+                    }
+                    if (!cleanResponse.startsWith("{")) {
                         Log.w(TAG, "Non-JSON response from track status API: " + response);
                         return;
                     }
                     try {
-                        JSONObject json = new JSONObject(response);
+                        JSONObject json = new JSONObject(cleanResponse);
                         if (!json.optBoolean("status", false)) {
                             Log.w(TAG, "Status check returned false: " + json.optString("message"));
+                            String msg = json.optString("message", "");
+                            if (msg.toLowerCase().contains("not found")) {
+                                getSharedPreferences("credentials", MODE_PRIVATE).edit().remove("Id").apply();
+                                registeredExpertId = null;
+                            }
                             return;
+                        }
+
+                        // Recover Page 1 personal fields
+                        String rName = json.optString("name", "");
+                        String rPhone = json.optString("phone", "");
+                        String rEmail = json.optString("email", "");
+                        String rAadhaar = json.optString("aadhar_card_no", "");
+                        String rGender = json.optString("gender", "");
+                        String rDob = json.optString("date_of_birth", "");
+                        String rAddress = json.optString("address", "");
+                        String rCityId = json.optString("city_id", "");
+                        String rCityName = json.optString("city_name", "");
+                        String rPhotoUrl = json.optString("profile_photo_url", "");
+
+                        if (!TextUtils.isEmpty(rName)) formName = rName;
+                        if (!TextUtils.isEmpty(rPhone)) formMobile = rPhone;
+                        if (!TextUtils.isEmpty(rEmail)) formEmail = rEmail;
+                        if (!TextUtils.isEmpty(rAadhaar)) formAadhaar = rAadhaar;
+                        if (!TextUtils.isEmpty(rGender)) selectedGenderString = rGender;
+                        if (!TextUtils.isEmpty(rDob)) selectedDob = rDob;
+                        if (!TextUtils.isEmpty(rAddress)) formAddress = rAddress;
+                        String rLivingCity = json.optString("living_city_name", "");
+                        if (!TextUtils.isEmpty(rLivingCity)) {
+                            selectedLivingCityName = rLivingCity;
+                            formCityName = rLivingCity;
+                        } else if (!TextUtils.isEmpty(rCityName)) {
+                            selectedLivingCityName = rCityName;
+                            formCityName = rCityName;
+                        }
+                        if (!TextUtils.isEmpty(rPhotoUrl)) existingProfilePhotoUrl = rPhotoUrl;
+                        String rExperience = json.optString("experience", "");
+                        if (!TextUtils.isEmpty(rExperience)) {
+                            selectedExperience = rExperience;
+                        }
+
+                        if (currentPage == 0) {
+                            restorePage1Views();
+                            validateCurrentPage();
                         }
 
                         int l1 = json.optInt("1st_layout", 0);
@@ -874,29 +1147,37 @@ public class Register extends AppCompatActivity {
                         int l3 = json.optInt("3rd_layout", 0);
                         int l4 = json.optInt("4th_layout", 0);
                         int l5 = json.optInt("5th_layout", 0);
-                        String verification = json.optString("verification", "UNVERIFIED");
+                        String verification = json.optString("verification", "UNVERIFIED").trim();
+                        String kitPayment = json.optString("kit_payment", "").trim();
 
-                        if ("VERIFIED".equalsIgnoreCase(verification)) {
-                            Intent intent = new Intent(Register.this, VerificationCenterActivity.class);
-                            intent.putExtra("EXTRA_EXPERT_ID", expertId);
-                            startActivity(intent);
-                            finish();
-                        } else if (l1 == 1 && l2 == 1 && l3 == 1 && l4 == 1 && l5 == 1) {
-                            Intent intent = new Intent(Register.this, ApplicationSubmittedActivity.class);
-                            intent.putExtra("EXTRA_EXPERT_ID", expertId);
-                            startActivity(intent);
-                            finish();
+                        boolean allLayoutsComplete = (l1 == 1 && l2 == 1 && l3 == 1 && l4 == 1 && l5 == 1);
+
+                        if (allLayoutsComplete) {
+                            if ("VERIFIED".equalsIgnoreCase(verification)) {
+                                if ("pending".equalsIgnoreCase(kitPayment)) {
+                                    Intent intent = new Intent(Register.this, TrainingRegistrationKitActivity.class);
+                                    intent.putExtra("EXTRA_EXPERT_ID", expertId);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Intent intent = new Intent(Register.this, VerificationCenterActivity.class);
+                                    intent.putExtra("EXTRA_EXPERT_ID", expertId);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            } else {
+                                Intent intent = new Intent(Register.this, ApplicationSubmittedActivity.class);
+                                intent.putExtra("EXTRA_EXPERT_ID", expertId);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else if (l4 == 1 && l5 == 0) {
-                            loadCities(1);
                             viewPager.setCurrentItem(4, false);
                         } else if (l3 == 1 && l4 == 0) {
-                            loadCities(1);
                             viewPager.setCurrentItem(3, false);
                         } else if (l2 == 1 && l3 == 0) {
-                            loadCities(1);
                             viewPager.setCurrentItem(2, false);
                         } else if (l1 == 1 && l2 == 0) {
-                            loadCities(1);
                             viewPager.setCurrentItem(1, false);
                         } else {
                             viewPager.setCurrentItem(0, false);
@@ -908,8 +1189,7 @@ public class Register extends AppCompatActivity {
                 error -> {
                     safeDismiss.run();
                     Log.e(TAG, "Failed to track registration progress: " + error.getMessage());
-                }
-        ) {
+                }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -925,6 +1205,7 @@ public class Register extends AppCompatActivity {
     private void initViews() {
         viewPager = findViewById(R.id.viewPager);
         btnNext = findViewById(R.id.btnNext);
+
         btnPrevious = findViewById(R.id.btnPrevious);
         tvStep = findViewById(R.id.tvSte);
         progressBar = findViewById(R.id.progressBar);
@@ -952,6 +1233,7 @@ public class Register extends AppCompatActivity {
                     @Override
                     public void onPageSelected(int position) {
                         super.onPageSelected(position);
+                        hideKeyboard();
                         currentPage = position;
                         updateUI();
 
@@ -992,6 +1274,114 @@ public class Register extends AppCompatActivity {
     }
 
     // ============================================================
+    // KEYBOARD HANDLING & AUTO-SCROLL HELPERS
+    // ============================================================
+
+    private void hideKeyboard() {
+        try {
+            View view = getCurrentFocus();
+            if (view == null) {
+                view = findViewById(R.id.registerRootLayout);
+            }
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                view.clearFocus();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error hiding keyboard", e);
+        }
+    }
+
+    private void setupFocusAutoScroll(View pageView) {
+        if (pageView == null) return;
+        ScrollView sv = findScrollView(pageView);
+        if (sv != null) {
+            attachFocusAutoScroll(pageView, sv);
+        }
+    }
+
+    private ScrollView findScrollView(View view) {
+        if (view == null) return null;
+        if (view instanceof ScrollView) return (ScrollView) view;
+        if (view instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) view;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                ScrollView sv = findScrollView(vg.getChildAt(i));
+                if (sv != null) return sv;
+            }
+        }
+        return null;
+    }
+
+    private void attachFocusAutoScroll(View root, ScrollView sv) {
+        if (root == null || sv == null) return;
+        if (root instanceof EditText) {
+            final View editView = root;
+            final View scrollTarget;
+            if (editView.getParent() != null && editView.getParent().getParent() instanceof com.google.android.material.textfield.TextInputLayout) {
+                scrollTarget = (View) editView.getParent().getParent();
+            } else {
+                scrollTarget = editView;
+            }
+
+            View.OnFocusChangeListener existingListener = editView.getOnFocusChangeListener();
+            editView.setOnFocusChangeListener((v, hasFocus) -> {
+                if (existingListener != null) {
+                    existingListener.onFocusChange(v, hasFocus);
+                }
+                if (hasFocus) {
+                    sv.postDelayed(() -> scrollToTarget(sv, scrollTarget), 200);
+                }
+            });
+        } else if (root instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) root;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                attachFocusAutoScroll(vg.getChildAt(i), sv);
+            }
+        }
+    }
+
+    private void scrollToTarget(final ScrollView scrollView, final View targetView) {
+        if (scrollView == null || targetView == null) {
+            return;
+        }
+        scrollView.post(() -> {
+            try {
+                Rect rect = new Rect();
+                targetView.getDrawingRect(rect);
+                scrollView.offsetDescendantRectToMyCoords(targetView, rect);
+
+                int extraPadding = (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
+
+                int scrollY = scrollView.getScrollY();
+                int scrollViewHeight = scrollView.getHeight();
+                if (scrollViewHeight <= 0) return;
+
+                int targetTop = rect.top;
+                int targetBottom = rect.bottom;
+                int targetHeight = targetBottom - targetTop;
+
+                if (targetHeight + extraPadding >= scrollViewHeight) {
+                    int desiredScrollY = Math.max(0, targetTop - (extraPadding / 2));
+                    scrollView.smoothScrollTo(0, desiredScrollY);
+                } else if (targetBottom + extraPadding > scrollY + scrollViewHeight) {
+                    int scrollAmount = (targetBottom + extraPadding) - (scrollY + scrollViewHeight);
+                    scrollView.smoothScrollBy(0, scrollAmount);
+                } else if (targetTop - extraPadding < scrollY) {
+                    int scrollAmount = Math.max(0, targetTop - extraPadding) - scrollY;
+                    scrollView.smoothScrollBy(0, scrollAmount);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error scrolling to target view", e);
+            }
+        });
+    }
+
+    // ============================================================
     // INITIALIZE PAGE VIEWS
     // ============================================================
 
@@ -1002,6 +1392,8 @@ public class Register extends AppCompatActivity {
             viewPager.postDelayed(() -> initPageViews(position), 50);
             return;
         }
+
+        setupFocusAutoScroll(pageView);
 
         switch (position) {
             // ----------------------------------------------------
@@ -1014,6 +1406,7 @@ public class Register extends AppCompatActivity {
                 regEmail = pageView.findViewById(R.id.reg_email);
                 regDob = pageView.findViewById(R.id.reg_age);
                 regCity = pageView.findViewById(R.id.etCity);
+                pbCityLoading = pageView.findViewById(R.id.pbCityLoading);
                 regAddress = pageView.findViewById(R.id.reg_address);
                 tvAge = pageView.findViewById(R.id.current_age);
                 rgGender = pageView.findViewById(R.id.radioGroup);
@@ -1028,10 +1421,11 @@ public class Register extends AppCompatActivity {
                 }
 
                 setupAadhaarFormatter();
-                setupCityDropdown();
+                setupSearchableCityPage1();
                 setupGenderChips();
                 setupDobPicker();
                 setupPhotoUpload();
+                restorePage1Views();
                 break;
 
             // ----------------------------------------------------
@@ -1039,7 +1433,8 @@ public class Register extends AppCompatActivity {
             // ----------------------------------------------------
             case 1:
                 rgCategory = pageView.findViewById(R.id.rgCategory);
-                glExperience = pageView.findViewById(R.id.glExperience);
+                spExperience = pageView.findViewById(R.id.spExperience);
+                flExperienceDropdown = pageView.findViewById(R.id.flExperienceDropdown);
                 etExpDesc = pageView.findViewById(R.id.reg_exp_desc);
                 llServiceSection = pageView.findViewById(R.id.llServiceSection);
                 dividerServiceSectionBottom = pageView.findViewById(R.id.dividerServiceSectionBottom);
@@ -1057,8 +1452,8 @@ public class Register extends AppCompatActivity {
                     fetchAyurvedaServicesFromApi();
                 }
 
-                if (glExperience != null && glExperience.getChildCount() == 0) {
-                    buildExperienceChips();
+                if (spExperience != null) {
+                    setupExperienceDropdown();
                 }
 
                 if (!selectedCategories.isEmpty() || !TextUtils.isEmpty(selectedCategory)) {
@@ -1208,146 +1603,345 @@ public class Register extends AppCompatActivity {
                 tvBtnUploadSchoolGrad.setText("Replace Degree");
         }
 
-        if (btnAddVocationalCert != null) {
-            btnAddVocationalCert.setOnClickListener(v -> {
-                if (layoutVocationalItem != null) {
-                    layoutVocationalItem.setVisibility(View.VISIBLE);
+        // Vocational Certificate: hidden by default unless uploaded
+        if (layoutVocationalItem != null) {
+            if (!TextUtils.isEmpty(vocationalCertFileName)) {
+                layoutVocationalItem.setVisibility(View.VISIBLE);
+                if (tvVocationalTitle != null) {
+                    tvVocationalTitle.setText("Vocational Certificate");
                 }
-                openDocumentPicker(7);
-            });
+                if (tvVocationalSubtitle != null) {
+                    tvVocationalSubtitle.setText("Uploaded · " + vocationalCertFileName);
+                }
+            } else {
+                layoutVocationalItem.setVisibility(View.GONE);
+            }
+        }
+
+        if (btnAddVocationalCert != null) {
+            btnAddVocationalCert.setOnClickListener(v -> openDocumentPicker(7));
         }
         if (ivDeleteVocational != null) {
             ivDeleteVocational.setOnClickListener(v -> {
+                vocationalCertFileName = "";
+                vocationalCertDocBase64 = "";
                 if (layoutVocationalItem != null) {
                     layoutVocationalItem.setVisibility(View.GONE);
                 }
                 Toast.makeText(Register.this, "Certificate removed", Toast.LENGTH_SHORT).show();
+                validateCurrentPage();
             });
         }
     }
 
     // ============================================================
-    // PAGE 1 - CITY
+    // PAGE 1 - WORLDWIDE SEARCHABLE CITY SELECTION
     // ============================================================
 
-    private void setupCityDropdown() {
+    public static class CityItem {
+        public final String cityName;
+        public final String countryName;
+        public final String displayName;
+
+        public CityItem(String cityName, String countryName, String displayName) {
+            this.cityName = cityName;
+            this.countryName = countryName;
+            this.displayName = displayName;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return displayName;
+        }
+    }
+
+    public static class CitySearchAdapter extends ArrayAdapter<CityItem> {
+        private final List<CityItem> items;
+        private final LayoutInflater inflater;
+
+        public CitySearchAdapter(Context context, List<CityItem> items) {
+            super(context, 0, items);
+            this.items = items;
+            this.inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return items != null ? items.size() : 0;
+        }
+
+        @Override
+        public CityItem getItem(int position) {
+            return (items != null && position >= 0 && position < items.size()) ? items.get(position) : null;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            if (convertView == null) {
+                convertView = inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+            }
+            TextView tv = convertView.findViewById(android.R.id.text1);
+            CityItem item = getItem(position);
+            if (item != null && tv != null) {
+                tv.setText(item.displayName);
+                if (TextUtils.isEmpty(item.cityName)) {
+                    // Status, empty or error item
+                    tv.setTextColor(Color.parseColor("#64748B"));
+                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                } else {
+                    tv.setTextColor(Color.parseColor("#14213D"));
+                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                }
+                tv.setPadding(36, 28, 36, 28);
+            }
+            return convertView;
+        }
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults results = new FilterResults();
+                    results.values = items;
+                    results.count = items != null ? items.size() : 0;
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    notifyDataSetChanged();
+                }
+            };
+        }
+    }
+
+    private void setupSearchableCityPage1() {
         if (regCity == null) {
             return;
         }
 
-        regCity.setFocusable(false);
-        regCity.setFocusableInTouchMode(false);
-        regCity.setCursorVisible(false);
+        regCity.setFocusable(true);
+        regCity.setFocusableInTouchMode(true);
+        regCity.setCursorVisible(true);
         regCity.setClickable(true);
-        regCity.setLongClickable(false);
-        regCity.setInputType(android.text.InputType.TYPE_NULL);
-        regCity.setKeyListener(null);
+        regCity.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        regCity.setDropDownBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        regCity.setThreshold(1);
 
-        View parent = (View) regCity.getParent();
-        if (parent != null) {
-            parent.setFocusable(false);
-            parent.setFocusableInTouchMode(false);
-            parent.setClickable(false);
-        }
-
-        regCity.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                v.clearFocus();
-                openCityPicker();
-                return true;
+        regCity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-            return true;
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String text = s != null ? s.toString().trim() : "";
+
+                // Invalidate selected city if user edits text away from previously selected city
+                if (!text.equalsIgnoreCase(selectedLivingCityName)) {
+                    selectedLivingCityName = "";
+                    validateCurrentPage();
+                } else if (!TextUtils.isEmpty(selectedLivingCityName)) {
+                    // Current text matches the confirmed selected city; do not search again
+                    if (citySearchRunnable != null) {
+                        citySearchHandler.removeCallbacks(citySearchRunnable);
+                    }
+                    if (pbCityLoading != null) {
+                        pbCityLoading.setVisibility(View.GONE);
+                    }
+                    return;
+                }
+
+                if (citySearchRunnable != null) {
+                    citySearchHandler.removeCallbacks(citySearchRunnable);
+                }
+
+                if (text.length() >= 2) {
+                    citySearchRunnable = () -> performCitySearch(text);
+                    citySearchHandler.postDelayed(citySearchRunnable, 300);
+                } else {
+                    if (pbCityLoading != null) {
+                        pbCityLoading.setVisibility(View.GONE);
+                    }
+                    if (regCity != null && regCity.isPopupShowing()) {
+                        regCity.dismissDropDown();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        regCity.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(selectedLivingCityName) && regCity.getText() != null
+                    && regCity.getText().toString().trim().length() >= 2) {
+                if (!regCity.isPopupShowing()) {
+                    performCitySearch(regCity.getText().toString().trim());
+                }
+            }
+        });
+
+        regCity.setOnItemClickListener((parent, view, position, id) -> {
+            CityItem item = (CityItem) parent.getItemAtPosition(position);
+            if (item == null || TextUtils.isEmpty(item.cityName)) {
+                if (regCity.isPopupShowing()) {
+                    regCity.dismissDropDown();
+                }
+                return;
+            }
+            selectedLivingCityName = item.displayName;
+            formCityName = item.displayName;
+            if (citySearchRunnable != null) {
+                citySearchHandler.removeCallbacks(citySearchRunnable);
+            }
+            getAppRequestQueue().cancelAll(TAG_CITY_SEARCH);
+            if (pbCityLoading != null) {
+                pbCityLoading.setVisibility(View.GONE);
+            }
+            regCity.setText(item.displayName, false);
+            regCity.dismissDropDown();
+            regCity.clearFocus();
+            validateCurrentPage();
         });
     }
 
-    private void openCityPicker() {
-        if (cityLoadedP1 && !cityNamesP1.isEmpty()) {
-            showCityDialog();
-        } else {
-            loadCities(0);
-        }
-    }
+    private void performCitySearch(String query) {
+        if (isFinishing() || isDestroyed() || regCity == null)
+            return;
 
-    private void showCityDialog() {
-        String[] cities = cityNamesP1.toArray(new String[0]);
-
-        ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.select_dialog_item,
-                cities) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view;
-                textView.setTextColor(Color.BLACK);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                textView.setPadding(40, 24, 40, 24);
-                textView.setBackgroundColor(Color.WHITE);
-                return view;
+        // If this text is already the selected city, do not search
+        if (!TextUtils.isEmpty(selectedLivingCityName) && query.equalsIgnoreCase(selectedLivingCityName)) {
+            if (pbCityLoading != null) {
+                pbCityLoading.setVisibility(View.GONE);
             }
-        };
+            return;
+        }
 
-        AlertDialog cityDialog = new AlertDialog.Builder(this, R.style.WhiteAlertDialog)
-                .setTitle("Select City")
-                .setAdapter(cityAdapter, (dialog, which) -> {
-                    String newCityId = cityIdsP1.get(which);
-                    selectedCityId = newCityId;
+        if (pbCityLoading != null) {
+            pbCityLoading.setVisibility(View.VISIBLE);
+        }
 
-                    if (regCity != null) {
-                        regCity.setText(cityNamesP1.get(which));
+        getAppRequestQueue().cancelAll(TAG_CITY_SEARCH);
+
+        String url = Constant.SearchCityUrl + "?query=" + Uri.encode(query);
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    if (pbCityLoading != null) {
+                        pbCityLoading.setVisibility(View.GONE);
                     }
 
-                    selectedLocalityId = "";
-                    selectedHubId = "";
+                    if (regCity == null || isFinishing() || isDestroyed())
+                        return;
 
-                    localityNames.clear();
-                    localityIds.clear();
-                    localityHubIds.clear();
+                    // If user has already confirmed a city selection, do not pop up suggestions
+                    if (!TextUtils.isEmpty(selectedLivingCityName)) {
+                        return;
+                    }
 
-                    loadDataByCityId(selectedCityId);
-                    validateCurrentPage();
-                    toggleArrowDirection(false);
-                })
-                .create();
+                    String currentText = regCity.getText() != null ? regCity.getText().toString().trim() : "";
+                    if (currentText.length() < 2) {
+                        if (regCity.isPopupShowing()) {
+                            regCity.dismissDropDown();
+                        }
+                        return;
+                    }
 
-        cityDialog.setOnDismissListener(dialog -> toggleArrowDirection(false));
+                    if (response == null || !response.trim().startsWith("{")) {
+                        showCitySearchState("Unable to search cities. Please retry.");
+                        return;
+                    }
 
-        cityDialog.setOnShowListener(dialogInterface -> {
-            Window w = cityDialog.getWindow();
-            if (w != null) {
-                // Force whole dialog window white
-                w.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        if (!json.optBoolean("status", false)) {
+                            showCitySearchState("City search error. Please retry.");
+                            return;
+                        }
 
-                // Title
-                int titleId = getResources().getIdentifier("alertTitle", "id", "android");
-                TextView title = cityDialog.findViewById(titleId);
-                if (title != null) {
-                    title.setTextColor(Color.BLACK);
-                    title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                    title.setTypeface(null, Typeface.BOLD);
-                    title.setPadding(40, 30, 40, 20);
-                    title.setBackgroundColor(Color.WHITE);
-                }
+                        JSONArray arr = json.optJSONArray("cities");
+                        List<CityItem> cityList = new ArrayList<>();
+                        Set<String> seen = new HashSet<>();
 
-                // List
-                ListView listView = cityDialog.getListView();
-                if (listView != null) {
-                    listView.setBackgroundColor(Color.WHITE);
-                    listView.setDivider(new ColorDrawable(Color.LTGRAY));
-                    listView.setDividerHeight(1);
-                    listView.setPadding(0, 10, 0, 10);
-                    listView.setVerticalScrollBarEnabled(true);
-                }
+                        if (arr != null && arr.length() > 0) {
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject obj = arr.getJSONObject(i);
+                                String cName = obj.optString("city_name", "").trim();
+                                String country = obj.optString("country_name", "").trim();
+                                String dName = obj.optString("display_name", "").trim();
+                                if (TextUtils.isEmpty(dName)) {
+                                    dName = !TextUtils.isEmpty(country) ? cName + ", " + country : cName;
+                                }
+                                if (!TextUtils.isEmpty(dName) && !seen.contains(dName.toLowerCase())) {
+                                    seen.add(dName.toLowerCase());
+                                    cityList.add(new CityItem(cName, country, dName));
+                                }
+                            }
+                        }
+
+                        if (cityList.isEmpty()) {
+                            showCitySearchState("No matching cities found");
+                        } else {
+                            displayCitySuggestions(cityList);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing city search response", e);
+                        showCitySearchState("Error loading city suggestions");
+                    }
+                },
+                error -> {
+                    if (pbCityLoading != null) {
+                        pbCityLoading.setVisibility(View.GONE);
+                    }
+                    if (regCity == null || isFinishing() || isDestroyed())
+                        return;
+                    if (!TextUtils.isEmpty(selectedLivingCityName))
+                        return;
+                    showCitySearchState("Network error searching cities");
+                });
+
+        request.setRetryPolicy(new DefaultRetryPolicy(12000, 1, 1.0f));
+        getAppRequestQueue().add(request.setTag(TAG_CITY_SEARCH));
+    }
+
+    private void displayCitySuggestions(List<CityItem> cityList) {
+        if (regCity == null || isFinishing() || isDestroyed())
+            return;
+        if (!TextUtils.isEmpty(selectedLivingCityName))
+            return;
+        CitySearchAdapter adapter = new CitySearchAdapter(this, cityList);
+        regCity.setAdapter(adapter);
+        regCity.setDropDownBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        regCity.post(() -> {
+            if (regCity != null && !isFinishing() && !isDestroyed() && TextUtils.isEmpty(selectedLivingCityName)) {
+                regCity.showDropDown();
             }
         });
+    }
 
-        cityDialog.show();
-
-        if (cityDialog.getWindow() != null) {
-            cityDialog.getWindow().setLayout(
-                    (int) (getResources().getDisplayMetrics().widthPixels * 0.9),
-                    android.view.WindowManager.LayoutParams.WRAP_CONTENT);
-        }
+    private void showCitySearchState(String message) {
+        if (regCity == null || isFinishing() || isDestroyed())
+            return;
+        if (!TextUtils.isEmpty(selectedLivingCityName))
+            return;
+        List<CityItem> emptyList = new ArrayList<>();
+        emptyList.add(new CityItem("", "", message));
+        CitySearchAdapter adapter = new CitySearchAdapter(this, emptyList);
+        regCity.setAdapter(adapter);
+        regCity.setDropDownBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        regCity.post(() -> {
+            if (regCity != null && !isFinishing() && !isDestroyed() && TextUtils.isEmpty(selectedLivingCityName)) {
+                regCity.showDropDown();
+            }
+        });
     }
 
     // ============================================================
@@ -1565,68 +2159,53 @@ public class Register extends AppCompatActivity {
     };
 
     private void populateDefaultCities(int status) {
-        ArrayList<String> targetNames = (status == 0) ? cityNamesP1 : cityNamesP3;
-        ArrayList<String> targetIds = (status == 0) ? cityIdsP1 : cityIdsP3;
-
-        targetNames.clear();
-        targetIds.clear();
+        cityNamesP3.clear();
+        cityIdsP3.clear();
 
         for (String[] city : DEFAULT_CITIES) {
-            targetIds.add(city[0]);
-            targetNames.add(city[1]);
+            cityIdsP3.add(city[0]);
+            cityNamesP3.add(city[1]);
         }
 
-        if (status == 0) {
-            cityLoadedP1 = true;
-            toggleArrowDirection(false);
-            showCityDialog();
-        } else {
-            cityLoadedP3 = true;
-            cityLoadingP3 = false;
-            refreshCityDropdownPage3();
-            toggleArrowDirection(false);
-            if (isCityPickerPendingP3) {
-                isCityPickerPendingP3 = false;
-                showCityDialogPage3();
-            }
+        cityLoadedP3 = true;
+        cityLoadingP3 = false;
+        refreshCityDropdownPage3();
+        toggleArrowDirection(false);
+        if (isCityPickerPendingP3) {
+            isCityPickerPendingP3 = false;
+            showCityDialogPage3();
         }
     }
 
     private void loadCities(int status) {
-        if (status == 0 && cityLoadedP1 && !cityNamesP1.isEmpty()) {
-            showCityDialog();
-            return;
-        }
-        if (status == 1 && cityLoadedP3 && !cityNamesP3.isEmpty()) {
-            showCityDialogPage3();
+        if (cityLoadedP3 && !cityNamesP3.isEmpty()) {
+            if (isCityPickerPendingP3) {
+                isCityPickerPendingP3 = false;
+                showCityDialogPage3();
+            }
             return;
         }
 
         // Prevent duplicate calls while one is already in flight
-        if (status == 1 && cityLoadingP3) {
+        if (cityLoadingP3) {
             return;
         }
 
-        if (status == 1) {
-            cityLoadingP3 = true;
-        }
-
+        cityLoadingP3 = true;
         toggleArrowDirection(true);
 
-        String url = "https://jiifit.com/Jifiit/get_cities_for_expert.php?status=" + status;
+        String url = "https://jiifit.com/Jifiit/get_cities_for_expert.php?status=1";
         Log.d(TAG, "Fetching cities with URL: " + url);
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
                 url,
                 response -> {
-                    if (status == 1) {
-                        cityLoadingP3 = false;
-                    }
+                    cityLoadingP3 = false;
 
                     if (TextUtils.isEmpty(response) || !response.trim().startsWith("{")) {
                         Log.w(TAG, "Non-JSON response from city API (WAF challenge or HTML). Loading default cities.");
-                        populateDefaultCities(status);
+                        populateDefaultCities(1);
                         return;
                     }
 
@@ -1636,22 +2215,19 @@ public class Register extends AppCompatActivity {
 
                         if (!apiStatus) {
                             Log.w(TAG, "City API returned status=false. Loading default cities.");
-                            populateDefaultCities(status);
+                            populateDefaultCities(1);
                             return;
                         }
 
                         JSONArray citiesArray = jsonResponse.optJSONArray("cities");
 
                         if (citiesArray == null || citiesArray.length() == 0) {
-                            populateDefaultCities(status);
+                            populateDefaultCities(1);
                             return;
                         }
 
-                        ArrayList<String> targetNames = (status == 0) ? cityNamesP1 : cityNamesP3;
-                        ArrayList<String> targetIds = (status == 0) ? cityIdsP1 : cityIdsP3;
-
-                        targetNames.clear();
-                        targetIds.clear();
+                        cityNamesP3.clear();
+                        cityIdsP3.clear();
 
                         for (int i = 0; i < citiesArray.length(); i++) {
                             JSONObject cityObject = citiesArray.optJSONObject(i);
@@ -1661,41 +2237,33 @@ public class Register extends AppCompatActivity {
                             String cId = cityObject.optString("id", "").trim();
                             String cName = cityObject.optString("name", "").trim();
                             if (!TextUtils.isEmpty(cName)) {
-                                targetIds.add(cId);
-                                targetNames.add(cName);
+                                cityIdsP3.add(cId);
+                                cityNamesP3.add(cName);
                             }
                         }
 
-                        if (targetNames.isEmpty()) {
-                            populateDefaultCities(status);
+                        if (cityNamesP3.isEmpty()) {
+                            populateDefaultCities(1);
                             return;
                         }
 
-                        if (status == 0) {
-                            cityLoadedP1 = true;
-                            toggleArrowDirection(false);
-                            showCityDialog();
-                        } else {
-                            cityLoadedP3 = true;
-                            refreshCityDropdownPage3();
-                            toggleArrowDirection(false);
-                            if (isCityPickerPendingP3) {
-                                isCityPickerPendingP3 = false;
-                                showCityDialogPage3();
-                            }
+                        cityLoadedP3 = true;
+                        refreshCityDropdownPage3();
+                        toggleArrowDirection(false);
+                        if (isCityPickerPendingP3) {
+                            isCityPickerPendingP3 = false;
+                            showCityDialogPage3();
                         }
 
                     } catch (Exception e) {
                         Log.e(TAG, "City parsing failed, fallback to default cities", e);
-                        populateDefaultCities(status);
+                        populateDefaultCities(1);
                     }
                 },
                 error -> {
-                    if (status == 1) {
-                        cityLoadingP3 = false;
-                    }
+                    cityLoadingP3 = false;
                     Log.w(TAG, "City API error, falling back to default cities: " + error.getMessage());
-                    populateDefaultCities(status);
+                    populateDefaultCities(1);
                 }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -2626,9 +3194,57 @@ public class Register extends AppCompatActivity {
                 services = dynamicCategoryServicesCache.get(catId);
             }
 
-            if (services != null && !services.isEmpty()) {
+            boolean isFailed = failedCategories.contains(catName) || (!TextUtils.isEmpty(catId) && failedCategories.contains(catId));
+            boolean isLoading = loadingCategories.contains(catName) || (!TextUtils.isEmpty(catId) && loadingCategories.contains(catId));
+
+            if (isFailed && (services == null || services.isEmpty())) {
+                // Error state with retry
+                LinearLayout errBox = new LinearLayout(this);
+                errBox.setOrientation(LinearLayout.VERTICAL);
+                errBox.setPadding(16, 20, 16, 20);
+                errBox.setGravity(Gravity.CENTER);
+
+                TextView tvErr = new TextView(this);
+                tvErr.setText("Unable to load services for " + catName + ".");
+                tvErr.setTextColor(Color.parseColor("#EF4444"));
+                tvErr.setTextSize(13f);
+                tvErr.setGravity(Gravity.CENTER);
+                errBox.addView(tvErr);
+
+                TextView tvRetry = new TextView(this);
+                tvRetry.setText("Tap to retry");
+                tvRetry.setTextColor(Color.parseColor("#2563EB"));
+                tvRetry.setTextSize(13f);
+                tvRetry.setTypeface(null, Typeface.BOLD);
+                tvRetry.setPadding(12, 10, 12, 10);
+                tvRetry.setGravity(Gravity.CENTER);
+                final String finalCatId = catId;
+                tvRetry.setOnClickListener(v -> {
+                    failedCategories.remove(catName);
+                    if (!TextUtils.isEmpty(finalCatId)) {
+                        failedCategories.remove(finalCatId);
+                    }
+                    loadingCategories.add(catName);
+                    renderServicesForSelectedCategories(false);
+                    fetchCategoryServicesFromApi(finalCatId, catName);
+                });
+                errBox.addView(tvRetry);
+
+                llServiceItemsContainer.addView(errBox);
+            } else if (services != null && !services.isEmpty()) {
+                // Success state: display database services
                 appendServiceRowsForCategory(catName, services);
+            } else if (services != null && services.isEmpty()) {
+                // Empty state: database returned 0 records
+                TextView tvEmpty = new TextView(this);
+                tvEmpty.setText("No services available for " + catName);
+                tvEmpty.setTextColor(Color.parseColor("#64748B"));
+                tvEmpty.setTextSize(13f);
+                tvEmpty.setPadding(16, 20, 16, 20);
+                tvEmpty.setGravity(Gravity.CENTER);
+                llServiceItemsContainer.addView(tvEmpty);
             } else {
+                // Loading state: request in progress
                 TextView tvLoading = new TextView(this);
                 tvLoading.setText("Loading services for " + catName + "...");
                 tvLoading.setTextColor(Color.parseColor("#64748B"));
@@ -2636,7 +3252,10 @@ public class Register extends AppCompatActivity {
                 tvLoading.setPadding(8, 12, 8, 12);
                 llServiceItemsContainer.addView(tvLoading);
 
-                fetchCategoryServicesFromApi(catId, catName);
+                if (!isLoading) {
+                    loadingCategories.add(catName);
+                    fetchCategoryServicesFromApi(catId, catName);
+                }
             }
         }
 
@@ -2692,26 +3311,103 @@ public class Register extends AppCompatActivity {
         }
     }
 
+    private boolean isAyurvedaCategory(String id, String name) {
+        if ("2".equals(id))
+            return true;
+        if (name == null)
+            return false;
+        String lower = name.toLowerCase(Locale.ROOT);
+        return lower.contains("ayurved");
+    }
+
+    private boolean isMassageCategory(String id, String name) {
+        if (isAyurvedaCategory(id, name))
+            return false; // Never treat Ayurveda as generic Massage
+        if ("1".equals(id) || "9".equals(id))
+            return true;
+        if (name == null)
+            return false;
+        String lower = name.toLowerCase(Locale.ROOT);
+        return lower.contains("massage");
+    }
+
+    private void cacheMassageServices(List<String> services) {
+        List<String> safeList = (services != null) ? services : Collections.emptyList();
+        dynamicCategoryServicesCache.put("Massage Therapist", safeList);
+        dynamicCategoryServicesCache.put("Massage at home", safeList);
+        dynamicCategoryServicesCache.put("Massage at hotel", safeList);
+        dynamicCategoryServicesCache.put("1", safeList);
+        dynamicCategoryServicesCache.put("9", safeList);
+    }
+
+    private void cacheAyurvedaServices(List<String> services) {
+        List<String> safeList = (services != null) ? services : Collections.emptyList();
+        dynamicCategoryServicesCache.put("Ayurveda Therapist", safeList);
+        dynamicCategoryServicesCache.put("Ayurveda at home", safeList);
+        dynamicCategoryServicesCache.put("Ayurveda Massage Therapist", safeList);
+        dynamicCategoryServicesCache.put("2", safeList);
+    }
+
     private void fetchHomeMassageServicesFromApi() {
+        loadingCategories.add("Massage Therapist");
+        loadingCategories.add("Massage at home");
+        loadingCategories.add("1");
+        loadingCategories.add("9");
+        Log.d(TAG, "Fetching dynamic home_massage services from URL: " + Constant.getHomeMassage);
+
         StringRequest request = new StringRequest(
                 Request.Method.GET,
                 Constant.getHomeMassage,
                 response -> {
+                    loadingCategories.remove("Massage Therapist");
+                    loadingCategories.remove("Massage at home");
+                    loadingCategories.remove("1");
+                    loadingCategories.remove("9");
+                    failedCategories.remove("Massage Therapist");
+                    failedCategories.remove("Massage at home");
+                    failedCategories.remove("1");
+                    failedCategories.remove("9");
+
                     List<String> services = parseServicesResponse(response);
-                    if (services != null && !services.isEmpty()) {
-                        Log.d(TAG, "Dynamic home_massage services loaded: " + services.size());
-                        dynamicCategoryServicesCache.put("Massage Therapist", services);
-                        dynamicCategoryServicesCache.put("1", services);
-                        CATEGORY_SERVICES.put("Massage Therapist", services);
-                        if (selectedCategories.contains("Massage Therapist")) {
-                            renderServicesForSelectedCategories(false);
-                            validateCurrentPage();
+                    Log.d(TAG, "Dynamic home_massage API returned " + (services != null ? services.size() : 0) + " services.");
+                    cacheMassageServices(services);
+
+                    boolean massageSelected = false;
+                    for (String sc : selectedCategories) {
+                        if (isMassageCategory("", sc)) {
+                            massageSelected = true;
+                            break;
                         }
+                    }
+                    if (massageSelected) {
+                        renderServicesForSelectedCategories(false);
+                        validateCurrentPage();
                     }
                 },
                 error -> {
-                    Log.w(TAG, "Failed to prefetch dynamic home_massage services (" + error.getMessage()
-                            + "). Retaining defaults.");
+                    loadingCategories.remove("Massage Therapist");
+                    loadingCategories.remove("Massage at home");
+                    loadingCategories.remove("1");
+                    loadingCategories.remove("9");
+                    failedCategories.add("Massage Therapist");
+                    failedCategories.add("Massage at home");
+                    failedCategories.add("1");
+                    failedCategories.add("9");
+
+                    Log.e(TAG, "Failed to load dynamic home_massage services from " + Constant.getHomeMassage
+                            + " (" + error.getMessage() + ")", error);
+
+                    boolean massageSelected = false;
+                    for (String sc : selectedCategories) {
+                        if (isMassageCategory("", sc)) {
+                            massageSelected = true;
+                            break;
+                        }
+                    }
+                    if (massageSelected) {
+                        renderServicesForSelectedCategories(false);
+                        validateCurrentPage();
+                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -2722,7 +3418,7 @@ public class Register extends AppCompatActivity {
         };
 
         request.setRetryPolicy(new DefaultRetryPolicy(
-                8000,
+                10000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -2730,25 +3426,60 @@ public class Register extends AppCompatActivity {
     }
 
     private void fetchAyurvedaServicesFromApi() {
+        loadingCategories.add("Ayurveda Therapist");
+        loadingCategories.add("Ayurveda at home");
+        loadingCategories.add("2");
+        Log.d(TAG, "Fetching dynamic ayurved_massages services from URL: " + Constant.getAyurvedaServices);
+
         StringRequest request = new StringRequest(
                 Request.Method.GET,
                 Constant.getAyurvedaServices,
                 response -> {
+                    loadingCategories.remove("Ayurveda Therapist");
+                    loadingCategories.remove("Ayurveda at home");
+                    loadingCategories.remove("2");
+                    failedCategories.remove("Ayurveda Therapist");
+                    failedCategories.remove("Ayurveda at home");
+                    failedCategories.remove("2");
+
                     List<String> services = parseServicesResponse(response);
-                    if (services != null && !services.isEmpty()) {
-                        Log.d(TAG, "Dynamic ayurved_massages services loaded: " + services.size());
-                        dynamicCategoryServicesCache.put("Ayurveda Therapist", services);
-                        dynamicCategoryServicesCache.put("2", services);
-                        CATEGORY_SERVICES.put("Ayurveda Therapist", services);
-                        if (selectedCategories.contains("Ayurveda Therapist")) {
-                            renderServicesForSelectedCategories(false);
-                            validateCurrentPage();
+                    Log.d(TAG, "Dynamic ayurved_massages API returned " + (services != null ? services.size() : 0) + " services.");
+                    cacheAyurvedaServices(services);
+
+                    boolean ayurvedaSelected = false;
+                    for (String sc : selectedCategories) {
+                        if (isAyurvedaCategory("", sc)) {
+                            ayurvedaSelected = true;
+                            break;
                         }
+                    }
+                    if (ayurvedaSelected) {
+                        renderServicesForSelectedCategories(false);
+                        validateCurrentPage();
                     }
                 },
                 error -> {
-                    Log.w(TAG, "Failed to prefetch dynamic ayurved_massages services (" + error.getMessage()
-                            + "). Retaining defaults.");
+                    loadingCategories.remove("Ayurveda Therapist");
+                    loadingCategories.remove("Ayurveda at home");
+                    loadingCategories.remove("2");
+                    failedCategories.add("Ayurveda Therapist");
+                    failedCategories.add("Ayurveda at home");
+                    failedCategories.add("2");
+
+                    Log.e(TAG, "Failed to load dynamic ayurved_massages services from " + Constant.getAyurvedaServices
+                            + " (" + error.getMessage() + ")", error);
+
+                    boolean ayurvedaSelected = false;
+                    for (String sc : selectedCategories) {
+                        if (isAyurvedaCategory("", sc)) {
+                            ayurvedaSelected = true;
+                            break;
+                        }
+                    }
+                    if (ayurvedaSelected) {
+                        renderServicesForSelectedCategories(false);
+                        validateCurrentPage();
+                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -2759,7 +3490,7 @@ public class Register extends AppCompatActivity {
         };
 
         request.setRetryPolicy(new DefaultRetryPolicy(
-                8000,
+                10000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -2768,6 +3499,10 @@ public class Register extends AppCompatActivity {
 
     private List<String> getFallbackServicesForCategory(String categoryName) {
         if (TextUtils.isEmpty(categoryName)) {
+            return Collections.emptyList();
+        }
+        // STRICT: Under no circumstances return static services for Massage or Ayurveda!
+        if (isMassageCategory("", categoryName) || isAyurvedaCategory("", categoryName)) {
             return Collections.emptyList();
         }
         List<String> list = CATEGORY_SERVICES.get(categoryName);
@@ -2789,28 +3524,55 @@ public class Register extends AppCompatActivity {
     }
 
     private void fetchCategoryServicesFromApi(String categoryId, String categoryName) {
-        String lowerCat = categoryName != null ? categoryName.toLowerCase(Locale.ROOT) : "";
-        boolean isAyurveda = "2".equals(categoryId) || lowerCat.contains("ayurved");
-        boolean isMassage = ("1".equals(categoryId) || lowerCat.contains("massage")) && !isAyurveda;
+        final boolean isAyurveda = isAyurvedaCategory(categoryId, categoryName);
+        final boolean isMassage = isMassageCategory(categoryId, categoryName);
 
         final String apiUrl = isMassage ? Constant.getHomeMassage
                 : (isAyurveda ? Constant.getAyurvedaServices : Constant.getCategoryServices);
         final int httpMethod = (isMassage || isAyurveda) ? Request.Method.GET : Request.Method.POST;
 
+        loadingCategories.add(categoryName);
+        if (!TextUtils.isEmpty(categoryId)) {
+            loadingCategories.add(categoryId);
+        }
+        Log.d(TAG, "Fetching services for category: name='" + categoryName + "', id='" + categoryId + "' from URL: " + apiUrl);
+
         StringRequest request = new StringRequest(
                 httpMethod,
                 apiUrl,
                 response -> {
+                    loadingCategories.remove(categoryName);
+                    if (!TextUtils.isEmpty(categoryId)) {
+                        loadingCategories.remove(categoryId);
+                    }
+                    failedCategories.remove(categoryName);
+                    if (!TextUtils.isEmpty(categoryId)) {
+                        failedCategories.remove(categoryId);
+                    }
+
                     List<String> services = parseServicesResponse(response);
-                    if (services == null || services.isEmpty()) {
+                    Log.d(TAG, "Services response for " + categoryName + " (" + categoryId + "): "
+                            + (services != null ? services.size() : 0) + " items parsed.");
+
+                    if (services == null) {
+                        services = Collections.emptyList();
+                    }
+
+                    // STRICT: Only use static fallback for other categories, NEVER for Massage or Ayurveda!
+                    if (services.isEmpty() && !isMassage && !isAyurveda) {
                         services = getFallbackServicesForCategory(categoryName);
                     }
 
-                    if (!TextUtils.isEmpty(categoryId)) {
-                        dynamicCategoryServicesCache.put(categoryId, services);
+                    if (isMassage) {
+                        cacheMassageServices(services);
+                    } else if (isAyurveda) {
+                        cacheAyurvedaServices(services);
+                    } else {
+                        if (!TextUtils.isEmpty(categoryId)) {
+                            dynamicCategoryServicesCache.put(categoryId, services);
+                        }
+                        dynamicCategoryServicesCache.put(categoryName, services);
                     }
-                    dynamicCategoryServicesCache.put(categoryName, services);
-                    CATEGORY_SERVICES.put(categoryName, services);
 
                     if (selectedCategories.contains(categoryName)) {
                         renderServicesForSelectedCategories(false);
@@ -2818,12 +3580,24 @@ public class Register extends AppCompatActivity {
                     }
                 },
                 error -> {
-                    Log.e(TAG, "Failed to fetch services for " + categoryName + " from " + apiUrl, error);
-                    List<String> fallback = getFallbackServicesForCategory(categoryName);
+                    loadingCategories.remove(categoryName);
                     if (!TextUtils.isEmpty(categoryId)) {
-                        dynamicCategoryServicesCache.put(categoryId, fallback);
+                        loadingCategories.remove(categoryId);
                     }
-                    dynamicCategoryServicesCache.put(categoryName, fallback);
+                    Log.e(TAG, "Failed to fetch services for " + categoryName + " from " + apiUrl + ": " + error.getMessage(), error);
+
+                    if (isMassage || isAyurveda) {
+                        failedCategories.add(categoryName);
+                        if (!TextUtils.isEmpty(categoryId)) {
+                            failedCategories.add(categoryId);
+                        }
+                    } else {
+                        List<String> fallback = getFallbackServicesForCategory(categoryName);
+                        if (!TextUtils.isEmpty(categoryId)) {
+                            dynamicCategoryServicesCache.put(categoryId, fallback);
+                        }
+                        dynamicCategoryServicesCache.put(categoryName, fallback);
+                    }
 
                     if (selectedCategories.contains(categoryName)) {
                         renderServicesForSelectedCategories(false);
@@ -2857,6 +3631,7 @@ public class Register extends AppCompatActivity {
     private List<String> parseServicesResponse(String response) {
         List<String> result = new ArrayList<>();
         if (TextUtils.isEmpty(response)) {
+            Log.w(TAG, "parseServicesResponse: empty or null response string received");
             return result;
         }
 
@@ -2868,14 +3643,14 @@ public class Register extends AppCompatActivity {
                 array = new JSONArray(trimmed);
             } else if (trimmed.startsWith("{")) {
                 JSONObject obj = new JSONObject(trimmed);
-                if (obj.has("ayurved_massages")) {
+                if (obj.has("services")) {
+                    array = obj.optJSONArray("services");
+                } else if (obj.has("home_massage")) {
+                    array = obj.optJSONArray("home_massage");
+                } else if (obj.has("ayurved_massages")) {
                     array = obj.optJSONArray("ayurved_massages");
                 } else if (obj.has("ayurveda_services")) {
                     array = obj.optJSONArray("ayurveda_services");
-                } else if (obj.has("home_massage")) {
-                    array = obj.optJSONArray("home_massage");
-                } else if (obj.has("services")) {
-                    array = obj.optJSONArray("services");
                 } else if (obj.has("data")) {
                     array = obj.optJSONArray("data");
                 } else if (obj.has("service_items")) {
@@ -2908,9 +3683,13 @@ public class Register extends AppCompatActivity {
                         }
                     }
                 }
+                Log.d(TAG, "parseServicesResponse: extracted " + result.size() + " items from array length " + array.length());
+            } else {
+                Log.w(TAG, "parseServicesResponse: no recognized services array found in response: "
+                        + (trimmed.length() > 200 ? trimmed.substring(0, 200) + "..." : trimmed));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error parsing services response: " + e.getMessage());
+            Log.e(TAG, "Error parsing services response: " + e.getMessage(), e);
         }
 
         return result;
@@ -2957,59 +3736,101 @@ public class Register extends AppCompatActivity {
     }
 
     // ============================================================
-    // PAGE 2 - EXPERIENCE
+    // PAGE 2 - EXPERIENCE (SELECT / DROPDOWN OPTIONS)
     // ============================================================
 
-    private void buildExperienceChips() {
-        if (glExperience == null) {
+    private void setupExperienceDropdown() {
+        if (spExperience == null) {
             return;
         }
 
-        glExperience.removeAllViews();
+        if (experienceOptions.isEmpty()) {
+            experienceOptions.add(new ExperienceOption("Select years of experience", ""));
+            experienceOptions.add(new ExperienceOption("Freshers", "0"));
+            for (int i = 1; i <= 20; i++) {
+                String label = i + (i == 1 ? " Year" : " Years");
+                experienceOptions.add(new ExperienceOption(label, String.valueOf(i)));
+            }
+        }
 
-        for (String experience : EXPERIENCE) {
-            RadioButton rb = new RadioButton(this);
-            rb.setText(experience);
-            rb.setButtonDrawable(null);
-            rb.setGravity(Gravity.CENTER);
-            rb.setBackgroundResource(R.drawable.bg_chip_unselected);
-            rb.setTextColor(getResources().getColor(R.color.Text_Blue));
-            rb.setPadding(24, 24, 24, 24);
+        ArrayAdapter<ExperienceOption> adapter = new ArrayAdapter<ExperienceOption>(
+                this,
+                R.layout.item_spinner_experience,
+                experienceOptions) {
 
-            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-            lp.width = 0;
-            lp.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-            lp.setMargins(6, 6, 6, 6);
-            lp.height = (int) (52 * getResources().getDisplayMetrics().density);
-            rb.setLayoutParams(lp);
+            @Override
+            public boolean isEnabled(int position) {
+                // Position 0 is the placeholder prompt and cannot be selected as valid experience
+                return position != 0;
+            }
 
-            rb.setOnClickListener(view -> {
-                selectedExperience = experience;
-                updateExperienceChips();
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView tv = (TextView) super.getView(position, convertView, parent);
+                if (position == 0) {
+                    tv.setTextColor(Color.parseColor("#94A3B8"));
+                    tv.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    tv.setTextColor(Color.parseColor("#14213D"));
+                    tv.setTypeface(null, Typeface.BOLD);
+                }
+                return tv;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView tv = (TextView) super.getDropDownView(position, convertView, parent);
+                if (position == 0) {
+                    tv.setTextColor(Color.parseColor("#94A3B8"));
+                    tv.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    tv.setTextColor(Color.parseColor("#14213D"));
+                    tv.setTypeface(null, Typeface.NORMAL);
+                }
+                return tv;
+            }
+        };
+
+        adapter.setDropDownViewResource(R.layout.item_spinner_experience_dropdown);
+        spExperience.setAdapter(adapter);
+
+        // Pre-select if selectedExperience was previously chosen or restored
+        int selectedIndex = 0;
+        if (!TextUtils.isEmpty(selectedExperience)) {
+            for (int i = 0; i < experienceOptions.size(); i++) {
+                ExperienceOption opt = experienceOptions.get(i);
+                if (opt.getValue().equals(selectedExperience)
+                        || opt.getLabel().equalsIgnoreCase(selectedExperience)
+                        || (selectedExperience.equals("0") && opt.getLabel().equalsIgnoreCase("Freshers"))
+                        || (selectedExperience.equalsIgnoreCase("Fresher") && opt.getValue().equals("0"))) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+        }
+        spExperience.setSelection(selectedIndex, false);
+
+        spExperience.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0 && position < experienceOptions.size()) {
+                    selectedExperience = experienceOptions.get(position).getValue();
+                } else {
+                    selectedExperience = "";
+                }
                 validateCurrentPage();
-            });
+            }
 
-            glExperience.addView(rb);
-        }
-    }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedExperience = "";
+                validateCurrentPage();
+            }
+        });
 
-    private void updateExperienceChips() {
-        if (glExperience == null) {
-            return;
-        }
-
-        for (int i = 0; i < glExperience.getChildCount(); i++) {
-            RadioButton rb = (RadioButton) glExperience.getChildAt(i);
-            boolean selected = rb.getText().toString().equals(selectedExperience);
-
-            rb.setBackgroundResource(
-                    selected ? R.drawable.bg_chip_selected : R.drawable.bg_chip_unselected);
-
-            rb.setTextColor(
-                    getResources().getColor(
-                            selected ? R.color.white : R.color.Text_Blue));
-
-            rb.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
+        if (flExperienceDropdown != null) {
+            flExperienceDropdown.setOnClickListener(v -> spExperience.performClick());
         }
     }
 
@@ -3082,22 +3903,27 @@ public class Register extends AppCompatActivity {
     }
 
     private boolean validatePersonal() {
-        if (regName == null || regAadhaar == null)
-            return false;
-        if (TextUtils.isEmpty(regName.getText()))
+        capturePage1FormState();
+
+        if (TextUtils.isEmpty(formName) && (regName == null || TextUtils.isEmpty(regName.getText())))
             return false;
 
-        String aadhaar = regAadhaar.getText() != null ? regAadhaar.getText().toString().trim() : formAadhaar;
+        String aadhaar = regAadhaar != null && regAadhaar.getText() != null
+                ? regAadhaar.getText().toString().trim()
+                : formAadhaar;
         String cleanAadhaar = aadhaar.replaceAll("\\s+", "");
         if (cleanAadhaar.length() != 12 || !TextUtils.isDigitsOnly(cleanAadhaar))
             return false;
 
-        if (ccp == null || !ccp.isValidFullNumber())
-            return false;
+        if (ccp == null || !ccp.isValidFullNumber()) {
+            if (TextUtils.isEmpty(formMobile) || formMobile.length() < 10) {
+                return false;
+            }
+        }
 
         String email = regEmail != null && regEmail.getText() != null
                 ? regEmail.getText().toString().trim()
-                : "";
+                : formEmail;
 
         if (!isValidEmail(email))
             return false;
@@ -3118,13 +3944,20 @@ public class Register extends AppCompatActivity {
             return false;
         }
 
-        if (regCity == null || TextUtils.isEmpty(regCity.getText()))
+        if (TextUtils.isEmpty(selectedLivingCityName)) {
             return false;
-        if (TextUtils.isEmpty(selectedCityId))
+        }
+        if (regCity != null && regCity.getText() != null) {
+            String currentCityText = regCity.getText().toString().trim();
+            if (TextUtils.isEmpty(currentCityText) || !currentCityText.equalsIgnoreCase(selectedLivingCityName)) {
+                return false;
+            }
+        } else if (TextUtils.isEmpty(formCityName)) {
             return false;
-        if (regAddress == null || TextUtils.isEmpty(regAddress.getText()))
+        }
+        if ((regAddress == null || TextUtils.isEmpty(regAddress.getText())) && TextUtils.isEmpty(formAddress))
             return false;
-        if (encodedPhoto == null)
+        if (encodedPhoto == null && TextUtils.isEmpty(existingProfilePhotoUrl))
             return false;
 
         return true;
@@ -3148,19 +3981,16 @@ public class Register extends AppCompatActivity {
     }
 
     private boolean validateDocuments() {
-        return !TextUtils.isEmpty(resumeDocBase64)
-                && !TextUtils.isEmpty(aadhaarFrontDocBase64)
+        // Except Aadhaar (Front and Back), all other documents are optional
+        return !TextUtils.isEmpty(aadhaarFrontDocBase64)
                 && !TextUtils.isEmpty(aadhaarBackDocBase64);
     }
 
     private String getDocumentValidationErrorMessage() {
-        if (TextUtils.isEmpty(resumeDocBase64)) {
-            return "Please upload your resume";
-        }
         if (TextUtils.isEmpty(aadhaarFrontDocBase64) || TextUtils.isEmpty(aadhaarBackDocBase64)) {
             return "Please upload Aadhaar Front and Back";
         }
-        return "Please upload all required documents";
+        return "Please upload required documents";
     }
 
     private boolean isValidEmail(String email) {
@@ -3206,6 +4036,7 @@ public class Register extends AppCompatActivity {
 
     private void setupButtons() {
         btnNext.setOnClickListener(v -> {
+            hideKeyboard();
             if (isSubmitting) {
                 return;
             }
@@ -3250,6 +4081,7 @@ public class Register extends AppCompatActivity {
         });
 
         btnPrevious.setOnClickListener(v -> {
+            hideKeyboard();
             if (currentPage > 0) {
                 viewPager.setCurrentItem(currentPage - 1, true);
             } else {
@@ -3324,24 +4156,33 @@ public class Register extends AppCompatActivity {
         if (isSubmitting)
             return;
 
-        final String name = regName != null && regName.getText() != null
+        capturePage1FormState();
+
+        final String name = regName != null && regName.getText() != null && regName.getText().length() > 0
                 ? regName.getText().toString().trim()
                 : formName;
 
-        final String rawAadhaar = regAadhaar != null && regAadhaar.getText() != null
+        final String rawAadhaar = regAadhaar != null && regAadhaar.getText() != null && regAadhaar.getText().length() > 0
                 ? regAadhaar.getText().toString().trim()
                 : formAadhaar;
         final String cleanAadhaar = rawAadhaar.replaceAll("\\s+", "").trim();
 
-        final String mobile = ccp != null ? ccp.getFullNumberWithPlus() : formMobile;
-        final String email = regEmail != null && regEmail.getText() != null
+        final String mobile = (ccp != null && ccp.isValidFullNumber())
+                ? ccp.getFullNumberWithPlus()
+                : (!TextUtils.isEmpty(formMobile) ? formMobile : (regMobile != null && regMobile.getText() != null ? regMobile.getText().toString().trim() : ""));
+
+        final String email = regEmail != null && regEmail.getText() != null && regEmail.getText().length() > 0
                 ? regEmail.getText().toString().trim()
                 : formEmail;
         final String dob = selectedDob != null ? selectedDob : "";
-        final String address = regAddress != null && regAddress.getText() != null
+        final String address = regAddress != null && regAddress.getText() != null && regAddress.getText().length() > 0
                 ? regAddress.getText().toString().trim()
                 : formAddress;
-        final String cityId = !TextUtils.isEmpty(selectedCityId) ? selectedCityId : "1";
+        final String livingCity = !TextUtils.isEmpty(selectedLivingCityName)
+                ? selectedLivingCityName
+                : (regCity != null && regCity.getText() != null && regCity.getText().length() > 0
+                        ? regCity.getText().toString().trim()
+                        : formCityName);
         final String photo = encodedPhoto != null ? encodedPhoto : "";
 
         String gender = "";
@@ -3366,7 +4207,7 @@ public class Register extends AppCompatActivity {
         params.put("dob", dob);
         params.put("date_of_birth", dob);
         params.put("gender", finalGender);
-        params.put("city_id", cityId);
+        params.put("living_city_name", livingCity);
         params.put("address", address);
         params.put("photo", photo);
         params.put("profile_photo", photo);
@@ -3406,7 +4247,9 @@ public class Register extends AppCompatActivity {
 
                     if (response == null || !response.trim().startsWith("{")) {
                         showStepErrorDialog("Server Error",
-                                "Server returned invalid response (non-JSON):\n" + (response != null ? response : "Empty response"), 500);
+                                "Server returned invalid response (non-JSON):\n"
+                                        + (response != null ? response : "Empty response"),
+                                500);
                         return;
                     }
 
@@ -3414,7 +4257,22 @@ public class Register extends AppCompatActivity {
                     try {
                         json = new JSONObject(response);
                     } catch (Exception e) {
-                        showStepErrorDialog("Response Error", "Could not parse server response as JSON:\n" + response, 200);
+                        showStepErrorDialog("Response Error", "Could not parse server response as JSON:\n" + response,
+                                200);
+                        return;
+                    }
+
+                    // Check for already fully registered account
+                    if (json.optBoolean("already_registered", false)) {
+                        String msg = json.optString("message", "An account with this mobile number or Aadhaar already exists. Please log in.");
+                        showAlreadyRegisteredDialog(msg);
+                        return;
+                    }
+
+                    // Check for conflict (e.g. mobile/aadhaar mismatch)
+                    if (json.optBoolean("conflict", false)) {
+                        String msg = json.optString("message", "The provided credentials conflict with an existing registration.");
+                        showStepErrorDialog("Account Conflict", msg, 409);
                         return;
                     }
 
@@ -3424,7 +4282,8 @@ public class Register extends AppCompatActivity {
                         return;
                     }
 
-                    // Extract registered expert id: "id" -> "expert_id" -> "inserted_id" -> "data.id"
+                    // Extract registered expert id: "id" -> "expert_id" -> "inserted_id" ->
+                    // "data.id"
                     String extractedId = json.optString("id", "");
                     if (TextUtils.isEmpty(extractedId)) {
                         extractedId = json.optString("expert_id", "");
@@ -3445,18 +4304,20 @@ public class Register extends AppCompatActivity {
                     // 3 & 4: Save expert id to SharedPreferences and in-memory field
                     saveExpertIdToPrefs(extractedId);
 
-                    // 6: Show Toast and advance ViewPager to page index 1
-                    Toast.makeText(Register.this, "Personal details saved successfully", Toast.LENGTH_SHORT).show();
+                    boolean isRecovered = json.optBoolean("recovered", false);
+                    if (isRecovered) {
+                        Toast.makeText(Register.this, "Incomplete registration recovered", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(Register.this, "Personal details saved successfully", Toast.LENGTH_SHORT).show();
+                    }
 
                     // Preload Page-3 city list as soon as user leaves Page 1
                     if (!cityLoadedP3 && !cityLoadingP3) {
                         loadCities(1);
                     }
 
-                    viewPager.setCurrentItem(currentPage + 1, true);
-
-                    // 5: Call tracking logic right after step-1 success
-                    trackRegistrationStatus(extractedId);
+                    // Advance to Page 2 (2nd layout: Professional Details / Experience / Categories)
+                    viewPager.setCurrentItem(1, true);
                 },
                 error -> {
                     safeDismiss.run();
@@ -3490,6 +4351,24 @@ public class Register extends AppCompatActivity {
 
         request.setRetryPolicy(new DefaultRetryPolicy(15000, 0, 1.0f));
         getAppRequestQueue().add(request.setTag(TAG_REGISTRATION));
+    }
+
+    private void showAlreadyRegisteredDialog(String message) {
+        if (isFinishing() || isDestroyed())
+            return;
+        new AlertDialog.Builder(this, R.style.WhiteAlertDialog)
+                .setTitle("Account Already Registered")
+                .setMessage(message)
+                .setPositiveButton("Log In", (dialog, which) -> {
+                    dialog.dismiss();
+                    Intent intent = new Intent(Register.this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .setCancelable(true)
+                .show();
     }
 
     // ============================================================
@@ -3635,7 +4514,7 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        final String cityId = !TextUtils.isEmpty(selectedCityIdP3) ? selectedCityIdP3 : selectedCityId;
+        final String cityId = !TextUtils.isEmpty(selectedCityIdP3) ? selectedCityIdP3 : "";
         final String areaIds = TextUtils.join(",", selectedAreaIds);
 
         final Map<String, String> params = new HashMap<>();
@@ -3905,9 +4784,10 @@ public class Register extends AppCompatActivity {
                         getSharedPreferences("credentials", MODE_PRIVATE)
                                 .edit()
                                 .putString("Id", registeredExpertId)
+                                .putString("userType", "expert")
                                 .apply();
 
-                        Intent intent = new Intent(Register.this, ApplicationSubmittedActivity.class);
+                        Intent intent = new Intent(Register.this, LoginActivity.class);
                         intent.putExtra("EXTRA_EXPERT_ID", registeredExpertId);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);

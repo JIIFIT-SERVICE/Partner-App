@@ -128,33 +128,6 @@
                 android:layout_marginBottom="12dp"
                 android:background="#F1F5F9" />
 
-            <!-- Hubs Header Section (FIXED) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="SELECT MULTIPLE WORKING LOCATIONS / HUBS"
-                    android:textColor="#0F172A"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.04" />
-
-                <TextView
-                    android:id="@+id/tvTotalAreas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 / 50 selected"
-                    android:textColor="#1A56DB"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvMinAreasHint"

@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -100,8 +101,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-        verifyuserexistance();
         viewPager = findViewById(R.id.viewPager);
         adapter = new ImageSliderAdapter(images);
         viewPager.setAdapter(adapter);
@@ -141,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
         sendOtpBtn = findViewById(R.id.send_Otp_btn);
         RegisterButton = findViewById(R.id.registerButton);
         progressBar = findViewById(R.id.login_progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         countryCodePicker.registerCarrierNumberEditText(phoneInput);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -212,6 +211,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         progressBar.setVisibility(View.GONE);
+        verifyuserexistance();
 
     }
 
@@ -419,7 +419,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             Intent intent = null;
                             if ("expert".equalsIgnoreCase(userType)) {
-                                intent = new Intent(LoginActivity.this, MainActivity.class);
+                                checkExpertRegistrationStatusAndNavigate(Id != null ? Id.toString() : "", Mobile);
+                                return;
                             } else if ("hotel".equalsIgnoreCase(userType)) {
                                 intent = new Intent(LoginActivity.this, HotelMainActivity.class);
                             } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
@@ -543,6 +544,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void verifyuserexistance() {
+        if (getIntent().getBooleanExtra("FROM_APP_SUBMITTED", false)) {
+            return;
+        }
+
+        String intentExpertId = getIntent().getStringExtra("EXTRA_EXPERT_ID");
+        if (intentExpertId != null && !intentExpertId.trim().isEmpty()) {
+            checkExpertRegistrationStatusAndNavigate(intentExpertId.trim(), "");
+            return;
+        }
 
         SharedPreferences sp =
                 getSharedPreferences("credentials", MODE_PRIVATE);
@@ -552,26 +562,152 @@ public class LoginActivity extends AppCompatActivity {
 
             String userType = sp.getString("userType", "");
 
-            Intent intent = null;
             if ("expert".equalsIgnoreCase(userType)) {
-                intent = new Intent(this, MainActivity.class);
+                String expertId = sp.getString("Id", "");
+                String phone = sp.getString("mobile", "");
+                checkExpertRegistrationStatusAndNavigate(expertId, phone);
+                return;
             } else if ("hotel".equalsIgnoreCase(userType)) {
-                intent = new Intent(this, HotelMainActivity.class);
-            } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
-                intent = new Intent(this, InfluencerMainActivity.class);
-            }
-
-            if (intent != null) {
+                Intent intent = new Intent(this, HotelMainActivity.class);
                 startActivity(intent);
-                overridePendingTransition(
-                        R.anim.slide_in_right,
-                        R.anim.slide_out_left
-                );
+                finish();
+            } else if ("influencer".equalsIgnoreCase(userType) || "partner".equalsIgnoreCase(userType)) {
+                Intent intent = new Intent(this, InfluencerMainActivity.class);
+                startActivity(intent);
                 finish();
             } else {
-                Log.w("LoginActivity", "Unrecognized or missing userType: " + userType);
+                String expertId = sp.getString("Id", "");
+                if (expertId != null && !expertId.trim().isEmpty()) {
+                    checkExpertRegistrationStatusAndNavigate(expertId, "");
+                }
             }
         }
+    }
+
+    public void checkExpertRegistrationStatusAndNavigate(String expertId, String phone) {
+        if ((expertId == null || expertId.trim().isEmpty()) && (phone == null || phone.trim().isEmpty())) {
+            return;
+        }
+
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST,
+                Constant.TrackRegistrationStatusUrl,
+                response -> {
+                    if (progressBar != null) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                    try {
+                        String cleanResponse = response != null ? response.trim() : "";
+                        int jsonStartIndex = cleanResponse.indexOf('{');
+                        int jsonEndIndex = cleanResponse.lastIndexOf('}');
+                        if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+                            cleanResponse = cleanResponse.substring(jsonStartIndex, jsonEndIndex + 1);
+                        }
+                        JSONObject json = new JSONObject(cleanResponse);
+                        if (json.optBoolean("status", false)) {
+                            int l1 = json.optInt("1st_layout", 0);
+                            int l2 = json.optInt("2nd_layout", 0);
+                            int l3 = json.optInt("3rd_layout", 0);
+                            int l4 = json.optInt("4th_layout", 0);
+                            int l5 = json.optInt("5th_layout", 0);
+                            String verification = json.optString("verification", "UNVERIFIED").trim();
+                            String kitPayment = json.optString("kit_payment", "").trim();
+                            String returnedId = json.optString("id", expertId);
+
+                            SharedPreferences sp = getSharedPreferences("credentials", MODE_PRIVATE);
+                            sp.edit()
+                                    .putString("Id", returnedId)
+                                    .putString("userType", "expert")
+                                    .putString("Verification", verification)
+                                    .apply();
+
+                            boolean allLayoutsComplete = (l1 == 1 && l2 == 1 && l3 == 1 && l4 == 1 && l5 == 1);
+
+                            if (allLayoutsComplete) {
+                                if ("VERIFIED".equalsIgnoreCase(verification)) {
+                                    if ("pending".equalsIgnoreCase(kitPayment)) {
+                                        Intent intent = new Intent(LoginActivity.this, TrainingRegistrationKitActivity.class);
+                                        intent.putExtra("EXTRA_EXPERT_ID", returnedId);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        // VERIFIED & kit_payment = 'completed' (or not pending): stay on login page
+                                        Log.d("LoginActivity", "Expert verified & kit completed. Remaining on login page.");
+                                        if (progressBar != null) {
+                                            progressBar.setVisibility(View.GONE);
+                                        }
+                                    }
+                                } else {
+                                    // UNVERIFIED
+                                    Intent intent = new Intent(LoginActivity.this, ApplicationSubmittedActivity.class);
+                                    intent.putExtra("EXTRA_EXPERT_ID", returnedId);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            } else {
+                                int targetPage = 0;
+                                if (l4 == 1 && l5 == 0) {
+                                    targetPage = 4;
+                                } else if (l3 == 1 && l4 == 0) {
+                                    targetPage = 3;
+                                } else if (l2 == 1 && l3 == 0) {
+                                    targetPage = 2;
+                                } else if (l1 == 1 && l2 == 0) {
+                                    targetPage = 1;
+                                } else {
+                                    targetPage = 0;
+                                }
+                                Intent intent = new Intent(LoginActivity.this, Register.class);
+                                intent.putExtra("EXTRA_EXPERT_ID", returnedId);
+                                intent.putExtra("EXTRA_PAGE_INDEX", targetPage);
+                                startActivity(intent);
+                                finish();
+                            }
+                        } else {
+                            if (progressBar != null) {
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("LoginActivity", "Error parsing tracking status", e);
+                        if (progressBar != null) {
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                },
+                error -> {
+                    if (progressBar != null) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                    String errorDetail = error.getMessage();
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, java.nio.charset.StandardCharsets.UTF_8);
+                            errorDetail = "Status " + error.networkResponse.statusCode + ": " + responseBody;
+                        } catch (Exception ignored) {}
+                    }
+                    Log.e("LoginActivity", "Failed to track registration status: " + errorDetail);
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                if (expertId != null && !expertId.trim().isEmpty()) {
+                    params.put("id", expertId.trim());
+                }
+                if (phone != null && !phone.trim().isEmpty()) {
+                    params.put("phone", phone.trim());
+                }
+                return params;
+            }
+        };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(12000, 1, 1.0f));
+        Volley.newRequestQueue(this).add(stringRequest);
     }
 
     public void OpenReg(View view) {

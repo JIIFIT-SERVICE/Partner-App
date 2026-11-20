@@ -7,6 +7,7 @@
     android:background="#F4F7FB"
     android:fillViewport="true"
     android:clipToPadding="false"
+    android:isScrollContainer="true"
     android:overScrollMode="never">
 
     <LinearLayout
@@ -16,7 +17,7 @@
         android:paddingStart="16dp"
         android:paddingTop="22dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="28dp">
+        android:paddingBottom="90dp">
 
         <!-- Header -->
         <LinearLayout
@@ -229,15 +230,36 @@
                     android:textSize="13sp"
                     android:lineSpacingExtra="2dp" />
 
-                <GridLayout
-                    android:id="@+id/glExperience"
+                <FrameLayout
+                    android:id="@+id/flExperienceDropdown"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginTop="12dp"
-                    android:columnCount="2"
-                    android:orientation="horizontal"
-                    android:alignmentMode="alignMargins"
-                    android:useDefaultMargins="false" />
+                    android:background="@drawable/bg_input_field">
+
+                    <Spinner
+                        android:id="@+id/spExperience"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:spinnerMode="dropdown"
+                        android:overlapAnchor="false"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="42dp"
+                        android:popupBackground="@android:color/white"
+                        android:dropDownVerticalOffset="4dp" />
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="14dp"
+                        android:src="@drawable/ic_arrow_drop_down"
+                        app:tint="#14213D"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
 
             </LinearLayout>
 
