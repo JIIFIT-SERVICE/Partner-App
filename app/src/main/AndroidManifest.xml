@@ -20,6 +20,9 @@
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false" />
 
     <queries>
         <intent>
@@ -511,6 +514,7 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="false"
             android:label=""
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Jifiit.hotel.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity

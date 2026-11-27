@@ -15,8 +15,8 @@ android {
         applicationId = "com.company.jifiit"
         minSdk = 24
         targetSdk = 36
-        versionCode = 62
-        versionName = "3.33"
+        versionCode = 63
+        versionName = "3.34"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
